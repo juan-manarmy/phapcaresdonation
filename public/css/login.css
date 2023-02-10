@@ -1,0 +1,19 @@
+html {
+ 
+}
+
+body  {
+    background-image: url("/images/login-bg.jpg"); /* The image used */
+    background-color: #fff; /* Used if the image is unavailable */
+    background-position: center bottom; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover;
+}
+
+.login-body {
+    max-width:500px;
+}
+
+.field-widths {
+    max-width: 350px;
+}

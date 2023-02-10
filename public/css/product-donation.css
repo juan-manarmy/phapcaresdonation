@@ -1,0 +1,159 @@
+.border-container {
+    height: 20px;
+    position: relative;
+}
+
+.progress-container {
+    /* height: 20px; */
+    position: relative;
+}
+.bg-progress-wrapper {
+    position: relative;
+    background-color: white;
+    border-radius: 15px;
+    padding-top: 30px;
+    padding-bottom: 10px;
+
+    padding-left: 4rem;
+    padding-right: 4rem;
+    z-index: -3;
+}
+.bg-heading-progress {
+    position: inherit;
+    z-index: -2;
+}
+
+.dot-progress {
+}
+
+.prog-line { 
+    width: 100%;
+    border-top: 3px solid #bbb; 
+    border-radius: 3px;
+    position: absolute;
+    top:9px;
+    left: 0px;
+    z-index: -1;
+}
+
+.bg-heading {
+    background-color: white;
+    border-radius: 15px;
+}
+
+.status-green {
+    color:  var(--main-green-light);
+    font-weight:700;
+}
+
+.status-gray {
+    color:  #bbb;
+}
+
+.dot-size {
+    font-size: 20px;
+}
+
+.check-size {
+    font-size: 11px;
+    color: white;
+    padding-top:5px;
+}
+
+.ic-bg-circle {
+    height: 22px;
+    width: 22px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-text {
+    font-weight:700;
+    color:#bbb;
+}
+
+.bg-initial-details{
+    background-color: white;
+    border-radius: 15px;
+}
+
+.title-initial-details {
+font-size:1rem;
+}
+
+.text-main-color {
+    color:#028446;
+}
+
+
+.theader {
+    background-color:#DEF6EB;
+    font-size: 0.8rem;
+    color: #15B166;
+}
+
+.donation-titles{
+    color: #333;
+    font-weight: 700;
+}
+
+.tableRecordStatAmount {
+    font-weight: 700;
+}
+
+.stats-title {
+    font-size:0.65rem;
+    /* font-weight:700;
+    color: #028446; */
+}
+
+.stats-head-title {
+    color: #333;
+    font-weight:700;
+    color: #028446;
+}
+
+.stats-card-header {
+    background-color:#DEF6EB;
+    font-weight: 700;
+}
+.stats-values {
+    font-weight: 700;
+}
+/* .stats-card-body {
+    padding:0;
+} */
+
+.sd-label {
+    font-weight:700;
+    color:#4D4D4D;
+}
+
+.finish-ic {
+    font-size:1.5rem;
+}
+
+.contribution-list-row td {
+    font-size:13px;
+}
+
+.cfs-edit-btn {
+    background-color: #f1f2f2; 
+    padding: 0.175rem 0.65rem;
+}
+
+.cfs-edit-btn:hover {
+    background-color: #E6E6E6;
+}
+
+.cfs-edit-ic {
+    font-size:10px;
+}
+
+tr td {
+    vertical-align: middle !important;
+}
+
+tr.clickable-row { cursor: pointer; }
+

@@ -1,0 +1,20 @@
+.card {
+    border-radius: 1rem; 
+    border:0;  
+}
+
+.card-body {
+    padding:3rem 2rem;
+}
+
+.btn-forms {
+    width:250px;
+}
+
+.forms-note-bg {
+    background-color: #DCF4E8;
+}
+
+.forms-title-bg {
+    font-weight:700;
+}

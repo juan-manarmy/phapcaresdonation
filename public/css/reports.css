@@ -1,0 +1,7 @@
+.members-title {
+    padding-top:10px; 
+    padding-bottom:10px; 
+    background-color:var(--main-green); 
+    padding-left:15px; 
+    color:white;
+}

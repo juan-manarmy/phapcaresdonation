@@ -1,0 +1,24 @@
+thead, tbody, tfoot, tr, td, th {
+    border-style: none;
+    border-width: 0;
+}
+
+/* .dataTables_wrapper .dataTables_info {
+    padding-left: 2em;
+}
+
+.dataTables_wrapper .dataTables_length {
+    padding-left: 2em;
+} */
+
+.dataTables_wrapper .dataTables_filter {
+    /* padding-right: 3em; */
+    margin-bottom: 0.5em;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: #F1FBF6;
+    color: var(--bs-table-striped-color);
+}
+
+

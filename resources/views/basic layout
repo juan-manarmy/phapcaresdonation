@@ -1,0 +1,524 @@
+@extends('layouts.app')
+
+
+@section('custom-css')
+
+@endsection
+
+@section('content')
+<div class="page-heading">
+    <h4>All Users</h4>
+    <div class="border-container">
+        <div class="heading-line"></div>
+        <hr class="rounded">
+    </div>
+</div>
+<section class="section">
+    <div class="card shadow mt-2">
+        <div class="card-header"></div>
+        <div class="card-body">
+
+        </div>
+    </div>
+</section>
+@endsection
+
+@section('custom-js')
+
+@endsection
+
+@foreach($transaction_reports as $transaction_report)
+                                    @if($transaction_report->member_id == $member->id && $transaction_report->transaction_type == 'IMP')
+                                        <tr>
+                                            <td>{{ $transaction_report->id }}</td>
+                                            <td>{{ $transaction_report->product_code }}</td>
+                                            <td>{{ $transaction_report->product_name }}</td>
+                                            <td>{{ $transaction_report->lot_no }}</td>
+                                            <td>{{ $transaction_report->opening_balance_quantity }}</td>
+                                            <td>{{ $transaction_report->quantity }}</td>
+                                            <td>{{ $transaction_report->unit_cost }}</td>
+                                            <td>{{ $transaction_report->receipt }}</td>
+                                            <td>{{ $transaction_report->receipt_amount }}</td>
+                                            <td>{{ $transaction_report->job_no }}</td>
+                                            <td>{{ $transaction_report->created_at }}</td>
+                                        </tr>
+                                        <!-- <x-transaction-table type="{{ $transaction_report->product_name }}"/> -->
+                                    @else
+
+                                    @endif
+                                @endforeach
+                                foreach($transaction_reports as $transactionReportDetails) {
+                //Product Details
+                $transactionReportId = $transactionReportDetails->transaction_report_id;
+                $memberId = $transactionReportDetails->member_id;
+                $beneficiaryId = $transactionReportDetails->beneficiary_id;
+                $contributionId = $transactionReportDetails->contribution_id;
+                $allocationId = $transactionReportDetails->allocation_id;
+                $month = $transactionReportDetails->month;
+                $year = $transactionReportDetails->year;
+                $contributionNo = $transactionReportDetails->contribution_no;
+                $allocationNo = $transactionReportDetails->allocation_no;
+                $productCode = $transactionReportDetails->product_code;
+                $productName = $transactionReportDetails->product_name;
+                $lotNo = $transactionReportDetails->lot_no;
+                $openingBalanceQuantity = $transactionReportDetails->opening_balance_quantity;
+                $transactionType = $transactionReportDetails->transaction_type;
+                $quantity = $transactionReportDetails->quantity;
+                $unitCost = $transactionReportDetails->unit_cost;
+                $receiptQuantity = $transactionReportDetails->receipt_quantity;
+                $issuanceQuantity = $transactionReportDetails->issuance_quantity;
+                $receiptAmount = $transactionReportDetails->receipt_amount;
+                $issuanceAmount = $transactionReportDetails->issuance_amount;
+                $mfgDate = $transactionReportDetails->mfg_date;
+                $expiryDate = $transactionReportDetails->expiry_date;
+                $createDate = $transactionReportDetails->created_at;
+                                                    
+                //Beneficiary Details
+
+                $beneficiary = Beneficiary::where('id',$beneficiaryId)->first();
+                $beneficiaryName = $beneficiary->name;
+
+                //Set Beneficiary Name To Empty If Benficiary Id Is Zero
+                if ($beneficiaryId == 0) {
+                    $beneficiaryName = "-";
+                }
+
+                //Get Contribution Details
+                $contribution = Contribution::where('id', $contributionId)->first();
+                $dndNo = $contribution->dnd_no;
+                $didrfNo = $contribution->didrf_no;
+
+                //Get Allocation Details
+                $allocation = Allocation::where('allocation_id', $allocationId)->first();
+
+                $dnaNo = $allocation->dna_no;
+                $dodrfNo = $allocation->dodrf_no;
+                           
+                //Identify Reference By Transaction Type
+                if ($transactionType == 'EXP') {
+                    $reference = $allocationNo."/DODRF: ".$dodrfNo."/DNA: ".$dnaNo;
+                } else if ($transactionType == 'IMP') {
+                    $reference = $contributionNo."/DIDRF: ".$didrfNo."/DNA: ".$dndNo;
+                } else if ($transactionType == 'ADJI') {
+                    $reference = 'INVENTORY ADJ-';
+                } else {
+                    $reference = 'INVENTORY ADJ+';
+                }
+                
+                $sheet
+                ->getCell('A'.$productDetailsRow)
+                ->setValue("{$productCode}");
+        
+                $sheet
+                ->mergeCells('B'.$productDetailsRow.':C'.$productDetailsRow);
+            
+                $sheet
+                ->getCell('B'.$productDetailsRow)
+                ->setValue("{$productName}");
+                
+                $sheet
+                ->getCell('D'.$productDetailsRow)
+                ->setValue("{$memberName}");
+                
+                $sheet
+                ->mergeCells('E'.$productDetailsRow.':F'.$productDetailsRow);
+            
+                $sheet
+                ->getCell('E'.$productDetailsRow)
+                ->setValue("{$beneficiaryName}");
+                
+                $sheet
+                ->getCell('G'.$productDetailsRow)
+                ->setValue("{$lotNo}");
+                
+                //Set Number Format
+                $sheet
+                ->getStyle('H'.$productDetailsRow)
+                ->getNumberFormat()
+                ->setFormatCode('#,##0');
+                
+                $sheet
+                ->getCell('H'.$productDetailsRow)
+                ->setValue("{$openingBalanceQuantity}");
+                
+                $sheet
+                ->getCell('I'.$productDetailsRow)
+                ->setValue("{$transactionType}");
+                
+                //Set Number Format
+                $sheet
+                ->getStyle('J'.$productDetailsRow)
+                ->getNumberFormat()
+                ->setFormatCode('#,##0');
+                
+                $sheet
+                ->getCell('J'.$productDetailsRow)
+                ->setValue("{$quantity}");
+                
+                //Set Number Format
+                $sheet
+                ->getStyle('K'.$productDetailsRow)
+                ->getNumberFormat()
+                ->setFormatCode('#,##0.00');
+                
+                $sheet
+                ->getCell('K'.$productDetailsRow)
+                ->setValue("{$unitCost}");
+                
+                //Set Number Format
+                $sheet
+                ->getStyle('L'.$productDetailsRow)
+                ->getNumberFormat()
+                ->setFormatCode('#,##0');
+                
+                $sheet
+                ->getCell('L'.$productDetailsRow)
+                ->setValue("{$receiptQuantity}");
+                
+                //Set Number Format
+                $sheet
+                ->getStyle('M'.$productDetailsRow)
+                ->getNumberFormat()
+                ->setFormatCode('#,##0');
+                
+                $sheet
+                ->getCell('M'.$productDetailsRow)
+                ->setValue("{$issuanceQuantity}");
+                
+                //Set Number Format
+                $sheet
+                ->getStyle('N'.$productDetailsRow)
+                ->getNumberFormat()
+                ->setFormatCode('#,##0.00');
+                
+                $sheet
+                ->getCell('N'.$productDetailsRow)
+                ->setValue("{$receiptAmount}");
+                
+                //Set Number Format
+                $sheet
+                ->getStyle('O'.$productDetailsRow)
+                ->getNumberFormat()
+                ->setFormatCode('#,##0.00');
+                
+                $sheet
+                ->getCell('O'.$productDetailsRow)
+                ->setValue("{$issuanceAmount}");
+                
+                $sheet
+                ->getCell('P'.$productDetailsRow)
+                ->setValue("{$reference}");
+                
+                $sheet
+                ->getCell('Q'.$productDetailsRow)
+                ->setValue("{$createDate}");
+                
+                $sheet
+                ->getCell('R'.$productDetailsRow)
+                ->setValue("{$mfgDate}");
+                
+                $sheet
+                ->getCell('S'.$productDetailsRow)
+                ->setValue("{$expiryDate}");
+                
+                $style = array(
+                    'alignment' => array('horizontal' => Alignment::HORIZONTAL_LEFT, 'vertical' => Alignment::VERTICAL_CENTER,),
+                    'font'  => array('color' => array('rgb' => '000000'), 'size'  => 8, 'name'  => 'Calibri'),
+                    'borders' => array('allborders' => array('style' => Border::BORDER_THIN,  'color' => array('rgb' => '000000')))
+                );
+                
+                $style2 = array(
+                    'alignment' => array('horizontal' => Alignment::HORIZONTAL_RIGHT, 'vertical' => Alignment::VERTICAL_CENTER,),
+                    'font'  => array('color' => array('rgb' => '000000'), 'size'  => 8, 'name'  => 'Calibri'),
+                    'borders' => array('allborders' => array('style' => Border::BORDER_THIN,  'color' => array('rgb' => '000000')))
+                );
+
+                $sheet->getStyle('A'.$productDetailsRow.':G'.$productDetailsRow)->applyFromArray($style);
+                $sheet->getStyle('H'.$productDetailsRow.':O'.$productDetailsRow)->applyFromArray($style2);
+                $sheet->getStyle('P'.$productDetailsRow.':S'.$productDetailsRow)->applyFromArray($style);
+                $sheet->getStyle('A'.$productDetailsRow.':S'.$productDetailsRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('E2E6EA');
+            
+                $productDetailsRow++;
+            }
+
+            //Compute The Location Of Total Row By Adding Starting Row, Member Title Row (1) And Total Transaction Row
+            $totalStatsRow = $startingRow + $totalTransactionRow + 1;
+
+            $total_issuance_quantity = TransactionReport::where('member_id', $member_id)
+            ->where('year',$year)
+            ->where('month',$month)
+            ->where('status',1)
+            ->sum('issuance_quantity');
+
+            $total_issuance_amount = TransactionReport::where('member_id', $member_id)
+            ->where('year',$year)
+            ->where('month',$month)
+            ->where('status',1)
+            ->sum('issuance_amount');
+
+            $total_receipt_quantity = TransactionReport::where('member_id', $member_id)
+            ->where('year',$year)
+            ->where('month',$month)
+            ->where('status',1)
+            ->sum('receipt_quantity');
+
+            $total_receipt_amount = TransactionReport::where('member_id', $member_id)
+            ->where('year',$year)
+            ->where('month',$month)
+            ->where('status',1)
+            ->sum('receipt_amount');
+
+            //Show Total Record
+            $sheet->mergeCells('A'.$totalStatsRow.':K'.$totalStatsRow);
+    
+            $sheet->getCell('A'.$totalStatsRow)
+            ->setValue('TOTAL');
+            
+            //Set Number Format
+            $sheet->getStyle('L'.$totalStatsRow)
+            ->getNumberFormat()
+            ->setFormatCode('#,##0');
+                
+            $sheet->getCell('L'.$totalStatsRow)
+            ->setValue("{$total_receipt_quantity}");
+            
+            //Set Number Format
+            $sheet->getStyle('M'.$totalStatsRow)
+            ->getNumberFormat()
+            ->setFormatCode('#,##0');
+            
+            $sheet->getCell('M'.$totalStatsRow)
+            ->setValue("{$total_issuance_quantity}");
+            
+            //Set Number Format
+            $sheet->getStyle('N'.$totalStatsRow)
+            ->getNumberFormat()
+            ->setFormatCode('#,##0.00');
+                
+            $sheet->getCell('N'.$totalStatsRow)
+            ->setValue("{$total_receipt_amount}");
+            
+            //Set Number Format
+            $sheet->getStyle('O'.$totalStatsRow)
+            ->getNumberFormat()
+            ->setFormatCode('#,##0.00');
+            
+            $sheet->getCell('O'.$totalStatsRow)
+            ->setValue("{$total_issuance_amount}");
+            
+            $sheet->mergeCells('P'.$totalStatsRow.':S'.$totalStatsRow);
+                
+            $style = array(
+                'alignment' => array('horizontal' => Alignment::HORIZONTAL_LEFT, 'vertical' => Alignment::VERTICAL_CENTER,),
+                'font'  => array('bold'  => true, 'color' => array('rgb' => '000000'), 'size'  => 8, 'name'  => 'Calibri'),
+                'borders' => array('allborders' => array('style' => Border::BORDER_THIN,  'color' => array('rgb' => '000000')))
+            );
+            
+            $style2 = array(
+                'alignment' => array('horizontal' => Alignment::HORIZONTAL_RIGHT, 'vertical' => Alignment::VERTICAL_CENTER,),
+                'font'  => array('bold'  => true, 'color' => array('rgb' => '000000'), 'size'  => 8, 'name'  => 'Calibri'),
+                'borders' => array('allborders' => array('style' => Border::BORDER_THIN,  'color' => array('rgb' => '000000')))
+            );
+
+            $sheet->getStyle('A'.$totalStatsRow.':G'.$totalStatsRow)->applyFromArray($style);
+            $sheet->getStyle('H'.$totalStatsRow.':S'.$totalStatsRow)->applyFromArray($style2);
+            $sheet->getStyle('A'.$totalStatsRow.':S'.$totalStatsRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('B8C0CB');
+
+
+            
+            $contributions_notif = DB::table('contributions')
+        ->join('members', 'contributions.member_id', '=', 'members.id')
+        ->where('contributions.status',1)
+        ->select('contributions.id','members.member_name','contributions.contribution_no','contributions.contribution_date','contributions.total_donation')
+        ->get();
+
+        $allocations_notif = DB::table('allocations')
+        ->join('beneficiaries', 'allocations.beneficiary_id', '=', 'beneficiaries.id')
+        ->where('allocations.status',1)
+        ->select('allocations.id','beneficiaries.name','allocations.total_allocated_products','allocations.allocation_no')
+        ->get();
+
+        ->with('allocations_notif', $allocations_notif)
+        ->with('contributions_notif', $contributions_notif)
+
+        setup: () => ({ 
+    v$: useVuelidate() 
+}),
+
+
+setup() { 
+    const state = reactive({
+        donation: {
+            contribution_id : this.contribution_id,
+            strength : '',
+            generic_name : '',
+            product_type : "1",
+            product_name : '',
+            dosage_form : '',
+            package_size: '',
+            lot_no: '',
+            quantity: 0,
+            unit_cost: 0,
+            total: 0,
+            drug_reg_no: '',
+            expiry_date: '',
+            mfg_date: '',
+            medicine_status: '',
+            status: 1
+        }
+    })
+    const rules = computed(() => {
+        return {
+            donation: {
+                contribution_id : { required },
+                strength : { required },
+                generic_name :{ required },
+                product_type : { required },
+                product_name : { required },
+                dosage_form : { required },
+                package_size: { required },
+                lot_no: { required },
+                quantity: { required },
+                unit_cost: { required },
+                total: { required },
+                drug_reg_no: { required },
+                expiry_date: { required },
+                mfg_date: { required },
+                medicine_status: { required },
+                status: { required }
+            }
+        }
+    })
+
+    const v$ = useVuelidate(rules,state)
+
+    return {
+        state,v$
+    }
+},
+
+validations () {
+    return {
+        donation: {
+            contribution_id : { required },
+            strength : { required },
+            generic_name :{ required },
+            product_type : { required },
+            product_name : { required },
+            dosage_form : { required },
+            package_size: { required },
+            lot_no: { required },
+            quantity: { required },
+            unit_cost: { required },
+            total: { required },
+            drug_reg_no: { required },
+            expiry_date: { required },
+            mfg_date: { required },
+            medicine_status: { required },
+            status: { required }
+        },
+    }
+},
+
+save contributions
+// $contribution = new Contribution;
+        // $contribution->contribution_no =  $request->contribution_no;
+        // $contribution->member_id = $request->member_id;
+        // $contribution->distributor = $request->distributor;
+        // $contribution->contribution_date = $converted_contribution_date;
+
+        // $contribution->save();
+
+        // $contribution = DB::table('contributions')
+        // ->where('contribution_no',$request->contribution_no)
+        // ->updateOrInsert(
+        //     ['contribution_no' => $request->contribution_no, 
+        //     'member_id' => $request->member_id,
+        //     'distributor' => $request->distributor,
+        //     'contribution_date' => $converted_contribution_date]
+        // );
+
+        <button data-bs-toggle="modal" data-bs-target="#deleteModal" type="button" class="btn btn-outline-secondary me-2">Cancel</button>
+
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                   Are you sure you want to cancel this contribution?
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form method="POST" action="{{ route('contribution-delete'}}">
+                        @method('DELETE')
+                        @csrf
+                        <input id="id" name="id" value="0">
+                        <button type="submit" class="btn btn-danger">Confirm</button>
+                    </form>
+                </div>
+                
+                </div>
+            </div>
+        </div>
+
+        $destruction = new Destruction;
+        
+        $destruction->destruction_no = $request->destruction_no;
+        $destruction->pdrf_no = $request->pdrf_no;
+        $destruction->beneficiary_id = $request->beneficiary_id;
+        $destruction->notice_to = $request->notice_to;
+        $destruction->pickup_address = $request->pickup_address;
+        $destruction->pickup_contact_person = $request->pickup_contact_person;
+        $destruction->pickup_contact_no = $request->pickup_contact_no;
+        $destruction->pickup_date = new Carbon($request->pickup_date);
+        $destruction->other_pickup_instructions = $request->other_pickup_instructions;
+        $destruction->delivery_contact_person = $request->delivery_contact_person;
+        $destruction->delivery_address = $request->delivery_address;
+        $destruction->delivery_authorized_recipient = $request->delivery_authorized_recipient;
+        $destruction->delivery_contact_no = $request->delivery_contact_no;
+        $destruction->delivery_date = new Carbon($request->delivery_date);
+        $destruction->other_delivery_instructions = $request->other_delivery_instructions;
+        $destruction->status = 0;
+        $destruction->save();
+
+        $allocation = new Allocation;
+        $allocation->allocation_no = $request->allocation_no;
+        $allocation->dna_no = $request->dna_no;
+        $allocation->beneficiary_id = $request->beneficiary_id;
+        // $allocation->beneficiary_new = $request->beneficiary_new;
+        $allocation->notice_to = $request->notice_to;
+        $allocation->authorized_representative = $request->authorized_representative;
+        $allocation->position = $request->position;
+        $allocation->contact_number = $request->contact_number;
+        $allocation->delivery_address = $request->delivery_address;
+        $allocation->delivery_date = new Carbon($request->delivery_date);
+        $allocation->other_delivery_instructions = $request->other_delivery_instructions;
+        $allocation->save();
+
+            <!-- <form method="POST" action="{{ route('pd-donation-update', ['donation_id' => $donation->id]) }}" class="mt-3"> -->
+
+
+            // $contribution->reasons_rejected_donation = $request->reasons_rejected_donation;
+            // $contribution->verified_date = Carbon::now()->format('Y-m-d');
+            // $contribution->save();
+
+            $contribution->reasons_rejected_inbound = $request->reasons_rejected_inbound;
+            $contribution->didrf_approval_date = Carbon::now()->format('Y-m-d');
+            $contribution->didrf_approval_user_id = $user_id;
+            $contribution->save();
+
+
+            TRUNCATE allocations;
+TRUNCATE inventories;
+TRUNCATE allocated_products;
+TRUNCATE contributions;
+TRUNCATE destructions;
+TRUNCATE documents;
+TRUNCATE donations;
+TRUNCATE summaries;
+TRUNCATE transaction_reports;
+TRUNCATE destructed_products;

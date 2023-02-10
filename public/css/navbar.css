@@ -1,0 +1,27 @@
+.notification-item {
+    font-size:9px;
+}
+
+.notification-title {
+    font-size:12px;
+    text-align:center;
+    padding:0 10px;
+}
+
+.dropdown-menu {
+    white-space: nowrap;
+}
+
+.text-green {
+    color: #028446;
+}
+
+.dropdown-menu {
+    max-height: 80vh;
+    overflow-y: scroll;
+}
+
+.nav-items-font {
+    font-size:12px;
+}
+
