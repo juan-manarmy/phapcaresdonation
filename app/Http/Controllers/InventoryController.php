@@ -190,9 +190,49 @@ class InventoryController extends Controller
 
                 // Last Progress 02/09/2023 9.16pm
 
+                //Update Summary										 
+				//Get The Current Summary Month And Year Of Product
+                $summaryThisMonth = Summary::where('member_id',$member_id)
+                ->where('month',$currentDateMonth)
+                ->where('year',$currentDateYear)
+                ->where('product_code',$product_code)
+                ->where('lot_no',$lot_no)
+                ->where('unit_cost',$unit_cost)->get();
+
+                $summaryId = 0;
+                $movementsQuantity = 0;
+
+                foreach($summaryThisMonth as $summaryDetails) {
+                    $summaryId = $summaryDetails['summary_id'];
+					$movementsQuantity = $summaryDetails['movements_quantity'];
+                }
+
+                //Compute For The Updated Quantity Movements
+				if ($transactionType == 'ADJI') {
+					$movementsQuantity = $movementsQuantity - $adjustmentQuantity; //Operation Is Subtraction Because The Tranasction Is Issuance Adjustment
+				} else {
+					$movementsQuantity = $movementsQuantity + $adjustmentQuantity; //Operation Is Addition Because The Tranasction Is Receipt Adjustment
+				}
+							
+				//Compute For The Updated Ending Balance Quantity
+				$endingBalanceQuantity = $lastSummaryEndingBalanceQuantity + $movementsQuantity;
+							
+				//Compute For The Updated Ending Balance Value
+				$endingBalanceValue = $endingBalanceQuantity * $unit_cost;
+
+                $summary = Summary::find($summaryId);
+                $summary->movements_quantity = $movementsQuantity;
+                $summary->ending_balance_quantity = $movementsQuantity;
+                $summary->ending_balance_value = $movementsQuantity;
+                $summary->updated_at = $movementsQuantity;
+                $summary->save();
+
+				// $this->query("UPDATE summary SET movements_quantity = '{$movementsQuantity}', ending_balance_quantity = '{$endingBalanceQuantity}', ending_balance_value = '{$endingBalanceValue}', update_date = '{$currentDateTime}' WHERE summary_id = {$summaryId}");
+
+
             }
             
-            return $inventory;
+            // return $inventory;
         }
 
         // return redirect()->route('inventory-list')->with('inventory-updated','Inventory successfully updated!');
