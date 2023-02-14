@@ -15,11 +15,9 @@ class CreateContributionsTable extends Migration
     public function up()
     {
         Schema::create('contributions', function (Blueprint $table) {
-            // $table->string('');
-            // $table->integer('');
             $table->id();
             $table->string('contribution_no');
-            $table->integer('cfs_id');
+            $table->integer('cfs_id')->nullable();
             $table->integer('member_id');
             $table->string('distributor');
             $table->date('contribution_date');

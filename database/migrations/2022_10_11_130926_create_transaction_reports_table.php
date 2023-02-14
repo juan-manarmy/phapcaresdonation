@@ -34,10 +34,10 @@ class CreateTransactionReportsTable extends Migration
             $table->string('transaction_type');
             $table->integer('quantity');
             $table->double('unit_cost', 10, 2);
-            $table->integer('receipt_quantity');
+            $table->integer('receipt_quantity')->nullable();
             $table->integer('issuance_quantity')->nullable();
             $table->integer('destruction_quantity')->nullable();
-            $table->double('receipt_amount', 10, 2);
+            $table->double('receipt_amount', 10, 2)->nullable();
             $table->double('issuance_amount', 10, 2)->nullable();
             $table->double('destruction_amount', 10, 2)->nullable();
             $table->dateTime('mfg_date');

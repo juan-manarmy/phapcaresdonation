@@ -222,9 +222,9 @@ class InventoryController extends Controller
 
                 $summary = Summary::find($summaryId);
                 $summary->movements_quantity = $movementsQuantity;
-                $summary->ending_balance_quantity = $movementsQuantity;
-                $summary->ending_balance_value = $movementsQuantity;
-                $summary->updated_at = $movementsQuantity;
+                $summary->ending_balance_quantity = $endingBalanceQuantity;
+                $summary->ending_balance_value = $endingBalanceValue;
+                $summary->updated_at = $currentDate;
                 $summary->save();
 
 				// $this->query("UPDATE summary SET movements_quantity = '{$movementsQuantity}', ending_balance_quantity = '{$endingBalanceQuantity}', ending_balance_value = '{$endingBalanceValue}', update_date = '{$currentDateTime}' WHERE summary_id = {$summaryId}");
