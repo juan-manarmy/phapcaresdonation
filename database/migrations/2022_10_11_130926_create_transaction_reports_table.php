@@ -40,9 +40,9 @@ class CreateTransactionReportsTable extends Migration
             $table->double('receipt_amount', 10, 2)->nullable();
             $table->double('issuance_amount', 10, 2)->nullable();
             $table->double('destruction_amount', 10, 2)->nullable();
-            $table->dateTime('mfg_date');
+            $table->dateTime('mfg_date')->nullable();
             $table->dateTime('expiry_date');
-            $table->string('remarks');
+            $table->string('remarks')->nullable();
             $table->string('job_no')->nullable();
             $table->integer('status');
             $table->timestamps();

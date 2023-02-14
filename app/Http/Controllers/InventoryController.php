@@ -82,13 +82,15 @@ class InventoryController extends Controller
 
 		//Compute Updated Inventory Product Value
 		$inventoryTotal = $quantity * $unit_cost;
-        
+
         // Save Update
         $inventory->product_name = $product_name;
         $inventory->quantity = $quantity;
         $inventory->mfg_date = $mfg_date;
         $inventory->expiry_date = $expiry_date;
         $inventory->drug_reg_no = $drug_reg_no;
+        $inventory->total = $inventoryTotal;
+        $inventory->job_no = $job_no;
         $inventory->updated_at = Carbon::now();
 
         if($inventory->save() == 0){
@@ -203,7 +205,7 @@ class InventoryController extends Controller
                 $movementsQuantity = 0;
 
                 foreach($summaryThisMonth as $summaryDetails) {
-                    $summaryId = $summaryDetails['summary_id'];
+                    $summaryId = $summaryDetails['id'];
 					$movementsQuantity = $summaryDetails['movements_quantity'];
                 }
 
@@ -221,21 +223,23 @@ class InventoryController extends Controller
 				$endingBalanceValue = $endingBalanceQuantity * $unit_cost;
 
                 $summary = Summary::find($summaryId);
+                
                 $summary->movements_quantity = $movementsQuantity;
                 $summary->ending_balance_quantity = $endingBalanceQuantity;
                 $summary->ending_balance_value = $endingBalanceValue;
                 $summary->updated_at = $currentDate;
-                $summary->save();
 
+                if($summary->save() == 1) {
+                    return redirect()->route('inventory-list')->with('inventory-updated','Inventory successfully updated!');
+                } else {
+                    return "Error saving";
+                }
 				// $this->query("UPDATE summary SET movements_quantity = '{$movementsQuantity}', ending_balance_quantity = '{$endingBalanceQuantity}', ending_balance_value = '{$endingBalanceValue}', update_date = '{$currentDateTime}' WHERE summary_id = {$summaryId}");
-
-
             }
             
             // return $inventory;
         }
 
-        // return redirect()->route('inventory-list')->with('inventory-updated','Inventory successfully updated!');
     }
 
 

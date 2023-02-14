@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Barryvdh\DomPDF\Facade\Pdf;
-
+use App\User;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,6 +16,24 @@ use Barryvdh\DomPDF\Facade\Pdf;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+
+Route::get('/register-user', function () {
+
+    $user = new User;
+    $user->first_name = "Admin";
+    $user->last_name = "Clinics";
+    $user->member_id = 1;
+    $user->email = "test@gmail.com";
+    $user->email_info = "test@gmail.com";
+    $user->mobile_number = "09999999";
+    $user->password = Hash::make("12345678");
+    $user->save();
+
+    if($user->save() == 1) {
+        return "Admin creation success";
+    } else {
+    } 
+});
 
 
 Route::get('/carbontest', 'HomeController@carbontest')->name('test'); // read
@@ -37,6 +55,9 @@ Route::get('/dashboard', function () {
 Route::get('/users/create-user', 'UserController@createUserView')->name('create-user'); // read
 Route::get('/users', 'UserController@index')->name('all-users'); // read
 Route::post('/users/create/submit', 'UserController@saveUser')->name('create-user-submit'); // submit
+
+
+
 Route::get('/users/{id}/edit/', 'UserController@show')->name('edit-user-view'); // read single user
 Route::put('/users/{id}/edit/submit', 'UserController@edit')->name('edit-user-submit'); // submit edit user
 
