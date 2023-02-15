@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
 class InventoryController extends Controller
 {
     public function inventoryList() {
+
         $contributions_notif = DB::table('contributions')
         ->join('members', 'contributions.member_id', '=', 'members.id')
         ->where('contributions.status',1)
@@ -28,7 +29,11 @@ class InventoryController extends Controller
         ->orderBy('id', 'DESC')
         ->get();
 
-        $inventory = Inventory::all();
+        $inventory = DB::table('inventories')
+        ->join('members', 'inventories.member_id', '=', 'members.id')
+        ->select('inventories.*','members.member_name')
+        ->orderBy('id', 'DESC')
+        ->get();
 
         return view ('inventory.inventory-list')
         ->with('inventory', $inventory)

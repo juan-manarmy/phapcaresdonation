@@ -145,7 +145,7 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form method="POST" action="{{ route('allocation-delete') }} ">
+                    <form method="POST" action="{{ route('allocation-cancel-request') }}">
                         @method('DELETE')
                         @csrf
                         <input id="id" name="id" type="hidden" value="0">

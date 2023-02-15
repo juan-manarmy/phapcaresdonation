@@ -27,6 +27,18 @@ class AllocationController extends Controller
     }
 
     public function editAllocatedProduct ($allocated_product_id) {
+        $contributions_notif = DB::table('contributions')
+        ->join('members', 'contributions.member_id', '=', 'members.id')
+        ->where('contributions.status',1)
+        ->select('contributions.id','members.member_name','contributions.contribution_no','contributions.contribution_date','contributions.total_donation')
+        ->get();
+
+        $allocations_notif = DB::table('allocations')
+        ->join('beneficiaries', 'allocations.beneficiary_id', '=', 'beneficiaries.id')
+        ->where('allocations.status',1)
+        ->select('allocations.id','beneficiaries.name','allocations.total_allocated_products','allocations.allocation_no')
+        ->get();
+
         $allocated_product = AllocatedProduct::findOrFail($allocated_product_id);
         $inventory_available_stock = Inventory::where('id',$allocated_product->inventory_id)
         ->select('quantity')->first();
@@ -35,43 +47,215 @@ class AllocationController extends Controller
 
         return view('allocations.allocation-edit-product')
         ->with('allocated_product', $allocated_product)
-        ->with('available_stock', $available_stock);
+        ->with('available_stock', $available_stock)
+        ->with('allocations_notif', $allocations_notif)
+        ->with('contributions_notif', $contributions_notif);
     } 
 
-    public function cancelAllocatedProduct (Request $request) {
+    public function processAllocatedProductsRevert($allocationId) {
+		$currentDateTime = Carbon::now();
+		
+		//Get Allocated Products And Revert Back The Stock To Inventory
+        $allocated_products = AllocatedProduct::where('allocation_id',$allocationId)
+        ->where('status',1)->get();
 
-        $allocated_product = AllocatedProduct::findOrFail($request->donation_id);
-        $inventory_id = $allocated_product->inventory_id; 
-        $allocation_id = $allocated_product->allocation_id; 
-        // saving the status as cancelled
-        $allocated_product->status = 2;
-        $allocated_product->save();
-        
-        // Update Allocation Total med, promats, donation
-        $allocation = Allocation::findOrFail($allocation_id);
-        
-        if($allocated_product->product_type == 1) {
-            $allocation->total_medicine -= $allocated_product->total;
-            $allocation->total_allocated_products -= $allocated_product->total;
+        foreach($allocated_products as $allocatedProductsDetails) {
+            $inventoryId =  $allocatedProductsDetails['inventory_id'];
+			$allocatedProductQuantity =  $allocatedProductsDetails['quantity'];
+
+            $inventory = Inventory::find($inventoryId);
+
+            //Get Inventory Details
+            $inventoryQuantity = $inventory->quantity;
+            $unitCost = $inventory->unit_cost;
+
+            //Get The Total Stocks
+			$quantity = $inventoryQuantity + $allocatedProductQuantity;
+			
+			//Compute The Total Value
+			$total = $quantity * $unitCost;
+
+            //Update The Inventory With The Difference
+            $inventory->quantity = $quantity;
+            $inventory->total = $total;
+            $inventory->updated_at = $currentDateTime;
+            $inventory->save();
         }
-
-        if($allocated_product->product_type == 2) {
-            $allocation->total_promats -= $allocated_product->total;
-            $allocation->total_allocated_products -= $allocated_product->total;
-        }
-
-        $allocation->save();
-        // revert back the quantity and total of allocated product back to inventory
-        $inventory = Inventory::findOrFail($inventory_id);
-        // adding back the quantity from allocated to inventory
-        $inventory->quantity += $allocated_product->quantity;
-        $inventory->total += $allocated_product->total;  
-        $inventory->save();
-        return back();
-
-        // $allocated_product->delete();
-        // return $quantity;
     }
+
+    //Remove Product
+	public function processAllocatedProductsRemove($allocatedProductId){
+		$currentDateTime = Carbon::now();
+
+        //Get Product Details
+        $allocated_product = AllocatedProduct::findOrFail($allocatedProductId);
+
+        $inventoryId = $allocated_product->inventory_id;
+        $allocationId = $allocated_product->allocation_id;
+        $allocatedProductQuantity = $allocated_product->quantity;
+
+        //Get Inventory Details
+        $inventory = Inventory::find($inventoryId);
+        $inventoryQuantity = $inventory->quantity;
+        $unitCost = $inventory->unit_cost;
+
+		//Add Again The Quantity
+		$quantity = $inventoryQuantity + $allocatedProductQuantity;
+		
+		//Compute The Total Value
+		$total = $quantity * $unitCost;
+
+		//Delete Product
+        $allocated_product->delete();
+
+        $inventory->quantity = $quantity;
+        $inventory->total = $total;
+        $inventory->updated_at = $currentDateTime;
+        $inventory->save();
+
+        //Update Allocated Products Total Amount
+        $this->processAllocationAmountUpdate($allocationId);
+	}
+
+    //Cancel Product
+	public function processAllocatedProductsCancel(Request $request){
+        $allocatedProductId  = $request->allocation_product_id;
+		$currentDateTime = Carbon::now();
+		
+		//Get Product Details
+        $allocated_product = AllocatedProduct::findOrFail($allocatedProductId);
+
+        $inventoryId = $allocated_product->inventory_id;
+        $allocationId = $allocated_product->allocation_id;
+        $allocatedProductQuantity = $allocated_product->quantity;
+
+        //Get Inventory Details
+        $inventory = Inventory::find($inventoryId);
+        $inventoryQuantity = $inventory->quantity;
+        $unitCost = $inventory->unit_cost;
+		
+		//Add Again The Quantity
+		$quantity = $inventoryQuantity + $allocatedProductQuantity;
+		
+		//Compute The Total Value
+		$total = $quantity * $unitCost;
+
+		//Update Product
+        $allocated_product->status = 0;
+        $allocated_product->updated_at = $currentDateTime;
+        $allocated_product->save();
+
+        $inventory->quantity = $quantity;
+        $inventory->total = $total;
+        $inventory->updated_at = $currentDateTime;
+        $inventory->save();
+
+        //Update Allocated Products Total Amount
+        $this->processAllocationAmountUpdate($allocationId);
+        return back();
+	}
+
+    //Update Allocated Products Quantity
+	public function processAllocatedProductsUpdate($allocatedProductId, Request $request) {
+		$currentDateTime = Carbon::now();
+
+        $allocated_product = AllocatedProduct::findOrFail($allocatedProductId);
+
+        //Get Allocated Product Details
+        $oldQuantity =  $allocated_product->quantity;
+        $allocatedProductUnitCost =  $allocated_product->unit_cost;
+
+        $allocationId = $allocated_product->allocation_id;
+		$inventoryId = $allocated_product->inventory_id;
+
+        $input_quantity = $request->quantity;
+
+        //Get Available Stock From Inventory
+        $inventory = Inventory::find($inventoryId);
+        $inventoryQuantity =  $inventory->quantity;
+        $inventoryUnitCost =  $inventory->unit_cost;
+
+        //Add The Inventory Quantity And Old Quantity Of Allocated Product To Compute The New Inventory Stock
+		$inventoryStock = $inventoryQuantity + $oldQuantity;
+
+		//Deduct The New Quantity Of Allocated Product From The New Inventory Stock
+		$inventoryQuantity = $inventoryStock - $input_quantity;
+
+        //Compute The Inventory Total Amount Based On Inventory Unit Cost
+		$inventoryTotal = $inventoryQuantity * $inventoryUnitCost;
+
+        //Update Inventory Quantity
+        $inventory->quantity = $inventoryQuantity;
+        $inventory->total = $inventoryTotal;
+        $inventory->updated_at = $currentDateTime;
+        $inventory->save();
+
+        //Compute The Allocated Product Total Amount Based On Allocated Product Unit Cost
+		$allocatedProductTotal = $input_quantity * $allocatedProductUnitCost;
+
+        $allocated_product->quantity = $input_quantity;
+        $allocated_product->total = $allocatedProductTotal;
+        $allocated_product->updated_at = $currentDateTime;
+        $allocated_product->save();
+
+        $this->processAllocationAmountUpdate($allocationId);
+
+        // return back();
+        return redirect()->route('allocation-details', ['allocation_id' => $allocationId]);
+
+	}
+
+    //Update Allocation Amount
+    public function processAllocationAmountUpdate($allocationId) {
+        $currentDateTime = Carbon::now();
+        //Compute Total Medicine Value And Save It To Allocations
+        $total_medicine_allocation = AllocatedProduct::where('allocation_id', $allocationId)
+        ->where('product_type', 1)
+        ->where('status',1)
+        ->sum('total');
+
+        //Compute Total Promotional Materials Value And Save It To Allocations
+        $total_promats_allocation = AllocatedProduct::where('allocation_id', $allocationId)
+        ->where('product_type',2)
+        ->where('status',1)
+        ->sum('total');
+
+        //Compute Total Allocated Products Amount And Save It To Allocations
+        $total_allocated_products = AllocatedProduct::where('allocation_id', $allocationId)
+        ->where('status',1)
+        ->sum('total');
+
+        $allocation = Allocation::find($allocationId);
+        $allocation->total_medicine = $total_medicine_allocation;
+        $allocation->total_promats = $total_promats_allocation;
+        $allocation->total_allocated_products = $total_allocated_products;
+        $allocation->updated_at = $currentDateTime;
+        $allocation->save();
+    }
+
+
+    //Cancel Allocation
+	public function processAllocationCancel($allocationId) {
+		//Get Allocated Products And Revert Back The Stock To Inventory
+		$this->processAllocatedProductsRevert($allocationId);
+        $allocated_products = AllocatedProduct::where('allocation_id',$allocationId)->delete();
+        $allocation = Allocation::findOrFail($allocationId);
+        $allocation->delete();
+
+        return redirect()->route('allocation-list')->with('allocation-cancelled','Allocation successfully cancelled.');
+	}
+
+    //Cancel Allocation
+	public function processAllocationCancelRequest(Request $request) {
+		//Get Allocated Products And Revert Back The Stock To Inventory
+        $allocationId = $request->id;
+		$this->processAllocatedProductsRevert($allocationId);
+        $allocated_products = AllocatedProduct::where('allocation_id',$allocationId)->delete();
+        $allocation = Allocation::findOrFail($allocationId);
+        $allocation->delete();
+
+        return redirect()->route('allocation-list')->with('allocation-cancelled','Allocation successfully cancelled.');
+	}
 
     public function revertAllocatedProduct ($allocated_product_id, Request $request) {
 
@@ -111,6 +295,8 @@ class AllocationController extends Controller
 
         return back();
     }
+
+
 
     public function updateProductQuantity($allocated_product_id, $quantity) {
 
@@ -680,45 +866,73 @@ class AllocationController extends Controller
 
     public function saveTotalDonations($allocation_id, Request $request) {
         $allocation = Allocation::findOrFail($allocation_id);
-        $allocation->total_medicine = $request->total_donations["medicine_total_donation"];
-        $allocation->total_promats = $request->total_donations["promats_total_donation"];
-        $allocation->total_allocated_products = $request->total_donations["total_products_amount"];
-        $allocation->status = 1;
-        $allocation->save();
-        
+        // $allocation->total_medicine = $request->total_donations["medicine_total_donation"];
+        // $allocation->total_promats = $request->total_donations["promats_total_donation"];
+        // $allocation->total_allocated_products = $request->total_donations["total_products_amount"];
+
         $this->createDNAForm($allocation_id);
         $this->saveDocuments($allocation_id,$allocation->allocation_no,$allocation->dna_no,"DNA");
+        $allocation->status = 1;
+        $allocation->save();
     }
 
     public function getAllocatedProduct($allocation_id) {
-        $allocated_product = AllocatedProduct::where('allocation_id',$allocation_id)->get();
+        $allocated_product = AllocatedProduct::where('allocation_id',$allocation_id)->where('status',1)->get();
         return $allocated_product;
     }
 
     public function saveAllocatedProduct($allocation_id, Request $request)
     {
+		$currentDateTime = Carbon::now();
+
+        $inventory_id = $request->selected_product["inventory_id"];
+        $input_quantity = $request->selected_product["quantity"];
+
+        $inventory = Inventory::findOrFail($inventory_id);
+
+        $unit_cost = $inventory->unit_cost;
+        $product_type = $inventory->product_type;
+        $product_code = $inventory->product_code;
+        $product_name = $inventory->product_name;
+        $quantity = $inventory->quantity;
+        $lot_no = $inventory->lot_no;
+        $mfg_date = $inventory->mfg_date;
+        $expiry_date = $inventory->expiry_date;
+        $drug_reg_no = $inventory->drug_reg_no;
+        $medicine_status = "Status test";
+        $job_no = $inventory->job_no;
+
         $selected_product = new AllocatedProduct;
-        $selected_product->inventory_id = $request->selected_product["inventory_id"];
         $selected_product->allocation_id = $allocation_id;
-        $selected_product->product_type = $request->selected_product["product_type"];
-        $selected_product->product_code = $request->selected_product["product_code"];
-        $selected_product->product_name = $request->selected_product["product_name"];
-        $selected_product->quantity = $request->selected_product["quantity"];
-        $selected_product->lot_no = $request->selected_product["lot_no"];
-        $selected_product->mfg_date = new Carbon($request->selected_product["mfg_date"]);
-        $selected_product->expiry_date = new Carbon($request->selected_product["expiry_date"]);
-        $selected_product->drug_reg_no = $request->selected_product["drug_reg_no"];
-        $selected_product->unit_cost = $request->selected_product["unit_cost"];
-        $selected_product->total = $request->selected_product["unit_cost"] * $request->selected_product["quantity"];
-        $selected_product->medicine_status = $request->selected_product["medicine_status"];
-        $selected_product->job_no = $request->selected_product["job_no"];
+        $selected_product->inventory_id = $inventory_id;
+        $selected_product->product_type = $product_type;
+        $selected_product->product_code = $product_code;
+        $selected_product->product_name = $product_name;
+        $selected_product->quantity = $input_quantity;
+        $selected_product->lot_no = $lot_no;
+        $selected_product->mfg_date = $mfg_date;
+        $selected_product->expiry_date = $expiry_date;
+        $selected_product->drug_reg_no = $drug_reg_no;
+        $selected_product->unit_cost = $unit_cost;
+        $selected_product->medicine_status = $medicine_status;
+        $selected_product->job_no = $job_no;
+        $selected_product->total = $unit_cost * $input_quantity;
         $selected_product->status = 1;
         $selected_product->save();
 
+        //Compute And Check Available Stock/Quantity
+		$deducted_inventory_quantity = $quantity - $input_quantity;
+
+        //Compute Allocation Total Value
+		$deducted_inventory_total = $deducted_inventory_quantity * $unit_cost;
+
         // deduct the issuance quantity to the inventory quantity
-        $inventory = Inventory::findOrFail($request->selected_product["inventory_id"]);
-        $inventory->quantity -= $request->selected_product["quantity"];
+        $inventory->quantity = $deducted_inventory_quantity;
+        $inventory->total = $deducted_inventory_total;
+        $inventory->updated_at = $currentDateTime;
         $inventory->save();
+
+        $this->processAllocationAmountUpdate($allocation_id);
         // 35000
         return $selected_product;
     }
@@ -870,7 +1084,6 @@ class AllocationController extends Controller
     }
 
     public function saveAllocation(Request $request) {
-
         $allocation = Allocation::updateOrCreate(
             ['allocation_no' => $request->allocation_no],
             ['dna_no' => $request->dna_no,
@@ -881,7 +1094,8 @@ class AllocationController extends Controller
             'contact_number' => $request->contact_number,
             'delivery_address'=> $request->delivery_address,
             'delivery_date'=> new Carbon($request->delivery_date),
-            'other_delivery_instructions'=> $request->other_delivery_instructions]
+            'other_delivery_instructions'=> $request->other_delivery_instructions,
+            'status'=> 0]
         );
 
         $allocation_id = $allocation->id;
@@ -953,10 +1167,9 @@ class AllocationController extends Controller
         $cancelled_total_donation = 0;
 
         foreach ($allocated_products as $donation) {
-
-            if($donation->product_type == 1) {
+            if($donation->product_type == 1 && $donation->status == 1) {
                 $medicine_count += 1;
-            } else {
+            } else if ($donation->product_type == 2 && $donation->status == 1){
                 $promats_count += 1;
             }
 
@@ -988,5 +1201,42 @@ class AllocationController extends Controller
         ->with('allocations_notif', $allocations_notif)
         ->with('contributions_notif', $contributions_notif);
     }
+
+
+    public function cancelAllocatedProduct (Request $request) {
+        $allocated_product = AllocatedProduct::findOrFail($request->donation_id);
+        $inventory_id = $allocated_product->inventory_id; 
+        $allocation_id = $allocated_product->allocation_id;
+
+        // saving the status as cancelled
+        $allocated_product->status = 2;
+        $allocated_product->save();
+        
+        // Update Allocation Total med, promats, donation
+        $allocation = Allocation::findOrFail($allocation_id);
+        
+        if($allocated_product->product_type == 1) {
+            $allocation->total_medicine -= $allocated_product->total;
+            $allocation->total_allocated_products -= $allocated_product->total;
+        }
+
+        if($allocated_product->product_type == 2) {
+            $allocation->total_promats -= $allocated_product->total;
+            $allocation->total_allocated_products -= $allocated_product->total;
+        }
+
+        $allocation->save();
+        // revert back the quantity and total of allocated product back to inventory
+        $inventory = Inventory::findOrFail($inventory_id);
+        // adding back the quantity from allocated to inventory
+        $inventory->quantity += $allocated_product->quantity;
+        $inventory->total += $allocated_product->total;  
+        $inventory->save();
+        return back();
+
+        // $allocated_product->delete();
+        // return $quantity;
+    }
+
 
 }

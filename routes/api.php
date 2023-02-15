@@ -29,15 +29,14 @@ Route::middleware('api')->get('/inventory/{member_id}/{allocation_id}/show-inven
 Route::middleware('api')->get('/inventory/{product_id}/show-product','AllocationController@getSelectedProduct');
 Route::middleware('api')->post('/allocation/{allocation_id}/save-allocated-product','AllocationController@saveAllocatedProduct');
 Route::middleware('api')->get('/allocation/{allocation_id}/get-allocated-product','AllocationController@getAllocatedProduct');
-Route::middleware('api')->delete('/allocation/{allocated_product_id}/delete-allocated-product','AllocationController@deleteAllocatedProduct');
+Route::middleware('api')->delete('/allocation/{allocated_product_id}/delete-allocated-product','AllocationController@processAllocatedProductsRemove');
 Route::middleware('api')->post('/allocation/{allocation_id}/save-total-donations','AllocationController@saveTotalDonations');
 
 Route::middleware('api')->get('/destruction/{destruction_id}/get-destructed-product','ProductDestructionController@getDestructedProduct');
 Route::middleware('api')->post('/destruction/{destruction_id}/save-total-donations','ProductDestructionController@saveTotalDonations');
 Route::middleware('api')->post('/destruction/{destruction_id}/save-destructed-product','ProductDestructionController@saveDestructedProduct');
 Route::middleware('api')->get('/destruction/inventory/{member_id}/{destruction_id}/show-inventory','ProductDestructionController@getInventory');
-Route::middleware('api')->delete('/destruction/{destruction_id}/delete-destructed-product','ProductDestructionController@deleteDestructedProduct');
-Route::middleware('api')->post('/destruction/{destruction_id}/delete-destructed-product','ProductDestructionController@deleteDestructedProduct');
+Route::middleware('api')->delete('/destruction/{destruction_id}/delete-destructed-product','ProductDestructionController@processDestructedProductsRemove');
 
 
 

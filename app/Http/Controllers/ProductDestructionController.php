@@ -21,6 +21,141 @@ use Illuminate\Support\Str;
 class ProductDestructionController extends Controller
 {
 
+    //Remove Destructed Product
+	public function processDestructedProductsRemove($destructedProductId) {
+
+		$currentDateTime = Carbon::now();
+
+        //Get Product Details
+        $destructed_product = DestructedProduct::findOrFail($destructedProductId);
+
+        $inventoryId = $destructed_product->inventory_id;
+        $destructionId = $destructed_product->destruction_id;
+        $destructedProductQuantity = $destructed_product->quantity;
+		
+        //Get Inventory Details
+        $inventory = Inventory::find($inventoryId);
+        $inventoryQuantity = $inventory->quantity;
+        $unitCost = $inventory->unit_cost;
+
+        //Add Again The Quantity
+        $quantity = $inventoryQuantity + $destructedProductQuantity;
+        
+        //Compute The Total Value
+        $total = $quantity * $unitCost;
+
+        //Delete Product
+        $destructed_product->delete();
+
+        $inventory->quantity = $quantity;
+        $inventory->total = $total;
+        $inventory->updated_at = $currentDateTime;
+        $inventory->save();
+
+        $this->processDestructionAmountUpdate($destructionId);
+	
+	}
+
+    //Revert Destructed Products To Inventory
+	public function processDestructedProductsRevert($destructionId){
+        $currentDateTime = Carbon::now();
+
+		//Get Destructed Products And Revert Back The Stock To Inventory
+        $destructed_products = DestructedProduct::where('destruction_id',$destructionId)
+        ->where('status',1)->get();
+
+        foreach($destructed_products as $destructedProductsDetails) {
+            $inventoryId =  $destructedProductsDetails['inventory_id'];
+			$destructedProductQuantity =  $destructedProductsDetails['quantity'];
+
+            $inventory = Inventory::find($inventoryId);
+
+            //Get Inventory Details
+            $inventoryQuantity = $inventory->quantity;
+            $unitCost = $inventory->unit_cost;
+
+            //Get The Total Stocks
+			$quantity = $inventoryQuantity + $destructedProductQuantity;
+			
+			//Compute The Total Value
+			$total = $quantity * $unitCost;
+
+            //Update The Inventory With The Difference
+            $inventory->quantity = $quantity;
+            $inventory->total = $total;
+            $inventory->updated_at = $currentDateTime;
+            $inventory->save();
+        }
+
+	}
+
+    //Cancel Destruction
+	public function processDestructionCancel($destructionId) {
+
+		//Get Destructed Products And Revert Back The Stock To Inventory
+		$this->processDestructedProductsRevert($destructionId);
+
+		//Delete Products To Be Destructed
+        $destruction_products = DestructedProduct::where('destruction_id',$destructionId)->delete();
+        $destruction = Destruction::findOrFail($destructionId);
+        $destruction->delete();
+
+        return redirect()->route('destruction-list')->with('destruction-cancelled','Destruction successfully cancelled.');
+	}
+
+    //Cancel Request Destruction
+	public function processDestructionCancelRequest(Request $request) {
+		//Get Destructed Products And Revert Back The Stock To Inventory
+        $destructionId = $request->id;
+
+		$this->processDestructedProductsRevert($destructionId);
+
+		//Delete Products To Be Destructed
+        $destruction_products = DestructedProduct::where('destruction_id',$destructionId)->delete();
+        $destruction = Destruction::findOrFail($destructionId);
+        $destruction->delete();
+
+        return redirect()->route('product-destruction-list')->with('destruction-cancelled','Destruction successfully cancelled.');
+	}
+
+    //Cancel Product
+	public function processDestructedProductsCancel(Request $request) {
+        $destructedProductId  = $request->destruction_product_id;
+		$currentDateTime = Carbon::now();
+		
+        //Get Product Details
+        $destructed_product = DestructedProduct::findOrFail($destructedProductId);
+
+        $inventoryId = $destructed_product->inventory_id;
+        $destructionId = $destructed_product->destruction_id;
+        $destructedProductQuantity = $destructed_product->quantity;
+
+        //Get Inventory Details
+        $inventory = Inventory::find($inventoryId);
+        $inventoryQuantity = $inventory->quantity;
+        $unitCost = $inventory->unit_cost;
+
+		//Add Again The Quantity
+		$quantity = $inventoryQuantity + $destructedProductQuantity;
+		
+		//Compute The Total Value
+		$total = $quantity * $unitCost;
+
+        //Update Product
+        $destructed_product->status = 0;
+        $destructed_product->updated_at = $currentDateTime;
+        $destructed_product->save();
+
+        $inventory->quantity = $quantity;
+        $inventory->total = $total;
+        $inventory->updated_at = $currentDateTime;
+        $inventory->save();
+
+        $this->processDestructionAmountUpdate($destructionId);
+        return back();
+
+	}
+
     public function cancelDestruction(Request $request) {
         $destruction = Destruction::findOrFail($request->id);
         $destruction->delete();
@@ -277,6 +412,18 @@ class ProductDestructionController extends Controller
     }
 
     public function editDestructedProduct ($destructed_product_id) {
+        $contributions_notif = DB::table('contributions')
+        ->join('members', 'contributions.member_id', '=', 'members.id')
+        ->where('contributions.status',1)
+        ->select('contributions.id','members.member_name','contributions.contribution_no','contributions.contribution_date','contributions.total_donation')
+        ->get();
+
+        $allocations_notif = DB::table('allocations')
+        ->join('beneficiaries', 'allocations.beneficiary_id', '=', 'beneficiaries.id')
+        ->where('allocations.status',1)
+        ->select('allocations.id','beneficiaries.name','allocations.total_allocated_products','allocations.allocation_no')
+        ->get();
+
         $destructed_product = DestructedProduct::findOrFail($destructed_product_id);
         $inventory_available_stock = Inventory::where('id',$destructed_product->inventory_id)
         ->select('quantity')->first();
@@ -285,9 +432,11 @@ class ProductDestructionController extends Controller
 
         return view('product-destruction.product-destruction-edit-product')
         ->with('destructed_product', $destructed_product)
-        ->with('available_stock', $available_stock);
+        ->with('available_stock', $available_stock)
+        ->with('allocations_notif', $allocations_notif)
+        ->with('contributions_notif', $contributions_notif);
     } 
-
+    // NOT USING
     public function cancelDestructedProduct (Request $request) {
 
         $destructed_product = DestructedProduct::findOrFail($request->donation_id);
@@ -322,7 +471,7 @@ class ProductDestructionController extends Controller
         // $allocated_product->delete();
         // return $quantity;
     }
-
+    // NOT USING
     public function revertDestructedProduct ($destructed_product_id, Request $request) {
         $destructed_product = DestructedProduct::findOrFail($destructed_product_id);
         $inventory_id = $destructed_product->inventory_id; 
@@ -361,7 +510,7 @@ class ProductDestructionController extends Controller
 
         return back();
     }
-
+    // NOT USING
     public function updateProductQuantity($destructed_product_id, $quantity) {
 
         $destructed_product = DestructedProduct::findOrFail($destructed_product_id);
@@ -401,26 +550,130 @@ class ProductDestructionController extends Controller
 
     public function saveDestructedProduct($destruction_id, Request $request)
     {
+		$currentDateTime = Carbon::now();
+        $inventory_id = $request->selected_product["inventory_id"];
+        $input_quantity = $request->selected_product["quantity"];
+
+        $inventory = Inventory::findOrFail($inventory_id);
+
+        $unit_cost = $inventory->unit_cost;
+        $product_type = $inventory->product_type;
+        $product_code = $inventory->product_code;
+        $product_name = $inventory->product_name;
+        $quantity = $inventory->quantity;
+        $lot_no = $inventory->lot_no;
+        $mfg_date = $inventory->mfg_date;
+        $expiry_date = $inventory->expiry_date;
+        $drug_reg_no = $inventory->drug_reg_no;
+        $medicine_status = "Status Destruction Test";
+        $job_no = $inventory->job_no;
+
         $selected_product = new DestructedProduct;
-        $selected_product->inventory_id = $request->selected_product["inventory_id"];
         $selected_product->destruction_id = $destruction_id;
-        $selected_product->product_type = $request->selected_product["product_type"];
-        $selected_product->product_code = $request->selected_product["product_code"];
-        $selected_product->product_name = $request->selected_product["product_name"];
-        $selected_product->quantity = $request->selected_product["quantity"];
-        $selected_product->lot_no = $request->selected_product["lot_no"];
-        $selected_product->expiry_date = new Carbon($request->selected_product["expiry_date"]);
-        $selected_product->unit_cost = $request->selected_product["unit_cost"];
-        $selected_product->total = $request->selected_product["unit_cost"] * $request->selected_product["quantity"];
+        $selected_product->inventory_id = $inventory_id;
+        $selected_product->product_type = $product_type;
+        $selected_product->product_code = $product_code;
+        $selected_product->product_name = $product_name;
+        $selected_product->quantity = $input_quantity;
+        $selected_product->lot_no = $lot_no;
+        $selected_product->expiry_date = $expiry_date;
+        $selected_product->unit_cost = $unit_cost;
+        $selected_product->total = $unit_cost * $input_quantity;
         $selected_product->status = 1;
         $selected_product->save();
-        // deduct the issuance quantity to the inventory quantity
-        $inventory = Inventory::findOrFail($request->selected_product["inventory_id"]);
-        $inventory->quantity -= $request->selected_product["quantity"];
+
+        //Compute Destruction Total Value
+		$total = $input_quantity * $unit_cost;
+		
+		//Compute And Check Available Stock/Quantity
+		$inventoryQuantity = $quantity - $input_quantity;
+		
+		//Compute Inventory Total Value
+		$inventoryTotal = $inventoryQuantity * $unit_cost;
+ 
+        $inventory->quantity = $inventoryQuantity;
+        $inventory->total = $inventoryTotal;
+        $inventory->updated_at = $currentDateTime;
         $inventory->save();
-        // 35000
+
+        $this->processDestructionAmountUpdate($destruction_id);
+
         return $selected_product;
     }
+
+    //Update Destruction Amount
+	public function processDestructionAmountUpdate($destructionId) {
+        $currentDateTime = Carbon::now();
+
+        //Compute Total Medicine Value And Save It To Destruction
+        $total_medicine_destruction = DestructedProduct::where('destruction_id', $destructionId)
+        ->where('product_type', 1)
+        ->where('status',1)
+        ->sum('total');
+
+        //Compute Total Promotional Materials Value And Save It To Destruction
+        $total_promats_destruction = DestructedProduct::where('destruction_id', $destructionId)
+        ->where('product_type',2)
+        ->where('status',1)
+        ->sum('total');
+
+        //Compute Total Allocated Products Amount And Save It To Destruction
+        $total_destructed_products = DestructedProduct::where('destruction_id', $destructionId)
+        ->where('status',1)
+        ->sum('total');
+
+        $destruction = Destruction::find($destructionId);
+        $destruction->total_medicine = $total_medicine_destruction;
+        $destruction->total_promats = $total_promats_destruction;
+        $destruction->total_destructed_products = $total_destructed_products;
+        $destruction->updated_at = $currentDateTime;
+        $destruction->save();
+	}
+
+    //Update Destructed Products Quantity
+	public function processDestructedProductsUpdate($destructedProductId, Request $request){
+        $currentDateTime = Carbon::now();
+		
+        $destructed_product = DestructedProduct::findOrFail($destructedProductId);
+        //Get Allocated Product Details
+        $oldQuantity =  $destructed_product->quantity;
+        $destructedProductUnitCost =  $destructed_product->unit_cost;
+
+        $destructionId = $destructed_product->destruction_id;
+		$inventoryId = $destructed_product->inventory_id;
+
+        $input_quantity = $request->quantity;
+
+        $inventory = Inventory::find($inventoryId);
+        $inventoryQuantity =  $inventory->quantity;
+        $inventoryUnitCost =  $inventory->unit_cost;
+
+        //Add The Inventory Quantity And Old Quantity Of Allocated Product To Compute The New Inventory Stock
+		$inventoryStock = $inventoryQuantity + $oldQuantity;
+
+		//Deduct The New Quantity Of Allocated Product From The New Inventory Stock
+		$inventoryQuantity = $inventoryStock - $input_quantity;
+
+        //Compute The Inventory Total Amount Based On Inventory Unit Cost
+		$inventoryTotal = $inventoryQuantity * $inventoryUnitCost;
+
+        //Update Inventory Quantity
+        $inventory->quantity = $inventoryQuantity;
+        $inventory->total = $inventoryTotal;
+        $inventory->updated_at = $currentDateTime;
+        $inventory->save();
+	
+		//Compute The Destructed Product Total Amount Based On Destructed Product Unit Cost
+		$destructedProductTotal = $input_quantity * $destructedProductUnitCost;
+
+        $destructed_product->quantity = $input_quantity;
+        $destructed_product->total = $destructedProductTotal;
+        $destructed_product->updated_at = $currentDateTime;
+        $destructed_product->save();
+
+        $this->processDestructionAmountUpdate($destructionId);
+        return redirect()->route('product-destruction-details', ['destruction_id' => $destructionId]);
+	}
 
     public function getDestructedProduct($destruction_id) {
         $destruction_product = DestructedProduct::where('destruction_id',$destruction_id)->get();
@@ -429,9 +682,9 @@ class ProductDestructionController extends Controller
 
     public function saveTotalDonations($destruction_id, Request $request) {
         $destruction = Destruction::findOrFail($destruction_id);
-        $destruction->total_medicine = $request->total_donations["medicine_total_donation"];
-        $destruction->total_promats = $request->total_donations["promats_total_donation"];
-        $destruction->total_destructed_products = $request->total_donations["total_products_amount"];
+        // $destruction->total_medicine = $request->total_donations["medicine_total_donation"];
+        // $destruction->total_promats = $request->total_donations["promats_total_donation"];
+        // $destruction->total_destructed_products = $request->total_donations["total_products_amount"];
         $destruction->status = 1;
         $destruction->save();
 
@@ -440,7 +693,6 @@ class ProductDestructionController extends Controller
     }
 
     public function saveDestruction(Request $request) {
-
         $destruction = Destruction::updateOrCreate(
             ['destruction_no' => $request->destruction_no],
             ['pdrf_no' => $request->pdrf_no,
@@ -464,6 +716,7 @@ class ProductDestructionController extends Controller
         return redirect()->route('product-destruction-add-products', ['destruction_id' => $destruction_id]);
     }
 
+    // NOT USING
     public function deleteDestructedProduct ($destructed_product_id) {
 
         $destructed_product = DestructedProduct::findOrFail($destructed_product_id);
@@ -637,12 +890,12 @@ class ProductDestructionController extends Controller
         $cancelled_total_donation = 0;
 
         foreach ($destructed_products as $donation) {
-
-            if($donation->product_type == 1) {
+            if($donation->product_type == 1 && $donation->status == 1) {
                 $medicine_count += 1;
-            } else {
+            } else if ($donation->product_type == 2 && $donation->status == 1){
                 $promats_count += 1;
             }
+
 
             if($donation->status == 1) {
                 $total_quantity += $donation->quantity;
@@ -750,7 +1003,6 @@ class ProductDestructionController extends Controller
             $transaction_report->destruction_quantity = $quantity;
             $transaction_report->destruction_amount = $total;
             $transaction_report->expiry_date = $expiry_date;
-            $transaction_report->remarks = "";
             $transaction_report->status = $status;
 
             $transaction_report->save();

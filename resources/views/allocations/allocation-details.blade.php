@@ -652,7 +652,7 @@
                 <div class="modal-footer">
                     <form method="POST" action="{{ route('allocation-cancel-product') }}">
                         @csrf
-                        <input name="donation_id" id="donation_id" value="" hidden/>
+                        <input name="allocation_product_id" id="donation_id" value="" hidden/>
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-danger">Confirm</button>
                     </form>

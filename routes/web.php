@@ -130,11 +130,14 @@ Route::get('/allocations', 'AllocationController@allocationList')->name('allocat
 Route::get('/allocations/{allocation_id}/details', 'AllocationController@allocationDetails')->name('allocation-details');
 Route::get('/allocations/create', 'AllocationController@allocationCreate')->name('allocation-create');
 Route::post('/allocations/create/save', 'AllocationController@saveAllocation')->name('allocation-create-save');
+Route::post('/allocations/{allocation_id}/cancel', 'AllocationController@processAllocationCancel')->name('allocation-cancel');
+Route::delete('/allocations/cancel', 'AllocationController@processAllocationCancelRequest')->name('allocation-cancel-request');
+
 Route::get('/allocations/{allocation_id}/add-products', 'AllocationController@allocationAddProducts')->name('allocation-add-products');
 Route::post('/allocations/{allocation_id}/update-status', 'AllocationController@updateAllocationStatus')->name('allocation-status-update');
 Route::get('/allocations/{allocated_product_id}/edit-allocated-product', 'AllocationController@editAllocatedProduct')->name('allocation-edit-view');
-Route::post('/allocations/cancel-allocated-product', 'AllocationController@cancelAllocatedProduct')->name('allocation-cancel-product');
-Route::post('/allocations/{allocated_product_id}/update-allocated-product', 'AllocationController@revertAllocatedProduct')->name('allocation-update-product');
+Route::post('/allocations/cancel-allocated-product', 'AllocationController@processAllocatedProductsCancel')->name('allocation-cancel-product');
+Route::post('/allocations/{allocated_product_id}/update-allocated-product', 'AllocationController@processAllocatedProductsUpdate')->name('allocation-update-product');
 
 Route::get('/allocations/create/{id}', 'AllocationController@allocationCreateRead')->name('allocation-create-read');
 Route::delete('/allocations/delete', 'AllocationController@cancelAllocation')->name('allocation-delete');
@@ -147,8 +150,9 @@ Route::post('/product-destruction/create/save', 'ProductDestructionController@sa
 Route::get('/product-destruction/{destruction_id}/add-products', 'ProductDestructionController@productDestructionAddProducts')->name('product-destruction-add-products');
 Route::post('/product-destruction/{destruction_id}/update-status', 'ProductDestructionController@updateDestructionStatus')->name('destruction-status-update');
 Route::get('/product-destruction/{destructed_product_id}/edit-destructed-product', 'ProductDestructionController@editDestructedProduct')->name('destruction-edit-view');
-Route::post('/product-destruction/cancel-destructed-product', 'ProductDestructionController@cancelDestructedProduct')->name('destruction-cancel-product');
-Route::post('/product-destruction/{destructed_product_id}/update-destructed-product', 'ProductDestructionController@revertDestructedProduct')->name('destruction-update-product');
+Route::post('/product-destruction/cancel-destructed-product', 'ProductDestructionController@processDestructedProductsCancel')->name('destruction-cancel-product');
+Route::post('/product-destruction/{destructed_product_id}/update-destructed-product', 'ProductDestructionController@processDestructedProductsUpdate')->name('destruction-update-product');
+Route::delete('/product-destruction/delete', 'ProductDestructionController@processDestructionCancelRequest')->name('destruction-delete-request');
 
 Route::get('/product-destruction/create/{id}', 'ProductDestructionController@productDestructionCreateRead')->name('product-destruction-create-read');
 Route::delete('/product-destruction/destruction/delete', 'ProductDestructionController@cancelDestruction')->name('destruction-delete');

@@ -38,11 +38,12 @@
                         <th scope="col">Actions</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @foreach($inventory as $item)
                         <tr class="contribution-list-row clickable-row">
                             <td>{{ $item->id }}</td>
-                            <td>{{ $item->member_id }}</td>
+                            <td>{{ $item->member_name }}</td>
                             <td>{{ $item->product_code }} </td>
                             <td>{{ $item->product_name }}</td>
                             <td>{{ $item->lot_no }}</td>

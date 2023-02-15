@@ -499,7 +499,6 @@ export default {
             return value.toLocaleString();
         },
         saveTotalDonation() {
-
             if(Object.keys(this.allocated_products).length == 0) {
                 alert("Donations are empty");
                 return;
@@ -516,6 +515,7 @@ export default {
             .catch (error => {
 
             })
+
         }
     },
     created() {

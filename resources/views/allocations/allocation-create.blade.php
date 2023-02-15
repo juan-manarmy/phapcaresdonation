@@ -143,6 +143,7 @@
                     <div class="d-flex flex-row-reverse mt-3">
                         <!-- <button type="button" class="btn btn-secondary">Cancel</button> -->
                         <button type="submit" class="btn btn-primary">Save and Proceed</button>
+                        <button type="submit" formaction="{{ route('allocation-cancel', ['allocation_id' => $allocation->id] ) }}" type="button" class="btn btn-outline-secondary me-2">Cancel</button>
                         <a href="{{ route('allocation-list') }}" type="button" class="btn btn-outline-secondary me-2">Go Back</a>
                     </div>
                 </form>

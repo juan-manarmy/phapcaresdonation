@@ -540,7 +540,9 @@ export default {
         },
         addDonation () {
 
-            this.v$.$validate()
+            if(this.donation.product_type == 1) {
+                this.v$.$validate()
+            }
 
             if(this.v$.$error) {
                 console.log(this.v$.$errors);
