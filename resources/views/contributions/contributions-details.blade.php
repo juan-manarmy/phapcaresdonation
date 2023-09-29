@@ -20,7 +20,13 @@
                     <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Contribution Info</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Donations</button>
+                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">
+                        Donations 
+                        @if($product_code_missing != 0)
+                        <i class="fa-solid fa-circle-exclamation tt" style="color:#ffc107;" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Update Product Code"></i>
+                        @endif
+                        <input type="text" value="{{ $product_code_missing }}" id="product_code_missing" hidden>
+                    </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Documents</button>
@@ -253,9 +259,10 @@
                         </div>
                         <!-- End Request By -->
                     @endif
+
                     <!-- if status is not finished yet -->
                     @if($contribution->status != 9)
-                        <form method="POST" enctype="multipart/form-data" action="{{ route('contribution-status-update', ['contribution_id' => $contribution->id]) }}">
+                        <form class="needs-validation" novalidate method="POST" enctype="multipart/form-data" action="{{ route('contribution-status-update', ['contribution_id' => $contribution->id]) }}" id="contribution_form">
                         @csrf
                             @if($contribution->status == 1 || $contribution->status == 3 || $contribution->status == 5 || $contribution->status == 7)
                                 <div class="row">
@@ -660,11 +667,11 @@
                             <h5 class="donation-titles mt-4">Approval</h5>
                             <hr>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="status" id="inlineRadio1" value="9" onclick="hideReasonInput(this.value)">
+                                <input class="form-check-input" type="radio" name="status" id="inlineRadio1" value="9" onclick="hideReasonInput(this.value)" required>
                                 <label class="form-check-label" for="inlineRadio1">Success</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="status" id="inlineRadio2" value="8" onclick="showReasonInput(this.value)">
+                                <input class="form-check-input" type="radio" name="status" id="inlineRadio2" value="8" onclick="showReasonInput(this.value)" required>
                                 <label class="form-check-label" for="inlineRadio2">Failed</label>
                             </div>
 
@@ -672,8 +679,8 @@
                                 <div class="row align-items-center mt-3">
                                     <div class="col-md-6 mt-2">
                                         <div class="row">
-                                            <label for="" class="col-lg-2 col-form-label fw-bold">DND No. :</label>
-                                            <div class="col-lg-8">
+                                            <label for="" class="col-lg-3 col-form-label fw-bold">DND No. :</label>
+                                            <div class="col-lg-9">
                                                 <input type="text" name="dnd_no" id="dnd_no" class="form-control" value="{{ $contribution->dnd_no }}" aria-describedby="dnd_no"  readonly>
                                             </div>
                                         </div>
@@ -683,18 +690,24 @@
                                 <div class="row">
                                     <div class="col-md-6 mt-2">
                                         <div class="row">
-                                            <label for="" class="col-lg-2 col-form-label fw-bold">DIDRF No. :</label>
-                                            <div class="col-lg-8">
-                                                <input type="text" name="didrf_no" id="didrf_no" class="form-control" aria-describedby="">
+                                            <label for="" class="col-lg-3 col-form-label fw-bold">DIDRF No. :</label>
+                                            <div class="col-lg-9">
+                                                <input type="text" name="didrf_no" id="didrf_no" class="form-control" aria-describedby="" required>
+                                                <div class="invalid-feedback">
+                                                    DIDRF No. is required
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6 mt-2">
                                         <div class="row">
-                                            <label for="" class="col-lg-2 col-form-label fw-bold">DAFF No. :</label>
-                                            <div class="col-lg-8">
-                                                <input type="text" name="daff_no" id="daff_no" class="form-control" aria-describedby="">
+                                            <label for="" class="col-lg-3 col-form-label fw-bold">DAFF No. :</label>
+                                            <div class="col-lg-9">
+                                                <input type="text" name="daff_no" id="daff_no" class="form-control" aria-describedby="" required>
+                                                <div class="invalid-feedback">
+                                                    DIDRF file is required
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -703,7 +716,10 @@
                                 <div class="row align-items-center">
                                     <div class="col-md-5 mt-2">
                                         <label for="didrf_file" class="col-form-label fw-bold">Upload DIDRF: </label>
-                                        <input class="form-control" type="file" id="didrf_file" name="didrf_file">
+                                        <input class="form-control" type="file" id="didrf_file" name="didrf_file" required>
+                                        <div class="invalid-feedback">
+                                            DAFF No. is required
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -713,13 +729,12 @@
                                     <label for="" class="col-form-label fw-bold">Reasons :</label>
                                 </div>
                                 <div class="col-md-5">
-                                    <input type="text" name="reasons_rejected_inbound" id="reasons_rejected_inbound" class="form-control" aria-describedby="">
+                                    <input type="text" name="reasons_rejected_inbound" id="reasons_rejected_inbound" class="form-control" aria-describedby="" >
                                 </div>
                             </div>
 
                             <div class="d-flex flex-row-reverse mt-3">
-                                <button type="submit" class="btn btn-primary">Verify</button>
-                                <a type="button" class="btn btn-outline-secondary me-2">Go Back</a>
+                                <button type="submit" class="btn btn-primary" id="didrf_button">Verify</button>
                             </div>
                         </form>
                         @endif
@@ -735,7 +750,7 @@
                     <table class="table mt-3">
                         <thead class="theader">
                             <tr>
-                                <th scope="col">No.</th>
+                                <th scope="col">Product Code</th>
                                 <th scope="col">Product Name</th>
                                 <th scope="col">Lot No.</th>
                                 <th scope="col">Quantity</th>
@@ -750,7 +765,14 @@
                                 @foreach ($donations as $donation)
                                     @if($donation->status == 1)
                                     <tr>
-                                        <td>{{ $donation->id }}</td>
+                                        @if($donation->product_code == '')
+                                        <td>
+                                            <i class="fa-solid fa-circle-exclamation tt" style="color:#ffc107;" data-bs-toggle="tooltip" data-bs-placement="right" title="Update Product Code"></i>
+                                        </td>
+                                        @else
+                                        <td>{{ $donation->product_code }}</td>
+                                        @endif
+                                        <!-- {{ $donation->product_code }} -->
                                         <td>{{ $donation->product_name }}</td>
                                         <td>{{ $donation->lot_no }}</td>
                                         <td>{{ $donation->quantity }}</td>
@@ -758,12 +780,16 @@
                                         <td>{{ $donation->total }}</td>
                                         <td>{{ date('F, d Y', strtotime($donation->expiry_date)) }}</td>
                                         <td>
+                                            @if($contribution->status == 7)
                                             <a href="{{ route('contribution-donation-edit-view', ['donation_id' => $donation->id]) }}" class="btn tt cfs-edit-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit">
                                                 <i class="fas fa-edit cfs-edit-ic text-secondary"></i>
                                             </a>
+                                            @endif
+                                            @if($contribution->status == 1 || $contribution->status == 3 || $contribution->status == 5 || $contribution->status == 7)
                                             <button data-bs-toggle="modal" data-id="{{ $donation->id }}" data-bs-target="#deleteModal" class="open-delete-modal btn tt cfs-edit-btn" title="Delete">
                                                 <i class="fas fa-trash-alt cfs-edit-ic text-secondary"></i>
                                             </button>
+                                            @endif
                                         </td>
                                     </tr>
                                     @endif
@@ -1116,6 +1142,18 @@
         <!-- End Cancel Modal -->
     </div>
 </div>
+
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 10">
+    <div id="liveToast" class="toast" style="background:#FFF3CD;" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" style="color:#664d03;">
+                Please update product code
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" style="color:#664d03;" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('custom-js')
@@ -1124,6 +1162,39 @@
 var $contribution_date = $('#contribution_date');
 var $pickup_date = $('#pickup_date');
 var $delivery_date = $('#delivery_date');
+
+// contribution_form
+var forms = document.getElementById("contribution_form");
+var product_code_missing = document.getElementById("product_code_missing");
+var didrf_button = document.getElementById("didrf_button");
+
+var toastLiveExample = document.getElementById('liveToast')
+var toast = new bootstrap.Toast(toastLiveExample)
+var didrf_file = document.getElementById("didrf_file");
+
+var status = document.querySelector("input[type='radio'][name=status]:checked");
+
+if(didrf_button) {
+    didrf_button.addEventListener("click", function () {
+        if(status.value == 8) {
+            return;
+        }
+        
+        if(product_code_missing.value != 0) {
+            event.preventDefault()
+            event.stopPropagation()
+            toast.show()
+        }
+        
+        if(!forms.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+        }
+
+        forms.classList.add('was-validated')
+        
+    });
+}
 
 $(document).ready(function () {
     $contribution_date.datepicker({

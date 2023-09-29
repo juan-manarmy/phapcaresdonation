@@ -96,11 +96,6 @@ hr.rounded {
     /* font-family: neosans_std_regular; */
 }
 
-.navbar {
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
 .navbar-font-size {
     font-size: 15px; 
 }
@@ -140,6 +135,12 @@ hr.rounded {
 .nav-item {
     margin-right: 5px;
     margin-left: 5px;
+}
+
+.hide-overlap {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .navbar-light .navbar-nav .nav-link.active {
@@ -182,6 +183,12 @@ hr.rounded {
 }
 
 .btn-primary {
+    color: #fff;
+    background-color: #028446;
+    border-color: #028446;
+}
+
+.btn-primary:disabled, .btn-primary.disabled {
     color: #fff;
     background-color: #028446;
     border-color: #028446;
@@ -258,6 +265,37 @@ body {
     background-color: #d3d3d3;
 }
 
+
+.apps-menu {
+    width: 17rem;
+}
+
+.apps-btn {
+    font-size: 13px;
+}
+
+.apps-title {
+    color: gray;
+}
+
+.apps-btn:hover {
+    background: #efefef;
+}
+
+.apps-icon {
+    color: rgb(2,131,111);
+    font-size:20px;
+}
+
+@media (max-width: 768px) {
+    .apps-menu {
+        width: 18rem;
+    }
+    .nav-wrap {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+    }
+}
  
 
 

@@ -16,7 +16,7 @@
     color: #028446;
 }
 
-.dropdown-menu {
+.dropdown-menu-notifs {
     max-height: 80vh;
     overflow-y: scroll;
 }

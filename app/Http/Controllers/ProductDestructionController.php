@@ -226,16 +226,16 @@ class ProductDestructionController extends Controller
         $pickupAddress = $destructionDetails['pickup_address'];
         $pickupContactPerson = $destructionDetails['pickup_contact_person'];
         $pickupContactNo = $destructionDetails['pickup_contact_no'];
-        $pickupDate = $destructionDetails['pickup_date'];
+        $pickupDate = date('m/d/Y', strtotime($destructionDetails['pickup_date']));
         $pickupInstructions = $destructionDetails['other_pickup_instructions'];
 
         $deliveryContactPerson = $destructionDetails['delivery_contact_person'];
         $deliveryAddress = $destructionDetails['delivery_address'];
         $deliveryAuthorizedRecipient = $destructionDetails['delivery_authorized_recipient'];
         $deliveryContactNo = $destructionDetails['delivery_contact_no'];
-        $deliveryDate = $destructionDetails['delivery_date'];
+        $deliveryDate = date('m/d/Y', strtotime($destructionDetails['delivery_date']));
         $deliveryInstructions = $destructionDetails['other_delivery_instructions'];
-        $createDate = $destructionDetails['created_at'];
+        $createDate = date('m/d/Y', strtotime($destructionDetails['created_at']));
 
         $totalDestructedProducts = $destructionDetails['total_destructed_products'];
 
@@ -284,7 +284,7 @@ class ProductDestructionController extends Controller
         
         $pdf->SetXY(96,68);
         $pdf->SetTextColor(43,43,43);	
-        $pdf->SetFont('Arial','B',12);
+        $pdf->SetFont('Arial','B',12);-
         $pdf->Cell(0,0,"{$pickupContactNo}");
 
         $pdf->SetXY(144,68);
@@ -342,7 +342,7 @@ class ProductDestructionController extends Controller
 
             $inventoryId =  $destructedProductsDetails->inventory_id;
             $productName =  $destructedProductsDetails->product_name;
-            $expiryDate =  $destructedProductsDetails->expiry_date;
+            $expiryDate =  date('m/d/Y', strtotime($destructedProductsDetails->expiry_date));
             $lotNo =  $destructedProductsDetails->lot_no;
             $quantity =  $destructedProductsDetails->quantity;
             $memberName =  $destructedProductsDetails->member_name;
@@ -821,7 +821,7 @@ class ProductDestructionController extends Controller
         ->get();
 
         $destruction = DB::table('destructions')
-        ->where('status',1)
+        ->where('status','!=',0)
         ->select('id','destruction_no','pdrf_no','total_destructed_products','created_at','status')
         ->get();
 

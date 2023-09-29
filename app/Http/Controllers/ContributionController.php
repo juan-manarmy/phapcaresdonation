@@ -13,6 +13,7 @@ use App\Document;
 use App\Inventory;
 use App\TransactionReport;
 use App\Summary;
+use App\Helpers\Helper;
 
 use Auth;
 
@@ -89,8 +90,13 @@ class ContributionController extends Controller
         $member = Member::findOrFail($contribution->member_id);
 
         $member_name = $member->member_name;
+        $product_code_missing = 0;
 
         foreach ($donations as $donation) {
+
+            if($donation->product_code == null) {
+                $product_code_missing++;
+            }
 
             if($donation->product_type == 1) {
                 $medicine_count += 1;
@@ -112,6 +118,7 @@ class ContributionController extends Controller
         $total_count = $medicine_count + $promats_count;
 
         return view('contributions.contributions-details')
+        ->with('product_code_missing',$product_code_missing)
         ->with('donations',$donations)
         ->with('contribution', $contribution)
         ->with('promats_count', $promats_count)
@@ -258,10 +265,11 @@ class ContributionController extends Controller
         }
         // Approve DIDRF
         if($request->status == 9) {
-
             $didrf_file = $request->file('didrf_file');
             $didrf_file_name = $contribution_no."_DIDRF".'.'.$request->file('didrf_file')->extension();
+            // $destination_path = $_SERVER["DOCUMENT_ROOT"].'/pdf/didrf';
             $destination_path = public_path('/pdf/didrf');
+            
             // upload file
             $didrf_file->move($destination_path,$didrf_file_name);
             // save data to documents db
@@ -271,8 +279,6 @@ class ContributionController extends Controller
 
             $this->verifyDIDRF($request->contribution_id,$request->contribution_date,$request->distributor,$request->notice_to,$request->pickup_contact_person,
             $request->pickup_contact_no,$request->pickup_date,$request->pickup_address,$request->pickup_instructions,$request->didrf_no,$request->daff_no,$request->reasons_rejected_inbound,$request->status);
-
-
         }
 
         return back();
@@ -296,6 +302,16 @@ class ContributionController extends Controller
         $contribution->status = $status;
 
         $contribution->approval_date = Carbon::now()->format('Y-m-d');
+
+        $member_id = $contribution->member_id;
+        $contribution_no = $contribution->contribution_no;
+
+        if($status == 2) {
+            Helper::sendNotificationContribution($contribution_no, 'Contribution Rejected',$member_id);
+        } 
+        if($status == 3) {
+            Helper::sendNotificationContribution($contribution_no, 'Contribution Approved!',$member_id);
+        } 
         $contribution->save();
     }
 
@@ -315,8 +331,18 @@ class ContributionController extends Controller
         $contribution->delivery_date = new Carbon($delivery_date);
         $contribution->reasons_rejected_donation = $reasons_rejected_donation;
         $contribution->status = $status;
-
         $contribution->verified_date = Carbon::now()->format('Y-m-d');
+
+        $member_id = $contribution->member_id;
+        $contribution_no = $contribution->contribution_no;
+
+        if($status == 4) {
+            Helper::sendNotificationContribution($contribution_no, 'Donation Rejected',$member_id);
+        } 
+        if($status == 5) {
+            Helper::sendNotificationContribution($contribution_no, 'Donation Accepted! Your Notice of Donation form is now available.',$member_id);
+        } 
+
         $contribution->save();
     }
 
@@ -366,7 +392,6 @@ class ContributionController extends Controller
         $contribution->didrf_approval_user_id = $user_id;
         $contribution->save();
     }
-
 
     public function cancelDonation($contribution, Request $request)
     {
@@ -421,6 +446,10 @@ class ContributionController extends Controller
         $dndTemplate = public_path("/images/templates/dndTemplate.jpg");
         $signature01 = public_path("/images/templates/signature01.png");
         $signature02 = public_path("/images/templates/signature02.png");
+
+        // $dndTemplate = url("/images/templates/dndTemplate.jpg");
+        // $signature01 = url("/images/templates/signature01.png");
+        // $signature02 = url("/images/templates/signature02.png");
 
         $pdf->Image($dndTemplate,0,0,0,297);
         $pdf->Image($signature01,21,260,0,12);
@@ -539,6 +568,7 @@ class ContributionController extends Controller
         $pdf->Cell(0,0,"Dr. Maria Rosita Q. Siasoco");
 
         $dnd_file_name = $contribution_no."_DND_".$dnd_no;
+        // $destination_path = "/pdf/nod/{$contribution_no}_NOD.pdf";
         $dnd_directory_path = public_path("/pdf/dnd/{$dnd_file_name}.pdf");
 
         $pdf->Output($dnd_directory_path,'F');
@@ -565,6 +595,7 @@ class ContributionController extends Controller
         $verified_date = date('F, d Y', strtotime($contribution->verified_date));
 
         $template_path = public_path("/images/templates/nodTemplate1.jpg");
+        // $template_path = urL("/images/templates/nodTemplate1.jpg");
 
         // Header 
         $pdf = new FPDF('L','mm','Legal');
@@ -672,6 +703,7 @@ class ContributionController extends Controller
         $pdf->AddPage();
 
         $template_path_nod_2 = public_path("/images/templates/nodTemplate2.jpg");
+        // $template_path_nod_2 = urL("images/templates/nodTemplate2.jpg");
 
         $pdf->Image($template_path_nod_2,0,0,350,220);
         
@@ -732,9 +764,9 @@ class ContributionController extends Controller
         $pdf->SetTextColor(43,43,43);	
         $pdf->SetFont('Arial','',10);
         $pdf->Cell(0,0,"{$first_name} {$last_name}");
-        // echo $donations;
-        // $random = rand(1,10000);
         $destination_path = public_path("/pdf/nod/{$contribution_no}_NOD.pdf");
+        // $destination_path = $_SERVER["DOCUMENT_ROOT"]."/pdf/nod/{$contribution_no}_NOD.pdf";
+
         $pdf->Output($destination_path,'F');
     }
 
@@ -744,10 +776,12 @@ class ContributionController extends Controller
         $document->contribution_id = $contribution_id;
         $document->type = $type;
         $document->name = "{$contribution_no}_{$type}";
+        
         if($type == "NOD") {
             $document->directory = "/pdf/nod/{$contribution_no}_{$type}";
+            // $document->directory = "/pdf/nod/{$contribution_no}_{$type}";
         } else if($type == "DND") {
-            $document->directory = "/pdf/dnd/{$contribution_no}_{$type}_";
+            $document->directory = "/pdf/dnd/{$contribution_no}_{$type}";
         } else if($type == "DIDRF") {
             $document->directory = "/pdf/didrf/{$contribution_no}_{$type}";
         }
@@ -768,7 +802,9 @@ class ContributionController extends Controller
     {
         $didrf_file = $request->file('didrf_file');
         $didrf_file_name = Str::uuid().'.'.$request->file('didrf_file')->extension();
-        $destination_path = public_path('/images/cfs_banners');
+
+        $destination_path = $_SERVER["DOCUMENT_ROOT"]."/pdf/nod/{$contribution_no}_NOD.pdf";
+        // $destination_path = public_path('/images/cfs_banners');
         // upload file
         $didrf_file->move($destination_path,$didrf_file_name);
     }

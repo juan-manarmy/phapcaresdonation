@@ -327,12 +327,14 @@
                                         <td>{{ $donation->total }}</td>
                                         <td>{{ date('F, d Y', strtotime($donation->expiry_date)) }}</td>
                                         <td>
-                                            <a href="{{ route('allocation-edit-view', ['allocated_product_id' => $donation->id]) }}" class="btn tt cfs-edit-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit">
-                                                <i class="fas fa-edit cfs-edit-ic text-secondary"></i>
-                                            </a>
-                                            <button data-bs-toggle="modal" data-id="{{ $donation->id }}" data-bs-target="#deleteModal" class="open-delete-modal btn tt cfs-edit-btn" title="Cancel">
-                                                <i class="fas fa-trash-alt cfs-edit-ic text-secondary"></i>
-                                            </button>
+                                            @if($allocation->status == 1 || $allocation->status == 3 || $allocation->status == 5)
+                                                <a href="{{ route('allocation-edit-view', ['allocated_product_id' => $donation->id]) }}" class="btn tt cfs-edit-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit">
+                                                    <i class="fas fa-edit cfs-edit-ic text-secondary"></i>
+                                                </a>
+                                                <button data-bs-toggle="modal" data-id="{{ $donation->id }}" data-bs-target="#deleteModal" class="open-delete-modal btn tt cfs-edit-btn" title="Cancel">
+                                                    <i class="fas fa-trash-alt cfs-edit-ic text-secondary"></i>
+                                                </button>
+                                            @endif
                                         </td>
                                     </tr>
                                     @endif

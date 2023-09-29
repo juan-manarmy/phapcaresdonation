@@ -23,136 +23,200 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&display=swap" rel="stylesheet">
     @yield('custom-css')
-
 </head>
 
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-lg navbar-light" style="background-color:white;">
-            <a class="navbar-brand px-3" href="/home">
-                <img src="/images/phapcares_logo.png" class="img-fluid p-1" alt="" width="85" >
+        <nav class="navbar navbar-expand-md nav-wrap navbar-light" style="background-color:white;">
+            <a class="navbar-brand ps-3" href="/home">
+                <img src="/images/phapcares_logo.png" class="img-fluid p-1" alt="" width="100" >
             </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-            </button>
+            <div class="container-fluid">
+                <div class="d-none d-md-block d-xl-block">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link {{ (request()->is('home')) ? 'active' : '' }}" aria-current="page" href="/home">
+                                Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ (request()->is('call-for-support*')) ? 'active' : '' }}" href="/call-for-support">Call for Support</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ (request()->is('product-donation*')) ? 'active' : '' }}" href="{{ route('pd-initial-details') }}">Product Donation</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ (request()->is('contributions*')) ? 'active' : '' }}" href="{{ route('contribution-list') }}">Contributions</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ (request()->is('inventory*')) ? 'active' : '' }}" href="{{route('inventory-list')}}">Inventory</a>
+                        </li>
+                    </ul>
+                </div>
+                <div></div>
+                <div class="d-flex">
+                    <div class="dropdown m-1">
+                        <button class="btn bg-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-grip"></i>
+                        </button>
 
-            <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link {{ (request()->is('home')) ? 'active' : '' }}" aria-current="page" href="/home">
-                            Home
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ (request()->is('product-donation*')) ? 'active' : '' }}" href="{{ route('pd-initial-details') }}">Product Donation</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ (request()->is('call-for-support*')) ? 'active' : '' }}" href="/call-for-support">Call for Support</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link {{ (request()->is('users*')) ? 'active' : '' }} dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Users
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item nav-items-font" href="{{ route('all-users') }}" >Users</a></li>
-                            <li><a class="dropdown-item nav-items-font" href="{{ route('all-companies') }}">Members</a></li>
-                            <li><a class="dropdown-item nav-items-font" href="{{ route('beneficiary-list') }}">Beneficiaries</a></li>
+                        <div class="dropdown-menu dropdown-menu-end apps-menu p-3">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <a type="button" class="btn apps-btn" href="{{ route('pd-initial-details') }}">
+                                            <i class="fa-solid fa-hand-holding-heart apps-icon"></i>
+                                            <p class="mb-0">Donation</p>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <a type="button" class="btn apps-btn" href="/call-for-support">
+                                            <i class="fa-solid fa-headset apps-icon"></i>
+                                            <p class="mb-0">Support</p>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <a type="button" class="btn apps-btn" href="{{ route('contribution-list') }}">
+                                            <i class="fa-solid fa-hand-holding-medical apps-icon"></i>
+                                            <p class="mb-0">Contributions</p>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <a type="button" class="btn apps-btn" href="{{ route('all-users') }}">
+                                            <i class="fa-solid fa-user apps-icon"></i>
+                                            <p class="mb-0">Users</p>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <a type="button" class="btn apps-btn" href="{{ route('all-companies') }}">
+                                            <i class="fa-solid fa-users apps-icon"></i>
+                                            <p class="mb-0">Members</p>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <a type="button" class="btn apps-btn" href="{{ route('beneficiary-list') }}">
+                                            <i class="fa-solid fa-hand-holding-hand apps-icon"></i>
+                                            <p class="mb-0">Beneficiaries</p>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <a type="button" class="btn apps-btn" href="{{ route('allocation-list') }}">
+                                            <i class="fa-solid fa-box-open apps-icon"></i>
+                                            <p class="mb-0">Allocations</p>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <a type="button" class="btn apps-btn" href="{{route('product-destruction-list')}}">
+                                            <i class="fa-solid fa-square-xmark apps-icon "></i>
+                                            <p class="mb-0">Destruction</p>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <a type="button" class="btn apps-btn" href="{{route('reports-list')}}">
+                                            <i class="fa-solid fa-folder apps-icon"></i>
+                                            <p class="mb-0">Reports</p>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <a type="button" class="btn apps-btn" href="{{route('inventory-list')}}">
+                                            <i class="fa-solid fa-boxes-stacked apps-icon"></i>
+                                            <p class="mb-0">Inventory</p>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown m-1">
+                        <button class="btn bg-circle position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-folder"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ $contributions_notif->count() }}
+                                <span class="visually-hidden">unread messages</span>
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-notifs" aria-labelledby="dropdownMenuButton1">
+                            <li class="notification-title fw-bold border-bottom pb-2">Pending Contribution Approvals</li>
+                            @if($contributions_notif->count() > 0)
+                                @foreach($contributions_notif as $item)
+                                    <li class="border-bottom">
+                                        <a class="dropdown-item py-2" href="{{ route('contribution-details', ['contribution_id' => $item->id]) }}">
+                                            <div class="notification-item">
+                                                <p class="mb-0"><span class="fw-bold">{{ $item->member_name }}</span></p>
+                                                <p class="mb-0">Contribution No. : <span class="fw-bold">{{ $item->contribution_no }}</span></p> 
+                                                <p class="mb-0">Date :<span class="fw-bold"> {{ $item->contribution_date }}</span></p>
+                                                <p class="mb-0">Donation :<span class="fw-bold text-green"> PHP {{ number_format($item->total_donation,2) }}</span></p>
+                                            </div>
+                                        </a>
+                                    </li>
+                                @endforeach
+                                <li class="notification-title fw-bold pt-2">
+                                    <a class="py-2" href="{{ route('contribution-list') }}">
+                                    <p class="mb-0 fw-bold">See more</p>
+                                    </a>
+                                </li>
+                            @else
+                                <li class="notification-title pt-2 pb-1 text-secondary">No Pending Contribution Approvals</li>
+                            @endif
                         </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ (request()->is('contributions*')) ? 'active' : '' }}" href="{{ route('contribution-list') }}">Contributions</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ (request()->is('allocations*')) ? 'active' : '' }}" href="{{ route('allocation-list') }}">Allocations</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ (request()->is('product-destruction*')) ? 'active' : '' }}" href="{{route('product-destruction-list')}}">Product Destruction</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ (request()->is('inventory*')) ? 'active' : '' }}" href="{{route('inventory-list')}}">Inventory</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ (request()->is('reports*')) ? 'active' : '' }}" href="{{route('reports-list')}}">Reports</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav px-2">
-                    <li class="nav-item">
-                        <div class="dropdown">
-                            <button class="btn bg-circle position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-folder"></i>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    {{ $contributions_notif->count() }}
-                                    <span class="visually-hidden">unread messages</span>
-                                </span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
-                                <li class="notification-title fw-bold border-bottom pb-2">Pending Contribution Approvals</li>
-                                @if($contributions_notif->count() > 0)
-                                    @foreach($contributions_notif as $item)
-                                        <li class="border-bottom">
-                                            <a class="dropdown-item py-2" href="{{ route('contribution-details', ['contribution_id' => $item->id]) }}">
-                                                <div class="notification-item">
-                                                    <p class="mb-0"><span class="fw-bold">{{ $item->member_name }}</span></p>
-                                                    <p class="mb-0">Contribution No. : <span class="fw-bold">{{ $item->contribution_no }}</span></p> 
-                                                    <p class="mb-0">Date :<span class="fw-bold"> {{ $item->contribution_date }}</span></p>
-                                                    <p class="mb-0">Donation :<span class="fw-bold text-green"> PHP {{ number_format($item->total_donation,2) }}</span></p>
-                                                </div>
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                    <li class="notification-title fw-bold pt-2">
-                                        <a class="py-2" href="{{ route('contribution-list') }}">
-                                        <p class="mb-0 fw-bold">See more</p>
+                    </div>
+                    <div class="dropdown m-1">
+                        <button class="btn bg-circle position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-box"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ $allocations_notif->count() }}
+                                <span class="visually-hidden">unread messages</span>
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-notifs" aria-labelledby="dropdownMenuButton1">
+                            <li class="notification-title fw-bold border-bottom pb-2">Pending Allocation Approvals</li>
+                            @if($allocations_notif->count() > 0)
+                                @foreach($allocations_notif as $item)
+                                    <li class="border-bottom">
+                                        <a class="dropdown-item py-2" href="{{ route('allocation-details', ['allocation_id' => $item->id]) }}">
+                                            <div class="notification-item">
+                                                <p class="mb-0"><span class="fw-bold">{{ $item->name }}</span></p> 
+                                                <p class="mb-0">Allocation No. : <span class="fw-bold"> {{ $item->allocation_no }}</span></p>
+                                                <p class="mb-0">Product Amount : <span class="fw-bold text-green">PHP {{ number_format($item->total_allocated_products,2) }}</span></p>
+                                            </div>
                                         </a>
                                     </li>
-                                @else
-                                    <li class="notification-title pt-2 pb-1 text-secondary">No Pending Contribution Approvals</li>
-                                @endif
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <div class="dropdown">
-                            <button class="btn bg-circle position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-box"></i>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    {{ $allocations_notif->count() }}
-                                    <span class="visually-hidden">unread messages</span>
-                                </span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
-                                <li class="notification-title fw-bold border-bottom pb-2">Pending Allocation Approvals</li>
-                                @if($allocations_notif->count() > 0)
-                                    @foreach($allocations_notif as $item)
-                                        <li class="border-bottom">
-                                            <a class="dropdown-item py-2" href="{{ route('allocation-details', ['allocation_id' => $item->id]) }}">
-                                                <div class="notification-item">
-                                                    <p class="mb-0"><span class="fw-bold">{{ $item->name }}</span></p> 
-                                                    <p class="mb-0">Allocation No. : <span class="fw-bold"> {{ $item->allocation_no }}</span></p>
-                                                    <p class="mb-0">Product Amount : <span class="fw-bold text-green">PHP {{ number_format($item->total_allocated_products,2) }}</span></p>
-                                                </div>
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                    <li class="notification-title fw-bold pt-2">
-                                        <a class="py-2" href="{{ route('allocation-list') }}">
-                                        <p class="mb-0 fw-bold">See more</p>
-                                        </a>
-                                    </li>
-                                @else
-                                    <li class="notification-title pt-2 pb-1 text-secondary">No Pending Allocation Approvals</li>
-                                @endif
-                            </ul>
-                        </div>
-                    </li>
-
-                    <li class="nav-item">
-                        <button type="button" class="btn bg-circle" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                        </a>
-                    </li>
-                </ul>
+                                @endforeach
+                                <li class="notification-title fw-bold pt-2">
+                                    <a class="py-2" href="{{ route('allocation-list') }}">
+                                    <p class="mb-0 fw-bold">See more</p>
+                                    </a>
+                                </li>
+                            @else
+                                <li class="notification-title pt-2 pb-1 text-secondary">No Pending Allocation Approvals</li>
+                            @endif
+                        </ul>
+                    </div>
+                    <button type="button" class="btn bg-circle m-1" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
             </div>
         </nav>
         <!-- Modal -->
@@ -188,16 +252,13 @@
 
         <footer class="footer">
             <div class="d-flex p-2 justify-content-center">
-                © Copyright 2022. PHAPCares Foundation. All Rights Reserved
+                © Copyright 2023. PHAPCares Foundation. All Rights Reserved
             </div>
         </footer>
 
     </div>
-
-    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
-
     
-    <script src="{{ mix('js/app.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
 
     <script>
         $(document).ready(function () {
@@ -207,8 +268,6 @@
             })
         });
     </script>
-
     @yield('custom-js')
-
 </body>
 </html>

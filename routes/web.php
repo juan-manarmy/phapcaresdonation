@@ -3,22 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\User;
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-// Route::get('/', function () {
-//     return view('welcome');
-// });
 
 Route::get('/register-user', function () {
-
     $user = new User;
     $user->first_name = "Admin";
     $user->last_name = "Clinics";
@@ -35,41 +21,18 @@ Route::get('/register-user', function () {
     } 
 });
 
-
-Route::get('/carbontest', 'HomeController@carbontest')->name('test'); // read
-Route::get('/test/{allocation_id}', 'AllocationController@saveAllocatedProductsToInventory')->name('tesct'); // read
-
-Route::get('/destructiontest', 'HomeController@destructiontest')->name('destructiontest'); // read
-
 Route::get('/home', 'HomeController@index')->name('home'); // read
-
-Route::get('/request-forms', function () {
-    return view('request-forms.request-forms');
-});
 
 Route::get('/dashboard', function () {
     return view('home');
 });
 
-
+// Users
 Route::get('/users/create-user', 'UserController@createUserView')->name('create-user'); // read
 Route::get('/users', 'UserController@index')->name('all-users'); // read
 Route::post('/users/create/submit', 'UserController@saveUser')->name('create-user-submit'); // submit
-
-
-
 Route::get('/users/{id}/edit/', 'UserController@show')->name('edit-user-view'); // read single user
 Route::put('/users/{id}/edit/submit', 'UserController@edit')->name('edit-user-submit'); // submit edit user
-
-//Allocations
-Route::get('/data/allocations', 'AllocationController@index')->name('all-allocations');
-Route::get('/data/create-allocation', function () {
-    return view('data-allocations-create');
-}); // CREATE View
-
-Route::post('/data/allocation/create/submit', 'AllocationController@store')->name('create-allocation-submit'); //CREATE Submit Route
-Route::get('/data/allocation/{id}/edit/', 'AllocationController@show')->name('edit-allocation-view'); // EDIT View
-Route::put('/data/allocation/{id}/edit/submit', 'AllocationController@edit')->name('edit-allocation-submit'); // EDIT Submit Route
 
 //Companies
 Route::get('/users/companies', 'MemberController@index')->name('all-companies');  // Show All Companies
@@ -91,15 +54,6 @@ Route::get('/call-for-support/create', 'CfsPostController@create')->name('call-f
 Route::post('/call-for-support/create/submit', 'CfsPostController@store')->name('call-for-support-submit');
 Route::get('call-for-support/{id}/edit', 'CfsPostController@show')->name('edit-call-for-support-view');
 Route::put('/call-for-support/{id}/edit/submit', 'CfsPostController@edit')->name('call-for-support-submit-edit');
-
-// Route::post('/send-notification', 'CfsPostController@sendNotification')->name('send-notification');
-
-//nods
-Route::get('/nods', 'NodPostController@index')->name('nod');
-Route::get('/nods/{id}/form', 'NodPostController@show')->name('nod-form-view');
-Route::get('/nods/{id}/form/{itemId}/item', 'NodPostController@showItem')->name('nod-form-view-item');
-Route::put('/nods/{id}/form/item/submit', 'NodPostController@updateItem')->name('nods-view-item-submit-edit');
-Route::get('/nods/{id}/form/change-approval/{approvalCode}', 'NodPostController@updateApproval')->name('nods-change-approval-status');
 
 // PRODUCT DONATION
 Route::get('/product-donation/initial-details', 'ProductDonationController@initialDetailsView')->name('pd-initial-details');
@@ -138,7 +92,6 @@ Route::post('/allocations/{allocation_id}/update-status', 'AllocationController@
 Route::get('/allocations/{allocated_product_id}/edit-allocated-product', 'AllocationController@editAllocatedProduct')->name('allocation-edit-view');
 Route::post('/allocations/cancel-allocated-product', 'AllocationController@processAllocatedProductsCancel')->name('allocation-cancel-product');
 Route::post('/allocations/{allocated_product_id}/update-allocated-product', 'AllocationController@processAllocatedProductsUpdate')->name('allocation-update-product');
-
 Route::get('/allocations/create/{id}', 'AllocationController@allocationCreateRead')->name('allocation-create-read');
 Route::delete('/allocations/delete', 'AllocationController@cancelAllocation')->name('allocation-delete');
 
@@ -168,31 +121,8 @@ Route::get('/reports', 'ReportsController@reportsList')->name('reports-list');
 Route::get('/reports/filter', 'ReportsController@filteredReportsList')->name('filter-reports-list');
 Route::get('/reports/generate/', 'ReportsController@generateExcelReport')->name('reports-generate');
 
-
-Route::get('/invoice', function () {
-    // $pdf = PDF::loadView('invoice');
-    // $pdf->setPaper('A4', 'landscape');
-    // return $pdf->download('invoice.pdf');
-    return view('invoice');
-});
-
-Route::get('/invoice-download', function (){
-
-    // $options = new Options();
-    // $options->setIsRemoteEnabled(true);
-    
-    // $domPdf->setOptions($options);
-    // $domPdf->output();
-    $pdf = PDF::loadView('invoice');
-    $pdf->setPaper('A4', 'landscape');
-
-    return $pdf->download('invoice.pdf');
-});
-
 Route::get('/', function () {
     return redirect()->route('login');
 });
-
-Route::get('/testpdf', 'ContributionController@test')->name('test-dpf');
 
 Auth::routes();

@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
-
 class ProductDonationController extends Controller
 {
  
@@ -87,7 +86,13 @@ class ProductDonationController extends Controller
         ->orderBy('id', 'DESC')
         ->get();
 
+        $cfs = DB::table('cfs_posts')
+        ->where('is_active', 1)
+        ->select('id','title')
+        ->get();
+
         return view('product-donation.pd-initial-details')
+        ->with('cfs',$cfs)
         ->with('members', $members)
         ->with('cn_no', $cn_no)
         ->with('allocations_notif', $allocations_notif)
@@ -125,7 +130,14 @@ class ProductDonationController extends Controller
         ->orderBy('id', 'DESC')
         ->get();
 
+        $cfs = DB::table('cfs_posts')
+        ->where('is_active', 1)
+        ->select('id','title')
+        ->get();
+
+
         return view('product-donation.pd-initial-details')
+        ->with('cfs',$cfs)
         ->with('members', $members)
         ->with('contribution', $contribution)
         ->with('cn_no', $cn_no)
@@ -139,7 +151,8 @@ class ProductDonationController extends Controller
 
         $contribution = Contribution::updateOrCreate(
             ['contribution_no' => $request->contribution_no],
-            ['member_id' => $request->member_id,
+            ['cfs_id' => $request->cfs_id,
+            'member_id' => $request->member_id,
             'distributor' => $request->distributor,
             'contribution_date' => $converted_contribution_date]
         );
@@ -148,9 +161,6 @@ class ProductDonationController extends Controller
         $contribution_no = $contribution->contribution_no;
         return redirect()->route('pd-donations', ['contribution_id' =>  $contribution_id, 'contribution_no' =>  $contribution_no]);
     }
-
-
-
 
     public function donationsView($contribution_id, $contribution_no)
     {
@@ -200,9 +210,9 @@ class ProductDonationController extends Controller
         $new_donation->total = $request->donation["unit_cost"] * $request->donation["quantity"];
         
         $random = rand(1,10000);
-        $new_donation->job_no = "JO-{$random}";
-        $new_donation->product_code = "JO-{$random}";
-        $new_donation->drug_reg_no = "DR-{$random}";
+        // $new_donation->job_no = "JO-{$random}";
+        // $new_donation->product_code = "JO-{$random}";
+        // $new_donation->drug_reg_no = "DR-{$random}";
 
         // $new_donation->uom = $request->donation["uom"];
         // $new_donation->remarks = $request->donation["remarks"];
@@ -282,7 +292,6 @@ class ProductDonationController extends Controller
         ->with('allocations_notif', $allocations_notif)
         ->with('contributions_notif', $contributions_notif);
     }
-
 
     public function finishView()
     {

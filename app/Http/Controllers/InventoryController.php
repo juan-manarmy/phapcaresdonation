@@ -99,9 +99,9 @@ class InventoryController extends Controller
         $inventory->updated_at = Carbon::now();
 
         if($inventory->save() == 0){
+            return "Error saving";
         } else {
             $inventory = Inventory::find($inventory_id);
-
             $member_id = $inventory->member_id;
             $product_code = $inventory->product_code;
             $product_name = $inventory->product_name;
@@ -119,6 +119,7 @@ class InventoryController extends Controller
 				//Receipt Adjustment
 				$transactionType = "ADJR";
 			} else {
+                return redirect()->route('inventory-list')->with('inventory-updated','Inventory details successfully updated!');
 				//No Adjustments Made, Existing And New Quantity Are Equal
 			}
             
@@ -235,6 +236,7 @@ class InventoryController extends Controller
                 $summary->updated_at = $currentDate;
 
                 if($summary->save() == 1) {
+                    // return "saved";
                     return redirect()->route('inventory-list')->with('inventory-updated','Inventory successfully updated!');
                 } else {
                     return "Error saving";

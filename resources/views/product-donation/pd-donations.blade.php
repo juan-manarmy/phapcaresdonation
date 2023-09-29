@@ -68,14 +68,14 @@
 <script src="{{asset('js/modules/datepicker/datepicker.js')}} "></script>
 
 <script>
-    var toastTrigger = document.getElementById('liveToastBtn')
-    var toastLiveExample = document.getElementById('liveToast')
-    if (toastTrigger) {
-        toastTrigger.addEventListener('click', function () {
-            var toast = new bootstrap.Toast(toastLiveExample)
-            toast.show()
-        })
-    }
+    // var toastTrigger = document.getElementById('liveToastBtn')
+    // var toastLiveExample = document.getElementById('liveToast')
+    // if (toastTrigger) {
+    //     toastTrigger.addEventListener('click', function () {
+    //         var toast = new bootstrap.Toast(toastLiveExample)
+    //         toast.show()
+    //     })
+    // }
     
 </script>
 @endsection

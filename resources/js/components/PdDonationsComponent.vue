@@ -164,10 +164,10 @@
                         <div class="row">
                             <label for="" class="col-lg-4 col-form-label fw-bold">Strength :</label>
                             <div class="col-lg-8">
-                            <input type="text" :class="{'is-invalid':this.v$.strength.$error}" class="form-control" name="strength" id="strength" placeholder="Strength" v-model="donation.strength">
-                            <div v-if="this.v$.strength.$error" class="invalid-feedback">
-                                Strength is required
-                            </div>
+                                <input type="text" :class="{'is-invalid':this.v$.strength.$error}" class="form-control" name="strength" id="strength" placeholder="Strength" v-model="donation.strength">
+                                <div v-if="this.v$.strength.$error" class="invalid-feedback">
+                                    Strength is required
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -176,10 +176,10 @@
                         <div class="row">
                             <label for="" class="col-lg-4 col-form-label fw-bold">Dosage Form :</label>
                             <div class="col-lg-8">
-                            <input type="text" :class="{'is-invalid':this.v$.dosage_form.$error}" class="form-control" name="dosage_form" id="dosage_form" placeholder="Dosage Form" v-model="donation.dosage_form">
-                            <div v-if="this.v$.dosage_form.$error" class="invalid-feedback">
-                                Dosage Form is required
-                            </div>
+                                <input type="text" :class="{'is-invalid':this.v$.dosage_form.$error}" class="form-control" name="dosage_form" id="dosage_form" placeholder="Dosage Form" v-model="donation.dosage_form">
+                                <div v-if="this.v$.dosage_form.$error" class="invalid-feedback">
+                                    Dosage Form is required
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -200,10 +200,10 @@
                         <div class="row">
                             <label for="" class="col-lg-4 col-form-label fw-bold">Quantity :</label>
                             <div class="col-lg-8">
-                            <input type="text" :class="{'is-invalid':this.v$.quantity.$error}" class="form-control" name="quantity" id="quantity" placeholder="Quantity" v-model="donation.quantity">
-                            <div v-if="this.v$.quantity.$error" class="invalid-feedback">
-                                Quantity is required
-                            </div>
+                                <input type="number" :class="{'is-invalid':this.v$.quantity.$error}" class="form-control" name="quantity" id="quantity" placeholder="Quantity" v-model="donation.quantity">
+                                <div v-if="this.v$.quantity.$error" class="invalid-feedback">
+                                    Quantity is required
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -267,7 +267,7 @@
                         <div class="row">
                             <label for="" class="col-lg-4 col-form-label fw-bold">Unit Cost/ Trade Price :</label>
                             <div class="col-lg-8">
-                            <input type="text" :class="{'is-invalid':this.v$.unit_cost.$error}" class="form-control" name="unit_cost" id="unit_cost" placeholder="Unit Cost/ Trade Price" v-model="donation.unit_cost">
+                            <input type="number" :class="{'is-invalid':this.v$.unit_cost.$error}" class="form-control" name="unit_cost" id="unit_cost" placeholder="Unit Cost/ Trade Price" v-model="donation.unit_cost">
                                 <div v-if="this.v$.unit_cost.$error" class="invalid-feedback">
                                     Unit Cost is required
                                 </div>
@@ -289,11 +289,23 @@
                     </div>
                 </div>
                 <!-- @click="addDonation()" -->
-                <button type="button" class="btn btn-outline-success mt-2 fw-bold" @click="addDonation()">Add Donation</button>
+                <button type="button" class="btn btn-outline-success mt-2 fw-bold" @click="addDonation()" :disabled='loading'>
+                    <div v-if='loading'>
+                        <div class="spinner-border text-success spinner-border-sm" role="status"></div>
+                        <span>Saving</span>
+                    </div>
+                    <span v-if='!loading'>Save Donation</span>
+                </button>
             </form>
             <!--End Medicine Donation Forms -->
             <div class="d-flex flex-row-reverse">
-                <button @click="saveTotalDonation()" class="btn btn-primary">Save and Proceed</button>
+                <button @click="saveTotalDonation()" class="btn btn-primary" :disabled='total_loading'>
+                    <div v-if='total_loading'>
+                        <div class="spinner-border text-light spinner-border-sm" role="status"></div>
+                        <span>Saving</span>
+                    </div>
+                    <span v-if='!total_loading'>Save and Proceed</span>
+                </button>
                 <a :href="'/product-donation/initial-details/'+contribution_id" type="button" class="btn btn-outline-secondary me-2">Go Back</a>
                 <!-- <button onclick="history.back()" type="button" class="btn btn-outline-secondary me-2">Go Back</button> -->
             </div>
@@ -464,8 +476,8 @@ export default {
             dosage_form : '',
             package_size: '',
             lot_no: '',
-            quantity: 0,
-            unit_cost: 0,
+            quantity: '',
+            unit_cost: '',
             drug_reg_no: '',
             expiry_date: '',
             mfg_date: '',
@@ -473,6 +485,20 @@ export default {
         })
 
         const rules = computed(() => {
+
+            if(donation.product_type == 2) {
+                return {
+                    contribution_id : { required },
+                    product_type : { required },
+                    product_name : { required },
+                    lot_no: { required },
+                    quantity: { required },
+                    unit_cost: { required },
+                    expiry_date: { required },
+                    mfg_date: { required },
+                }
+            }
+
             return {
                 contribution_id : { required },
                 strength : { required },
@@ -493,9 +519,7 @@ export default {
 
         const v$ = useVuelidate(rules,donation)
 
-        return { 
-            donation,v$
-        }
+        return {donation,v$}
     },
     data: function() {
         return  {
@@ -512,6 +536,8 @@ export default {
             promats_count : 0,
             medicine_count : 0,
             total_products_count : 0,
+            loading:false,
+            total_loading:false
         }
     },
     methods : {
@@ -521,8 +547,11 @@ export default {
             toast.show()
         },
         saveTotalDonation() {
+            this.total_loading = !false
+
             if(Object.keys(this.donations).length == 0) {
                 this.emptyToast()
+                this.total_loading = !true
                 return;
             }
             axios.post('../../../api/product-donation/'+ this.donation.contribution_id + "/save-total-donations", {
@@ -530,22 +559,19 @@ export default {
             })
             .then( response=> {
                 if (response.status == 200) {
+                    this.total_loading = !true
                     window.location.href = "/product-donation/" + this.donation.contribution_id  + "/secondary-details";
                 }
             })
             .catch (error => {
 
             })
-
         },
         addDonation () {
-
-            if(this.donation.product_type == 1) {
-                this.v$.$validate()
-            }
-
+            this.loading = !false
+            this.v$.$validate()
             if(this.v$.$error) {
-                console.log(this.v$.$errors);
+                this.loading = !true
                 return;
             }
 
@@ -569,14 +595,16 @@ export default {
                     this.donation.expiry_date = '';
                     this.donation.mfg_date = '';
                     this.donation.medicine_status = '';
-
                     this.v$.$reset();
-                    this.getDonations ();
+                    this.getDonations();
+                    this.loading = !true
                 }
             })
             .catch (error => {
 
             })
+
+
         },
         getDonations () {
             axios.get('../../../api/product-donation/'+ this.contribution_id + "/show-donations", {

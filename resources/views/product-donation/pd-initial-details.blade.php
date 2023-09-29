@@ -6,26 +6,9 @@
 @endsection
 
 @section('content')
-<!-- <div class="page-heading">
-    <h4>Product Donation</h4>
-    <div class="border-container">
-        <div class="heading-line"></div>
-        <hr class="rounded">
-    </div>
-</div> -->
 <div class="bg-heading">
     <h4 class="px-4 py-3">Product Donation</h4>
 </div>
-<!-- green -->
-<!-- dot-status -->
-
-
-<!-- circle with check -->
-<!-- <div class="ic-bg-circle">
-    <i class="fa-solid fa-check check-size"></i>
-</div> -->
-
-
 
 <div class="bg-progress-wrapper">
     <div class="bg-heading-progress">
@@ -83,6 +66,17 @@
                 </div>
             </div>
             <div class="form-group row mt-2">
+                <label class="col-lg-1 col-form-label sd-label" for="sel1">Call for Support :</label>
+                <div class="col-lg-4">
+                    <select class="form-select" name="cfs_id">
+                        @foreach ($cfs as $item)
+                            <option {{ $contribution->cfs_id == $item->id ? "selected" : "" }} value="{{ $item->id }}">{{ $item->title }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group row mt-2">
                 <label for="inputPassword" class="col-sm-1 col-form-label sd-label">Distributor :</label>
                 <div class="col-lg-4">
                     <input type="text" class="form-control" id="distributor" name="distributor" value="{{ $contribution->distributor }}" placeholder="Distributor" required>
@@ -92,7 +86,7 @@
                 <label for="inputPassword" class="col-sm-1 col-form-label sd-label">Date :</label>
                 <div class="col-lg-4">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="contribution_date" id="contribution_date" value="{{date('m/d/Y', strtotime($contribution->contribution_date))}}" placeholder="Date" onkeydown="return false" required>
+                        <input type="text" class="form-control" name="contribution_date" id="contribution_date" value="{{date('m/d/Y', strtotime($contribution->contribution_date))}}" placeholder="Date" onkeydown="return false" autocomplete="off" required>
                         <span class="input-group-text"><i class="fa-solid fa-calendar text-main-color"></i></span>
                     </div>
                 </div>
@@ -111,6 +105,18 @@
                 <input type="text" class="form-control" id="staticEmail" readonly value="CN-{{ $cn_no }}" name="contribution_no">
                 </div>
             </div>
+
+            <div class="form-group row mt-2">
+                <label class="col-lg-1 col-form-label sd-label" for="sel1">Call for Support :</label>
+                <div class="col-lg-4">
+                    <select class="form-select" name="cfs_id">
+                        @foreach ($cfs as $item)
+                            <option value="{{ $item->id }}">{{ $item->title }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
             <div class="form-group row mt-2">
                 <label class="col-lg-1 col-form-label sd-label" for="sel1">Company :</label>
                 <div class="col-lg-4">
@@ -121,6 +127,7 @@
                     </select>
                 </div>
             </div>
+
             <div class="form-group row mt-2">
                 <label for="inputPassword" class="col-sm-1 col-form-label sd-label">Distributor :</label>
                 <div class="col-lg-4">
@@ -131,7 +138,7 @@
                 <label for="inputPassword" class="col-sm-1 col-form-label sd-label">Date :</label>
                 <div class="col-lg-4">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="contribution_date" id="contribution_date" placeholder="Date" onkeydown="return false" required>
+                        <input type="text" class="form-control" name="contribution_date" id="contribution_date" placeholder="Date" onkeydown="return false" autocomplete="off" required>
                         <span class="input-group-text"><i class="fa-solid fa-calendar text-main-color"></i></span>
                     </div>
                 </div>

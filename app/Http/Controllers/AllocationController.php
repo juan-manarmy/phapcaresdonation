@@ -618,6 +618,13 @@ class AllocationController extends Controller
         $dna_template = public_path("/images/templates/dnaTemplate.jpg");
         $signature01 = public_path("/images/templates/signature01.png");
         $signature02 = public_path("/images/templates/signature02.png");
+        
+        // $dna_template = url("/images/templates/dnaTemplate.jpg");
+        // $signature01 = url("/images/templates/signature01.png");
+        // $signature02 = url("/images/templates/signature02.png");
+
+        $allocation_created_at = date('m/d/Y', strtotime($allocation->created_at));
+        $allocation_delivery_date = date('m/d/Y', strtotime($allocation->delivery_date));
 
         $pdf->AddPage();
         $pdf->Image($dna_template,0,0,210,297);
@@ -638,7 +645,7 @@ class AllocationController extends Controller
         $pdf->SetXY(141,37);
         $pdf->SetTextColor(43,43,43);	
         $pdf->SetFont('Arial','B',12);
-        $pdf->Cell(0,0,"{$allocation->created_at}");
+        $pdf->Cell(0,0,"{$allocation_created_at}");
         
         $pdf->SetXY(20,56);
         $pdf->SetTextColor(43,43,43);	
@@ -663,7 +670,7 @@ class AllocationController extends Controller
         $pdf->SetXY(160,74);
         $pdf->SetTextColor(43,43,43);	
         $pdf->SetFont('Arial','B',9);
-        $pdf->Cell(0,0,"{$allocation->delivery_date}");
+        $pdf->Cell(0,0,"{$allocation_delivery_date}");
         
         $pdf->SetXY(20,83);
         $pdf->SetTextColor(43,43,43);	
@@ -688,7 +695,7 @@ class AllocationController extends Controller
             $inventoryId =  $allocatedProductsDetails->inventory_id;
             $productCode =  $allocatedProductsDetails->product_code;
             $productName =  $allocatedProductsDetails->product_name;
-            $expiryDate =  $allocatedProductsDetails->expiry_date;
+            $expiryDate = date('m/d/Y', strtotime($allocatedProductsDetails->expiry_date));
             $lotNo =  $allocatedProductsDetails->lot_no;
             $quantity =  $allocatedProductsDetails->quantity;
             $memberName =  $allocatedProductsDetails->member_name;
@@ -746,7 +753,7 @@ class AllocationController extends Controller
         $pdf->SetFont('Arial','',9);
         $pdf->Cell(0,0,"Dr. Maria Rosita Q. Siasoco");
 
-        // $random = rand(1,10000);
+        // $destination_path = $_SERVER["DOCUMENT_ROOT"]."/pdf/dna/{$allocation_no}_DNA.pdf";
         $destination_path = public_path("/pdf/dna/{$allocation_no}_DNA.pdf");
         $pdf->Output($destination_path,'F');
     }
@@ -823,7 +830,7 @@ class AllocationController extends Controller
             $productName =  $allocatedProductsDetails->product_name;
             $quantity =  $allocatedProductsDetails->quantity;
             $lotNo =  $allocatedProductsDetails->lot_no;
-            $expiryDate =  $allocatedProductsDetails->expiry_date;
+            $expiryDate =  date('m/d/Y', strtotime($allocatedProductsDetails->expiry_date));
             $drugRegNo =  $allocatedProductsDetails->drug_reg_no;
             $unitCost =  $allocatedProductsDetails->unit_cost;
             $total =  $allocatedProductsDetails->total;
@@ -942,18 +949,6 @@ class AllocationController extends Controller
         $allocated_product = AllocatedProduct::findOrFail($allocated_product_id);
         $inventory_id = $allocated_product->inventory_id; 
         $allocation_id = $allocated_product->allocation_id; 
-
-        // $allocation = Allocation::findOrFail($allocation_id);
-        
-        // if($allocation->product_type == 1) {
-        //     $allocation->total_medicine -= $allocated_product->total;
-        //     $allocation->total_donation -= $allocated_product->total;
-        // }
-
-        // if($allocation->product_type == 2) {
-        //     $allocation->total_promats -= $allocated_product->total;
-        //     $allocation->total_donation -= $allocated_product->total;
-        // }
 
         $inventory = Inventory::findOrFail($inventory_id);
         // adding back the quantity from allocated to inventory

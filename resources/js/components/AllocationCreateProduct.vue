@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col-md-10">
                 <h5 class="donation-titles">Products to be Delivered</h5>
-                <table class="table mt-3">
+                <table class="table mt-3" width="100%">
                     <thead class="theader">
                         <tr>
                             <th scope="col">No.</th>
@@ -58,12 +58,15 @@
                     <div class="row">
                         <div class="col-md-6 mt-2">
                             <div class="row">
-                                <label for="" class="col-lg-4 col-form-label fw-bold">Principal :</label>
+                                <label for="" class="col-md-3 col-form-label fw-bold">Principal :</label>
                                 <div class="col-lg-8">
                                     <select class="form-control form-select" aria-label="Default select example" id="member_selection" @change="getInventory($event)">
                                         <option value="0" selected>Choose a Principal</option>
                                         <option v-for="(member, index) in members" :key="index" :value="member.id" > {{ member.member_name }} </option>
                                     </select>
+                                </div>
+                                <div v-if='inventory_loading' class="col-1 my-auto">
+                                    <div class="spinner-border text-success spinner-border-sm" role="status"></div>
                                 </div>
                             </div>
                         </div>
@@ -72,11 +75,10 @@
                     <div class="row">
                         <div class="col-md-6 mt-2">
                             <div class="row align-items-center">
-                                <label for="" class="col-lg-4 col-form-label fw-bold">Products :</label>
+                                <label for="" class="col-lg-3 col-form-label fw-bold">Products :</label>
                                 <div class="col-lg-8">
                                     <!-- Show No Results Found if Inventory is empty -->
                                     <div v-if="Object.keys(inventory).length == 0"><span class="text-danger fw-bold">No Item Available</span></div>
-
                                     <!-- Show No Results Found IF Inventory is NOT empty -->
                                     <template v-else-if="Object.keys(inventory).length !== 0">
                                         <select class="form-control form-select" id="product_selection" aria-label="Default select example" @change="getSelectedProduct($event)">
@@ -84,6 +86,9 @@
                                             <option v-for="(item, index) in inventory" :key="index" :value="item.id"> {{ item.product_name }} </option>
                                         </select>
                                     </template>
+                                </div>
+                                <div v-if='item_loading' class="col-1 my-auto">
+                                    <div class="spinner-border text-success spinner-border-sm" role="status"></div>
                                 </div>
                             </div>
                         </div>
@@ -175,12 +180,24 @@
                                 </div>
                             </div>
 
-                            <button href="#" type="button" class="btn btn-outline-success mt-3" @click="addAllocatedProduct()">Add Product</button>
+                            <button type="button" class="btn btn-outline-success mt-3" @click="addAllocatedProduct()">
+                                <div v-if='loading'>
+                                    <div class="spinner-border text-success spinner-border-sm" role="status"></div>
+                                    <span>Adding Product</span>
+                                </div>
+                                <span v-if='!loading'>Add Product</span>
+                            </button>
                             <!-- End Delivery Details -->
                     </div>
                     <div class="d-flex flex-row-reverse mt-3">
                         <!-- <button type="button" class="btn btn-secondary">Cancel</button> -->
-                        <button @click="saveTotalDonation()" type="button" class="btn btn-primary">Save and Proceed</button>
+                        <button @click="saveTotalDonation()" type="button" class="btn btn-primary">
+                            <div v-if='total_loading'>
+                                <div class="spinner-border text-light spinner-border-sm" role="status"></div>
+                                <span>Saving</span>
+                            </div>
+                            <span v-if='!total_loading'>Save and Proceed</span>
+                        </button>
                         <a :href="'/allocations/create/'+allocation_id" type="button" class="btn btn-outline-secondary me-2">Go Back</a>
                     </div>
                 </form>
@@ -357,11 +374,16 @@ export default {
             promats_count : 0,
             medicine_count : 0,
             total_products_count : 0,
-            issuance_quantity: 0
+            issuance_quantity: 0,
+            loading:false,
+            total_loading:false,
+            inventory_loading:false,
+            item_loading:false,
         }
     },
     methods : {
         getInventory (event) {
+            this.inventory_loading = !false
             this.inventory.splice(0);
             this.$delete(this.selected_product);
             this.selected_product.id = 0;
@@ -370,6 +392,7 @@ export default {
             })
             .then( response => {
                 this.inventory = response.data;
+                this.inventory_loading = !true
             })
             .catch (error => {
                 console.log( error );
@@ -389,8 +412,10 @@ export default {
             })
         },
         getSelectedProduct (event) {
+            this.item_loading = !false
             if(isNaN(event.target.value)) {
                 // if the selected product is the placeholder. delete the details template
+                this.item_loading = !true
                 this.selected_product.id = 0;
             } else {
                 // if there is a selected item in invetory get the details of the product
@@ -398,6 +423,7 @@ export default {
                 })
                 .then( response => {
                     this.selected_product = response.data;
+                    this.item_loading = !true
                 })
                 .catch (error => {
                     console.log( error );
@@ -405,13 +431,15 @@ export default {
             }
         },
         addAllocatedProduct () {
-
+            this.loading = !false
             if(this.issuance_quantity == 0) {
+                this.loading = !true
                 alert("Issuance quantity is empty");
                 return;
             }
 
             if(this.selected_product.quantity < this.issuance_quantity) {
+                this.loading = !true
                 alert("Not enough stock.");
                 return;
             }
@@ -437,6 +465,7 @@ export default {
                     this.inventory.splice(0);
                     this.selected_product.id = 0;
                     this.getMembers();
+                    this.loading = !true
                 }
             })
             .catch (error => {
@@ -493,22 +522,23 @@ export default {
         },
         getId(id) {
             this.p_id = id;
-            // console.log(this.p_id +" "+ this.p_quantity);
         },
         numberFormat (value) {
             return value.toLocaleString();
         },
         saveTotalDonation() {
+            this.total_loading = !false
             if(Object.keys(this.allocated_products).length == 0) {
                 alert("Donations are empty");
+                this.total_loading = !true
                 return;
             }
-
             axios.post('../../../api/allocation/'+ this.allocation_id + "/save-total-donations", {
                 total_donations: this.total_donations
             })
             .then( response=> {
                 if (response.status == 200) {
+                    this.loading = !true
                     window.location.replace("/allocations");
                 }
             })

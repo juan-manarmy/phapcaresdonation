@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use App\Member;
+use App\Role;
 use Illuminate\Support\Facades\DB;
 
 
@@ -58,6 +59,7 @@ class UserController extends Controller
 
         if($validated) {
             $user = new User;
+            $user->role_id = $request->role_id;
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->member_id = $request->member_id;
@@ -95,8 +97,9 @@ class UserController extends Controller
 
         $user = User::findOrFail($id);
         $companies = Member::all();
+        $roles = Role::all();
 
-        return view('users-edit', compact('user','companies'))
+        return view('users-edit', compact('user','companies','roles'))
         ->with('allocations_notif', $allocations_notif)
         ->with('contributions_notif', $contributions_notif);
         
@@ -114,6 +117,7 @@ class UserController extends Controller
             ]);
 
             if($validated) {
+                $user->role_id = $request->role_id;
                 $user->first_name = $request->first_name;
                 $user->last_name = $request->last_name;
                 $user->member_id = $request->member_id;
@@ -126,6 +130,7 @@ class UserController extends Controller
             }
 
         } else {
+            $user->role_id = $request->role_id;
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->member_id = $request->member_id;
@@ -154,8 +159,10 @@ class UserController extends Controller
         ->get();
 
         $companies = Member::all();
+        $roles = Role::all();
 
         return view('users-create',compact('companies'))
+        ->with('roles',$roles)
         ->with('allocations_notif', $allocations_notif)
         ->with('contributions_notif', $contributions_notif);
     }

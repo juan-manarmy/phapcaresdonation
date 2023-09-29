@@ -29,7 +29,9 @@
 <div class="bg-heading">
     <h4 class="px-4 py-3">Call for Support</h4>
 </div>
-
+<div class="d-flex justify-content-end mt-2">
+    <a type="button" class="btn btn-primary" href="{{ route('call-for-support-create') }}"> <i class="bi bi-person-plus-fill"></i>Request Call for Support</a>
+</div>
 <div class="bg-initial-details mt-2 px-4 py-4">
     <div class="row">
         <div class="col">
@@ -69,9 +71,7 @@
                 </tbody>
             </table>
 
-            <div class="d-flex justify-content-end mt-2">
-                <a type="button" class="btn btn-primary" href="{{ route('call-for-support-create') }}"> <i class="bi bi-person-plus-fill"></i>Request Call for Support</a>
-            </div>
+
         </div>
     </div>
 </div>

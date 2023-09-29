@@ -60,6 +60,16 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Role</label>
+                        <select class="form-select" aria-label="Default select example" id="role_id" name="role_id">
+                            @foreach ($roles as $item)
+                                <option value="{{$item->id}}" {{ $user->role_id == $item->id ? 'selected="selected"' : '' }}> {{ $item->name }} </option>
+                            @endforeach
+                        </select>
+                        <div class="form-text">This determines the access capability of the user.</div>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Company</label>
                         <select class="form-select" aria-label="Default select example" id="member_id" name="member_id">
                             @foreach ($companies as $item)

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\User;
+use App\Helpers\Helper;
 
 class CfsPostController extends Controller
 {
@@ -40,7 +41,8 @@ class CfsPostController extends Controller
         ->orderBy('id', 'DESC')
         ->get();
 
-        $cfs = CfsPost::all();
+        $cfs = DB::table('cfs_posts')->get();
+        
         return view('cfs')->with('cfs', $cfs)
         ->with('allocations_notif', $allocations_notif)
         ->with('contributions_notif', $contributions_notif);
@@ -67,54 +69,13 @@ class CfsPostController extends Controller
         ->with('contributions_notif', $contributions_notif);
     }
 
-    private function sendNotification($title, $details)
-    {
-        $firebaseToken = User::whereNotNull('device_token')->pluck('device_token')->all();
-        // $tokens = ["cDRV0IhYRHeT0nzTUmepcb:APA91bGyUPFdKImF9ymqTK3XgWWRUFarh18GX1lV3tr-d5LvponVTn9UJTNtK8qMHXMhKSH9lfQzycbX_C6vLOlDL9PLk-POQ9SewXWaBBaIGWoeQ81Jo5Ov-cGEgxje0BKn_FTv-VMR"];
-        // cDRV0IhYRHeT0nzTUmepcb:APA91bGyUPFdKImF9ymqTK3XgWWRUFarh18GX1lV3tr-d5LvponVTn9UJTNtK8qMHXMhKSH9lfQzycbX_C6vLOlDL9PLk-POQ9SewXWaBBaIGWoeQ81Jo5Ov-cGEgxje0BKn_FTv-VMR
-        // $SERVER_API_KEY = 'AAAADIIopxY:APA91bGxfT8RVogOubgfciec080v9bx2QrrHkHwccl-xqKX0SW9Pu-KzuA7MBTKaZM73PgpD3UiBsKPYIQakFPNo4prEiBnJjzaslxitKA8MMEnCRuPzIMNjtJDYTuc8-mWeikutmdbw';
-        $SERVER_API_KEY = 'AAAAmb9zww0:APA91bF0IqHAGvXzYsOXfvkgqs80f_OuJqpVKyWc_Tz35qhNB5O5HIM7Y5dJISuT96o6shXH-LSMltOlwuYywlq5OYsLs4C5g4OQ7cNJe-dd-th-XIG8IPxv6HC7WWIrDebmwq_a5clJ';
-
-        $data = [
-            "registration_ids" => $firebaseToken,
-            "notification" => [
-                "title" => $title,
-                "body" => $details,
-                "content_available" => true,
-                "priority" => "high",
-            ]
-        ];
-        $dataString = json_encode($data);
-
-        $headers = [
-            'Authorization: key=' . $SERVER_API_KEY,
-            'Content-Type: application/json',
-        ];
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
-
-        $response = curl_exec($ch);
-
-        // dd($response);
-    }
-
-
     public function store(Request $request)
     {
-
         $cfs_banner = $request->file('banner_path');
         $cfs_banner_name = Str::uuid().'.'.$request->file('banner_path')->extension();
         $destination_path = public_path('/images/cfs_banners');
 
         // $destination_path_api = 'http://192.168.0.121:8000/images/cfs_banners';
-
         // upload banner
         $cfs_banner->move($destination_path,$cfs_banner_name);
 
@@ -127,7 +88,7 @@ class CfsPostController extends Controller
         $cfs->is_active = 1;
 
         if($cfs->save() == 1) {
-            $this->sendNotification($request->title, $request->details);
+            Helper::sendNotification($request->title, $request->details);
             return redirect('call-for-support')->with('cfs-created','New Call for Support Successfully Added!');
         }
     }

@@ -40,7 +40,7 @@
                         <div class="row">
                             <label for="" class="col-lg-4 col-form-label fw-bold">Product Code :</label>
                             <div class="col-lg-8">
-                            <input type="text" class="form-control" name="product_code" id="product_code" placeholder="Product Code" value="{{ $donation->product_code }}">
+                            <input type="text" class="form-control" name="product_code" id="product_code" placeholder="Product Code" value="{{ $donation->product_code }}" required>
                             </div>
                         </div>
                     </div>
