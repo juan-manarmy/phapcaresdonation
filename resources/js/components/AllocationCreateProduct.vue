@@ -180,7 +180,7 @@
                                 </div>
                             </div>
 
-                            <button type="button" class="btn btn-outline-success mt-3" @click="addAllocatedProduct()">
+                            <button type="button" class="btn btn-outline-success mt-3" @click="addAllocatedProduct()" :disabled='loading'>
                                 <div v-if='loading'>
                                     <div class="spinner-border text-success spinner-border-sm" role="status"></div>
                                     <span>Adding Product</span>
@@ -191,7 +191,7 @@
                     </div>
                     <div class="d-flex flex-row-reverse mt-3">
                         <!-- <button type="button" class="btn btn-secondary">Cancel</button> -->
-                        <button @click="saveTotalDonation()" type="button" class="btn btn-primary">
+                        <button @click="saveTotalDonation()" type="button" class="btn btn-primary" :disabled='total_loading'>
                             <div v-if='total_loading'>
                                 <div class="spinner-border text-light spinner-border-sm" role="status"></div>
                                 <span>Saving</span>
@@ -529,8 +529,8 @@ export default {
         saveTotalDonation() {
             this.total_loading = !false
             if(Object.keys(this.allocated_products).length == 0) {
-                alert("Donations are empty");
                 this.total_loading = !true
+                alert("Donations are empty");
                 return;
             }
             axios.post('../../../api/allocation/'+ this.allocation_id + "/save-total-donations", {
@@ -538,7 +538,7 @@ export default {
             })
             .then( response=> {
                 if (response.status == 200) {
-                    this.loading = !true
+                    this.total_loading = !true
                     window.location.replace("/allocations");
                 }
             })

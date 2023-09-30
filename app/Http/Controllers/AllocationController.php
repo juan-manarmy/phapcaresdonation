@@ -676,7 +676,6 @@ class AllocationController extends Controller
         $pdf->SetTextColor(43,43,43);	
         $pdf->SetFont('Arial','B',9);
         $pdf->Cell(0,0,"{$allocation->other_delivery_instructions}");
-
         
         // $allocated_products = AllocatedProduct::where('allocation_id', $allocation_id)->get();
         // Joining Allocated -> Inventory -> Members Table to get the allocated products info and member name from Member Table usign inventory->member_id

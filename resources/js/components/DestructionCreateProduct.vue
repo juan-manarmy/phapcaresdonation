@@ -58,12 +58,15 @@
                     <div class="row">
                         <div class="col-md-6 mt-2">
                             <div class="row">
-                                <label for="" class="col-lg-4 col-form-label fw-bold">Principal :</label>
+                                <label for="" class="col-lg-3 col-form-label fw-bold">Principal :</label>
                                 <div class="col-lg-8">
                                     <select class="form-control form-select" aria-label="Default select example" @change="getInventory($event)">
                                         <option selected>Choose a Principal</option>
                                         <option v-for="(member, index) in members" :key="index" :value="member.id"> {{ member.member_name }} </option>
                                     </select>
+                                </div>
+                                <div v-if='inventory_loading' class="col-1 my-auto">
+                                    <div class="spinner-border text-success spinner-border-sm" role="status"></div>
                                 </div>
                             </div>
                         </div>
@@ -72,11 +75,10 @@
                     <div class="row">
                         <div class="col-md-6 mt-2">
                             <div class="row align-items-center">
-                                <label for="" class="col-lg-4 col-form-label fw-bold">Products :</label>
+                                <label for="" class="col-lg-3 col-form-label fw-bold">Products :</label>
                                 <div class="col-lg-8">
                                     <!-- Show No Results Found if Inventory is empty -->
                                     <div v-if="Object.keys(inventory).length == 0"><span class="text-danger fw-bold">No Item Available</span></div>
-
                                     <!-- Show No Results Found IF Inventory is NOT empty -->
                                     <template v-else-if="Object.keys(inventory).length !== 0">
                                         <select class="form-control form-select" aria-label="Default select example" @change="getSelectedProduct($event)">
@@ -84,6 +86,9 @@
                                             <option v-for="(item, index) in inventory" :key="index" :value="item.id"> {{ item.product_name }} </option>
                                         </select>
                                     </template>
+                                </div>
+                                <div v-if='item_loading' class="col-1 my-auto">
+                                    <div class="spinner-border text-success spinner-border-sm" role="status"></div>
                                 </div>
                             </div>
                         </div>
@@ -176,12 +181,24 @@
                                 </div>
                             </div>
 
-                            <button type="button" class="btn btn-outline-success mt-3" @click="addDestructedProduct()">Add Product</button>
+                            <button type="button" class="btn btn-outline-success mt-3" @click="addDestructedProduct()" :disabled='loading'>
+                                <div v-if='loading'>
+                                    <div class="spinner-border text-success spinner-border-sm" role="status"></div>
+                                    <span>Adding Product</span>
+                                </div>
+                                <span v-if='!loading'>Add Product</span>
+                            </button>
                             <!-- End Delivery Details -->
                     </div>
                 </form>
                 <div class="d-flex flex-row-reverse mt-3">
-                    <button @click="saveTotalDonation()" type="button" class="btn btn-primary">Save and Proceed</button>
+                    <button @click="saveTotalDonation()" type="button" class="btn btn-primary" :disabled='total_loading'>
+                        <div v-if='total_loading'>
+                            <div class="spinner-border text-light spinner-border-sm" role="status"></div>
+                            <span>Saving</span>
+                        </div>
+                        <span v-if='!total_loading'>Save and Proceed</span>
+                    </button>
                     <a :href="'/product-destruction/create/'+destruction_id" type="button" class="btn btn-outline-secondary me-2">Go Back</a>
                 </div>
         </div>
@@ -350,11 +367,16 @@ export default {
             promats_count : 0,
             medicine_count : 0,
             total_products_count : 0,
-            issuance_quantity: 0
+            issuance_quantity: 0,
+            loading:false,
+            total_loading:false,
+            inventory_loading:false,
+            item_loading:false
         }
     },
     methods : {
         getInventory (event) {
+            this.inventory_loading = !false
             this.$delete(this.inventory);
             this.$delete(this.selected_product);
             this.selected_product.id = 0;
@@ -363,6 +385,7 @@ export default {
             })
             .then( response => {
                 this.inventory = response.data;
+                this.inventory_loading = !true
             })
             .catch (error => {
                 console.log( error );
@@ -379,7 +402,9 @@ export default {
             })
         },
         getSelectedProduct (event) {
+            this.item_loading = !false
             if(isNaN(event.target.value)) {
+                this.item_loading = !true
                 // if the selected product is the placeholder. delete the details template
                 this.selected_product.id = 0;
             } else {
@@ -388,6 +413,7 @@ export default {
                 })
                 .then( response => {
                     this.selected_product = response.data;
+                    this.item_loading = !true
                 })
                 .catch (error => {
                     console.log( error );
@@ -395,13 +421,16 @@ export default {
             }
         },
         addDestructedProduct () {
+            this.loading = !false
 
             if(this.issuance_quantity == 0) {
+                this.loading = !true
                 alert("Issuance quantity is empty");
                 return;
             }
 
             if(this.selected_product.quantity < this.issuance_quantity) {
+                this.loading = !true
                 alert("Not enough stock.");
                 return;
             }
@@ -425,6 +454,7 @@ export default {
                     this.inventory.splice(0);
                     this.selected_product.id = 0;
                     this.getMembers();
+                    this.loading = !true
                 }
             })
             .catch (error => {
@@ -487,7 +517,9 @@ export default {
             return value.toLocaleString();
         },
         saveTotalDonation() {
+            this.total_loading = !false
             if(Object.keys(this.destruction_products).length == 0) {
+                this.total_loading = !true
                 alert("Donations are empty");
                 return;
             }
@@ -497,6 +529,7 @@ export default {
             })
             .then( response=> {
                 if (response.status == 200) {
+                    this.total_loading = !true
                     window.location.replace("/product-destruction");
                 }
             })
