@@ -94,7 +94,7 @@ class ContributionController extends Controller
 
         foreach ($donations as $donation) {
 
-            if($donation->product_code == null) {
+            if($donation->product_code == null && $donation->status != 2) {
                 $product_code_missing++;
             }
 

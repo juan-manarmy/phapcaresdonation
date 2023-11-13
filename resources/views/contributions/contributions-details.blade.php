@@ -597,7 +597,7 @@
 
                                 <div class="d-flex flex-row-reverse mt-3">
                                     <button type="submit" class="btn btn-primary">Verify</button>
-                                    <a type="button" class="btn btn-outline-secondary me-2">Go Back</a>
+                                    <!-- <a type="button" class="btn btn-outline-secondary me-2">Go Back</a> -->
                                 </div>
                         </form>
                         @elseif($contribution->status == 3)
@@ -634,7 +634,7 @@
                             
                             <div class="d-flex flex-row-reverse mt-3">
                                 <button type="submit" class="btn btn-primary">Verify</button>
-                                <a type="button" class="btn btn-outline-secondary me-2">Go Back</a>
+                                <!-- <a type="button" class="btn btn-outline-secondary me-2">Go Back</a> -->
                             </div>
                         </form>
                         @elseif($contribution->status == 5)
@@ -660,7 +660,7 @@
 
                             <div class="d-flex flex-row-reverse mt-3">
                                 <button type="submit" class="btn btn-primary">Verify</button>
-                                <a type="button" class="btn btn-outline-secondary me-2">Go Back</a>
+                                <!-- <a type="button" class="btn btn-outline-secondary me-2">Go Back</a> -->
                             </div>
                         </form>
                         @elseif($contribution->status == 7)
@@ -706,7 +706,7 @@
                                             <div class="col-lg-9">
                                                 <input type="text" name="daff_no" id="daff_no" class="form-control" aria-describedby="" required>
                                                 <div class="invalid-feedback">
-                                                    DIDRF file is required
+                                                    DAFF No. is required
                                                 </div>
                                             </div>
                                         </div>
@@ -716,9 +716,10 @@
                                 <div class="row align-items-center">
                                     <div class="col-md-5 mt-2">
                                         <label for="didrf_file" class="col-form-label fw-bold">Upload DIDRF: </label>
-                                        <input class="form-control" type="file" id="didrf_file" name="didrf_file" required>
+                                        <input class="form-control" accept="application/pdf"  onchange="validateSize(this)" type="file" id="didrf_file" name="didrf_file" required>
+                                        <div id="emailHelp" class="form-text">Maximum upload file size: 1 MB.</div>
                                         <div class="invalid-feedback">
-                                            DAFF No. is required
+                                            DIDRF file is required
                                         </div>
                                     </div>
                                 </div>
@@ -1170,7 +1171,6 @@ var didrf_button = document.getElementById("didrf_button");
 
 var toastLiveExample = document.getElementById('liveToast')
 var toast = new bootstrap.Toast(toastLiveExample)
-var didrf_file = document.getElementById("didrf_file");
 
 var status = document.querySelector("input[type='radio'][name=status]:checked");
 
@@ -1245,5 +1245,21 @@ function hideReasonInput(value) {
         didrf_div.style.display = "block";
     }
 }
+
+function validateSize(input) {
+  const fileSize = input.files[0].size / 1024 / 1024; // in MiB
+  const fileType = input.files[0].type;
+
+  if(fileType != 'application/pdf') {
+    $(input).val('');
+    alert('The file must be in PDF format');
+  }
+
+  if (fileSize > 1) {
+    $(input).val('');
+    alert('File size exceeds 1 MB');
+  }
+}
+
 </script>
 @endsection

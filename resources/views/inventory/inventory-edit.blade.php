@@ -78,7 +78,12 @@
                         <div class="row">
                             <label for="" class="col-lg-4 col-form-label fw-bold">Quantity :</label>
                             <div class="col-lg-8">
-                                <input type="text" class="form-control" placeholder="" id="" name="quantity" value="{{ $inventory->quantity }}" required>
+                                <input                                 
+                                type="number" 
+                                onkeypress="return event.charCode != 45" 
+                                class="form-control" name="quantity" 
+                                value="{{ $inventory->quantity }}" 
+                                required>
                             </div>
                         </div>
                     </div>

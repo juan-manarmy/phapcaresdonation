@@ -50,19 +50,6 @@
 
 @section('custom-js')
 <script>
-    // function createRequest() {
-    //     var cont = $('#request_area');
-    //     cont.append('<div class="d-flex mt-2"> <input type="text" class="form-control me-2" name="" id="" aria-describedby="emailHelp" required placeholder="Input request"> <button class="btn btn-companies"><i class="fa-solid fa-xmark"></i></button></div>');
-    // }
 
-    // document.getElementById("btn_request").addEventListener("click", createRequest);
-
-    // createRequest();
-    // let newField = document.createElement('input');
-    // newField.classList.add('form-control');
-    // newField.classList.add('mt-2');
-    // newField.placeholder = "Input request";
-    // let request_area = document.getElementById('request_area');
-    // request_area.appendChild(newField);
 </script>
 @endsection

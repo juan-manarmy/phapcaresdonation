@@ -117,19 +117,18 @@ class CfsPostController extends Controller
 
     public function edit($id,Request $request)
     {
-        
         $cfs = CfsPost::findOrFail($id);
-
-        $cfs_banner = $request->file('banner_path');
-        $cfs_banner_name = Str::uuid().'.'.$request->file('banner_path')->extension();
-        $destination_path = public_path('/images/cfs_banners');
-
-        $cfs_banner->move($destination_path, $cfs_banner_name);
+        if($request->file('banner_path')) {
+            $cfs_banner = $request->file('banner_path');
+            $cfs_banner_name = Str::uuid().'.'.$request->file('banner_path')->extension();
+            $destination_path = public_path('/images/cfs_banners');
+            $cfs_banner->move($destination_path, $cfs_banner_name);
+            $cfs->banner_path = $cfs_banner_name;
+        }
 
         $cfs->title = $request->title;
         $cfs->details = $request->details;
         $cfs->request_items = $request->request_items;
-        $cfs->banner_path = $cfs_banner_name;
 
         $cfs->is_yearend = $request->is_yearend;
         $cfs->is_active = $request->is_active;
@@ -138,7 +137,6 @@ class CfsPostController extends Controller
         if($cfs->save()){
             return redirect('call-for-support')->with('cfs-updated','Call for Support Successfully Updated!');
         }
-
     }
 
     public function update(Request $request, $id)

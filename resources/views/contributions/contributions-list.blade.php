@@ -56,7 +56,7 @@
                                     <td>{{ $item->contribution_no }}</td>
                                     <td>{{ $item->member_name }}</td>
                                     <td>{{ $item->distributor }}</td>
-                                    <td>{{date('F, d Y', strtotime($item->contribution_date))}}</td>  <!-- <th>Date</th> -->
+                                    <td>{{date('F d, Y', strtotime($item->contribution_date))}}</td>  <!-- <th>Date</th> -->
                                     <td>P{{ number_format($item->total_donation,2) }}</td>
                                     <td>
                                             <i class="fas fa-check-circle status-green"></i>

@@ -9,11 +9,17 @@
                     <div class="mt-5 ">
                         <form method="POST" action="{{ route('login') }}">
                             @csrf
+
+                            @if (session('admin-message'))
+                                <div class="alert alert-danger" role="alert">
+                                    {{ session('admin-message') }}
+                                </div>
+                            @endif
+
                             <div class="mb-3">
                                 <label for="exampleInputEmail1" class="form-label">Email address</label>
                                 <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"  name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
                                 <div id="emailHelp" class="form-text"></div>
-
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

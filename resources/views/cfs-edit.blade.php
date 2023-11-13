@@ -50,7 +50,7 @@
                         </div>
 
                         <label for="formFile" class="form-label">Banner</label>
-                        <input class="form-control" type="file" name="banner_path" id="banner_path" accept="" onchange="showPreview(event);" required>
+                        <input class="form-control" type="file" name="banner_path" id="banner_path" accept="" onchange="showPreview(event);">
                         <div class="form-text text-primary" for="exampleCheck1">Upload new image to update the banner.</div>
                     </div>
                 </div>

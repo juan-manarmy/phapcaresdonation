@@ -261,12 +261,9 @@ class ProductDonationController extends Controller
         $contribution->total_medicine = $request->total_donations["medicine_total_donation"];
         $contribution->total_promats = $request->total_donations["promats_total_donation"];
         $contribution->total_donation = $request->total_donations["total_products_amount"];
-
         $contribution->save();
-        
         // return $contribution;
         // redirect()->route('pd-secondary-details', ['contribution_id' =>  $contribution_id]);
-
     }
 
     public function updateDonationsView($donation_id)

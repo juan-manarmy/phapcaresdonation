@@ -69,7 +69,7 @@
                                 </div>
                             </div>
                         </div>
-                        <form method="POST" enctype="multipart/form-data" class="mt-3" action="{{ route('allocation-status-update', ['allocation_id' => $allocation->id]) }}">
+                        <form class="needs-validation" novalidate method="POST" enctype="multipart/form-data" class="mt-3" action="{{ route('allocation-status-update', ['allocation_id' => $allocation->id]) }}" id="allocation_form">
                         @csrf
                             <div class="row">
                                 <div class="col-md-6 mt-2">
@@ -244,27 +244,29 @@
                                 <hr>
                                 @csrf
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="status" id="inlineRadio1" value="7" onclick="hideReasonInput(this.value)">
+                                    <input class="form-check-input" type="radio" name="status" id="inlineRadio1" value="7" onclick="hideReasonInput(this.value)" required>
                                     <label class="form-check-label" for="inlineRadio1">Approve</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="status" id="inlineRadio2" value="6" onclick="showReasonInput(this.value)">
+                                    <input class="form-check-input" type="radio" name="status" id="inlineRadio2" value="6" onclick="showReasonInput(this.value)" required>
                                     <label class="form-check-label" for="inlineRadio2">Reject</label>
                                 </div>
 
                                 <div id="dodrf_div" style="display:block;">
                                     <div class="row align-items-end">
                                         <div class="col-md-6 mt-2">
-                                            <label for="didrf_file" class="col-lg-2  col-form-label fw-bold">Upload DODRF: </label>
-                                            <div class="col-lg-8">
-                                                <input class="form-control" type="file" id="dodrf_file" name="dodrf_file">
+                                            <label for="dodrf_file" class="col-form-label fw-bold">Upload DODRF: </label>
+                                            <input class="form-control" accept="application/pdf"  onchange="validateSize(this)" type="file" id="dodrf_file" name="dodrf_file" required>
+                                            <div id="emailHelp" class="form-text">Maximum upload file size: 1 MB.</div>
+                                            <div class="invalid-feedback">
+                                                DIDRF file is required
                                             </div>
                                         </div>
                                         <div class="col-md-6 mt-2">
                                             <div class="row">
                                                 <label for="" class="col-lg-2 col-form-label fw-bold">DODRF No. :</label>
                                                 <div class="col-lg-8">
-                                                    <input type="text" name="dodrf_no" id="dodrf_no" class="form-control" aria-describedby="didrf_no">
+                                                    <input type="text" name="dodrf_no" id="dodrf_no" class="form-control" aria-describedby="didrf_no" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -285,8 +287,7 @@
                                 </div>
 
                                 <div class="d-flex flex-row-reverse mt-3">
-                                    <button type="submit" class="btn btn-primary">Close Transaction</button>
-                                    <a type="button" class="btn btn-outline-secondary me-2">Go Back</a>
+                                    <button type="submit" class="btn btn-primary" id="dodrf_button">Close Transaction</button>
                                 </div>
                             </form>
                             @elseif($allocation->status == 7)
@@ -664,7 +665,6 @@
         </div>
         <!-- End Cancel Modal -->
 
-
     </div>
 </div>
 @endsection
@@ -691,6 +691,27 @@ var dnd_div = document.getElementById("reasons_rejected_dnd_div");
 var inbound_div = document.getElementById("reasons_rejected_inbound_div");
 var dodrf_div = document.getElementById("dodrf_div");
 
+// contribution_form
+var forms = document.getElementById("allocation_form");
+var dodrf_button = document.getElementById("dodrf_button");
+
+var status = document.querySelector("input[type='radio'][name=status]:checked");
+
+if(dodrf_button) {
+    dodrf_button.addEventListener("click", function () {
+        if(status.value == 6) {
+            return;
+        }
+        
+        if(!forms.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+        }
+        forms.classList.add('was-validated')
+    });
+}
+
+
 function showReasonInput(value) {
     if(value == 2) {
         contribution_div.style.display = "flex";
@@ -712,6 +733,22 @@ function hideReasonInput(value) {
         dnd_div.style.display = "none";
         dodrf_div.style.display = "block";
     }
+}
+
+function validateSize(input) {
+  const fileSize = input.files[0].size / 1024 / 1024; // in MiB
+  const fileType = input.files[0].type;
+
+  if(fileType != 'application/pdf') {
+    $(input).val('');
+    alert('The file must be in PDF format');
+  }
+
+  if (fileSize > 1) {
+    $(input).val('');
+    alert('File size exceeds 1 MB');
+  }
+
 }
 </script>
 @endsection

@@ -55,7 +55,7 @@
                                     <td>{{ $item->id }}</td>
                                     <td>{{ $item->allocation_no }}</td>
                                     <td>{{ $item->dna_no }}</td>
-                                    <td>{{ date('F, d Y', strtotime($item->created_at)) }}</td>  <!-- <th>Date</th> -->
+                                    <td>{{ date('F d, Y', strtotime($item->created_at)) }}</td>  <!-- <th>Date</th> -->
                                     <td>P{{ number_format($item->total_allocated_products,2) }}</td>
                                     <td>
                                             <i class="fas fa-check-circle status-green"></i>
@@ -114,7 +114,7 @@
                                     <td>{{ $item->id }}</td>
                                     <td>{{ $item->allocation_no }}</td>
                                     <td>{{ $item->dna_no }}</td>
-                                    <td>{{ date('F, d Y', strtotime($item->created_at)) }}</td>  
+                                    <td>{{ date('F d, Y', strtotime($item->created_at)) }}</td>  
                                     <td>
                                         <a href="{{ route('allocation-create-read', ['id' => $item->id]) }}" class="btn tt cfs-edit-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit">
                                             <i class="fas fa-edit cfs-edit-ic text-secondary"></i>

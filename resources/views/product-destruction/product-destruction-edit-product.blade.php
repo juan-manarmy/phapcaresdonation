@@ -88,7 +88,16 @@
                         <div class="row">
                             <label for="" class="col-lg-4 col-form-label fw-bold">Quantity :</label>
                             <div class="col-lg-8">
-                                <input type="text" class="form-control" name="quantity" id="quantity" placeholder="Quantity" value="{{$destructed_product->quantity}}" required>
+                                <input  
+                                class="form-control" name="quantity" id="quantity" 
+                                placeholder="Quantity"
+                                autocomplete="off"
+                                value="{{ $destructed_product->quantity }}" 
+                                type="number" 
+                                onkeypress="return event.charCode != 45" 
+                                min="0" max="{{ $available_stock + $destructed_product->quantity }}"
+                                onKeyUp = "if(this.value> {{$available_stock + $destructed_product->quantity}} ){this.value='{{$available_stock + $destructed_product->quantity}}';}else if(this.value<0){this.value='0';}" 
+                                required>
                             </div>
                         </div>
                     </div>
@@ -96,7 +105,7 @@
 
                 <div class="d-flex flex-row-reverse mt-4">
                     <button type="submit" class="btn btn-primary">Update and Proceed</button>
-                    <button href="#" type="button" class="btn btn-outline-secondary me-2">Go Back</button>
+                    <!-- <button href="#" type="button" class="btn btn-outline-secondary me-2">Go Back</button> -->
                 </div>
             </form>
             <!--End Medicine Donation Forms -->

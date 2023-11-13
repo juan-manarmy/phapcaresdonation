@@ -14,10 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+
 
 Route::middleware('api')->post('/product-donation/{contribution_id}/save-donation','ProductDonationController@saveDonation');
 Route::middleware('api')->get('/product-donation/{contribution_id}/show-donations','ProductDonationController@showDonations');

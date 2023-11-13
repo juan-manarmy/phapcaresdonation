@@ -57,7 +57,7 @@
                                         <td>{{ $item->id }}</td>
                                         <td>{{ $item->destruction_no }}</td>
                                         <td>{{ $item->pdrf_no }}</td>
-                                        <td>{{ date('F, d Y', strtotime($item->created_at)) }}</td>
+                                        <td>{{ date('F d, Y', strtotime($item->created_at)) }}</td>
                                         <td>P{{ number_format($item->total_destructed_products,2) }}</td>
                                         <td>
                                             <i class="fa-solid fa-circle-check status-green"></i>
@@ -104,7 +104,7 @@
                                     <td>{{ $item->id }}</td>
                                     <td>{{ $item->destruction_no }}</td>
                                     <td>{{ $item->pdrf_no }}</td>
-                                    <td>{{ date('F, d Y', strtotime($item->created_at)) }}</td>
+                                    <td>{{ date('F d, Y', strtotime($item->created_at)) }}</td>
                                     <td>
                                         <a href="{{ route('product-destruction-create-read', ['id' => $item->id]) }}" class="btn tt cfs-edit-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit">
                                             <i class="fas fa-edit cfs-edit-ic text-secondary"></i>
