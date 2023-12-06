@@ -69,6 +69,7 @@
                 <label class="col-lg-1 col-form-label sd-label" for="sel1">Call for Support :</label>
                 <div class="col-lg-4">
                     <select class="form-select" name="cfs_id">
+                        <option {{ $contribution->cfs_id == $item->id ? "selected" : "" }} value="{{ $item->id }}">None</option>
                         @foreach ($cfs as $item)
                             <option {{ $contribution->cfs_id == $item->id ? "selected" : "" }} value="{{ $item->id }}">{{ $item->title }}</option>
                         @endforeach
@@ -110,6 +111,7 @@
                 <label class="col-lg-1 col-form-label sd-label" for="sel1">Call for Support :</label>
                 <div class="col-lg-4">
                     <select class="form-select" name="cfs_id">
+                        <option value="0">None</option>
                         @foreach ($cfs as $item)
                             <option value="{{ $item->id }}">{{ $item->title }}</option>
                         @endforeach

@@ -199,6 +199,8 @@ class AllocationController extends Controller
         $allocated_product->save();
 
         $this->processAllocationAmountUpdate($allocationId);
+        $this->createDNAForm($allocationId);
+        $this->createDTACForm($allocationId);
 
         // return back();
         return redirect()->route('allocation-details', ['allocation_id' => $allocationId]);

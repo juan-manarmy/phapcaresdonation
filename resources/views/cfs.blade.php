@@ -56,7 +56,7 @@
                             <td>{{date('M, d Y', strtotime($item->created_at))}}</td>
                             <!-- Year-End Request -->
                             <td>
-                                <span class="badge {{ $item->is_yearend ? 'bg-success' : 'bg-info' }} "> {{ $item->is_yearend ? 'Year-End Request' : 'Month Request' }}  </span>
+                                <span class="badge {{ $item->is_yearend ? 'bg-success' : 'bg-info' }} "> {{ $item->is_yearend ? 'All-Year-Round' : 'Month Request' }}  </span>
                             </td>
                             <td>
                                 <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">{{ $item->is_active ? 'Active' : 'Inactive' }}</span>

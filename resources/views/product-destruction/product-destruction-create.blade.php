@@ -43,7 +43,7 @@
                                 </div>
                             </div>
 
-                            <div class="row">
+                            <!-- <div class="row">
                                 <div class="col-md-6 mt-2">
                                     <div class="row">
                                         <label for="" class="col-lg-4 col-form-label fw-bold">Beneficiary :</label>
@@ -56,7 +56,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <div class="row">
                                 <div class="col-md-6 mt-2">
@@ -64,8 +64,7 @@
                                         <label for="" class="col-lg-4 col-form-label fw-bold">Notice To :</label>
                                         <div class="col-lg-8">
                                             <select class="form-control form-select " aria-label="Default select example" name="notice_to">
-                                                <option value="Zuellig Pharma Corp." {{ $destruction->notice_to == 'Zuellig Pharma Corp.' ? 'selected' : ''}}>Zuellig Pharma Corp.</option>
-                                                <option value="Metro Drug" {{ $destruction->notice_to == 'Metro Drug' ? 'selected' : ''}}>Metro Drug</option>
+                                                <option value="Zuellig Pharma Corp." {{ $destruction->notice_to == 'ZPC MDI' ? 'selected' : ''}}>ZPC MDI</option>
                                             </select>
                                         </div>
                                     </div>
@@ -228,6 +227,7 @@
                                         <label for="beneficiary_id" class="col-lg-4 col-form-label fw-bold">Beneficiary :</label>
                                         <div class="col-lg-8">
                                             <select class="form-control form-select" name="beneficiary_id" aria-label="Default select example">
+                                                <option value="0">None</option>
                                                 @foreach($beneficiaries as $item)
                                                     <option value="{{ $item->id }}">{{ $item->name }}</option>
                                                 @endforeach
@@ -243,8 +243,7 @@
                                         <label for="notice_to" class="col-lg-4 col-form-label fw-bold">Notice To :</label>
                                         <div class="col-lg-8">
                                             <select class="form-control form-select " aria-label="Default select example" name="notice_to">
-                                                <option value="Zuellig Pharma Corp.">Zuellig Pharma Corp.</option>
-                                                <option value="Metro Drug">Metro Drug</option>
+                                                <option value="Zuellig Pharma Corp.">ZPC MDI</option>
                                             </select>
                                         </div>
                                     </div>

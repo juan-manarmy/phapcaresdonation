@@ -161,6 +161,9 @@ class ContributionController extends Controller
     public function updateDonation($donation_id, Request $request)
     {
         $existing_donation = Donation::findOrFail($donation_id);
+
+        $contribution_id = $existing_donation->contribution_id;
+
         $existing_donation->product_type = $request["product_type"];
         $existing_donation->product_code = $request["product_code"];
         $existing_donation->product_name = $request["product_name"];
@@ -180,6 +183,18 @@ class ContributionController extends Controller
         $existing_donation->uom = $request["uom"];
         $existing_donation->remarks = $request["remarks"];
         $existing_donation->save();
+
+        $newTotalDonation = DB::table('donations')
+        ->where('contribution_id', '=', $contribution_id)
+        ->sum('donations.total');
+        
+        $contribution = Contribution::findOrFail($contribution_id);
+        $contribution->total_donation = $newTotalDonation;
+        $contribution->save();
+
+        $this->createNODForm($contribution_id);
+        $this->createDNDForm($contribution_id);
+
         return redirect()->route('contribution-details', ['contribution_id' => $existing_donation->contribution_id]);
     }
     
@@ -187,6 +202,7 @@ class ContributionController extends Controller
     {
         $contribution = Contribution::findOrFail($contribution_id);
         $contribution_no = $contribution->contribution_no;
+
         $member_id = $contribution->member_id;
 
         $user_id = Auth::id();
@@ -256,6 +272,11 @@ class ContributionController extends Controller
             $request->pickup_contact_no,$request->pickup_date,$request->pickup_address,$request->pickup_instructions,$request->reasons_rejected_dnd,$request->status);
             
             $this->createDNDForm($contribution_id);
+
+            $contributionDND = Contribution::findOrFail($contribution_id);
+            $dnd_no = $contributionDND->dnd_no;
+
+            $this->saveDNDDocument($contribution_id,$contribution_no,"DND",$dnd_no);
         }
 
         // Rejecting DIDRF
@@ -573,7 +594,6 @@ class ContributionController extends Controller
 
         $pdf->Output($dnd_directory_path,'F');
 
-        $this->saveDNDDocument($contribution_id,$contribution_no,"DND",$dnd_no);
     }
 
     public function createNODForm($contribution_id)

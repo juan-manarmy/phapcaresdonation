@@ -597,6 +597,8 @@ class ProductDestructionController extends Controller
         $inventory->save();
 
         $this->processDestructionAmountUpdate($destruction_id);
+        
+
 
         return $selected_product;
     }
@@ -672,6 +674,8 @@ class ProductDestructionController extends Controller
         $destructed_product->save();
 
         $this->processDestructionAmountUpdate($destructionId);
+        $this->createPDRFForm($destructionId);
+
         return redirect()->route('product-destruction-details', ['destruction_id' => $destructionId]);
 	}
 
