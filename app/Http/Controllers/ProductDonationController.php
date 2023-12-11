@@ -191,15 +191,22 @@ class ProductDonationController extends Controller
         return $donations;
     }
 
-    public function handle(Request $request) {
-        $cfs_banner = $request->file('proof_deposit');
-        $cfs_banner_name = Str::uuid().'.'.$request->file('proof_deposit')->extension();
+    public function uploadMonetary(Request $request) {
+        $new_donation = new Donation;
+        $new_donation->contribution_id = $request->contribution_id;
+        $new_donation->product_type = $request->product_type;
+        $new_donation->total = $request->total;
+
+        $proof_deposit = $request->file('proof_deposit');
+        $proof_deposit_name = Str::uuid().'.'.$request->file('proof_deposit')->extension();
         $destination_path = public_path('/images/cfs_banners');
-
         // upload banner
-        $cfs_banner->move($destination_path,$cfs_banner_name);
+        $proof_deposit->move($destination_path,$proof_deposit_name);
+        $new_donation->proof_deposit = $proof_deposit_name;
 
-        return $cfs_banner;
+        $new_donation->status = 1;
+        $new_donation->save();
+        return $new_donation;
     }
 
     public function saveDonation($production_id, Request $request)

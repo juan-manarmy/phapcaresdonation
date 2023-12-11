@@ -268,7 +268,7 @@
                         <div class="row">
                             <label for="" class="col-lg-4 col-form-label fw-bold">Proof of Deposit :</label>
                             <div class="col-lg-8">
-                                <input type="file" :class="{'is-invalid':this.v$.proof_deposit.$error}" class="form-control" name="proof_deposit" id="proof_deposit" placeholder="Proof of Deposit" @change="handleOnChange">
+                                <input type="file" :class="{'is-invalid':this.v$.proof_deposit.$error}" class="form-control" name="proof_deposit" id="proof_deposit" placeholder="Proof of Deposit" @change="handleOnChange" ref="ref_proof_deposit">
                                 <div v-if="this.v$.proof_deposit.$error" class="invalid-feedback">
                                     Proof of Deposit is required
                                 </div>
@@ -356,7 +356,7 @@
                     </div>
                 </div>
                 <!-- @click="addDonation()" -->
-                <button type="button" class="btn btn-outline-success mt-2 fw-bold" @click="upload()" :disabled='loading'>
+                <button type="button" class="btn btn-outline-success mt-2 fw-bold" @click="addDonation()" :disabled='loading'>
                     <div v-if='loading'>
                         <div class="spinner-border text-success spinner-border-sm" role="status"></div>
                         <span>Saving</span>
@@ -636,7 +636,7 @@ export default {
     },
     methods : {
         handleOnChange (e) {
-            this.proof_deposit = e.target.files[0];
+            this.donation.proof_deposit = e.target.files[0];
         },
         emptyToast() {
             var toastLiveExample = document.getElementById('liveToast')
@@ -645,7 +645,6 @@ export default {
         },
         saveTotalDonation() {
             this.total_loading = !false
-
             if(Object.keys(this.donations).length == 0) {
                 this.emptyToast()
                 this.total_loading = !true
@@ -674,40 +673,88 @@ export default {
             if(this.donation.product_type != 3) {
                 this.donation.expiry_date = moment(this.donation.expiry_date).format('l');
                 this.donation.mfg_date = moment(this.donation.mfg_date).format('l');
-            }
-            const headers = { 'Content-Type': 'multipart/form-data' };
-            axios.post('../../../api/product-donation/'+ this.donation.contribution_id + "/save-donation", {
-                donation: this.donation
-            })
-            .then( response=> {
-                if (response.status == 201) {
-                    this.donation.strength = '';
-                    this.donation.generic_name = '';
-                    this.donation.product_name = '';
-                    this.donation.dosage_form = '';
-                    this.donation.package_size = '';
-                    this.donation.lot_no = '';
-                    this.donation.quantity = '';
-                    this.donation.unit_cost = '';
-                    this.donation.drug_reg_no = '';
-                    this.donation.expiry_date = '';
-                    this.donation.mfg_date = '';
-                    this.donation.medicine_status = '';
-                    this.donation.total = 0;
-                    this.donation.proof_deposit = '';
+                axios.post('../../../api/product-donation/'+ this.donation.contribution_id + "/save-donation", {
+                    donation: this.donation
+                }).then( response=> {
+                    if (response.status == 201) {
+                        this.donation.strength = '';
+                        this.donation.generic_name = '';
+                        this.donation.product_name = '';
+                        this.donation.dosage_form = '';
+                        this.donation.package_size = '';
+                        this.donation.lot_no = '';
+                        this.donation.quantity = '';
+                        this.donation.unit_cost = '';
+                        this.donation.drug_reg_no = '';
+                        this.donation.expiry_date = '';
+                        this.donation.mfg_date = '';
+                        this.donation.medicine_status = '';
+                        this.donation.total = 0;
+                        this.donation.proof_deposit = '';
 
-                    this.v$.$reset();
-                    this.getDonations();
-                    this.loading = !true
+                        this.v$.$reset();
+                        this.getDonations();
+                        this.loading = !true
+                    }
+                })
+                .catch (error => {
+                })
+            }
+
+            if(this.donation.product_type == 3) {
+                const formData = new FormData
+                formData.append('contribution_id', this.donation.contribution_id);
+                formData.append('product_type', this.donation.product_type);
+                formData.append('total', this.donation.total);
+                formData.append('proof_deposit', this.donation.proof_deposit);
+
+                let config = {
+                    header : {
+                    'Content-Type' : 'multipart/form-data'
+                    }
                 }
-            })
-            .catch (error => {
-            })
+
+                // axios.post('../../../api/upload-monetary', formData)
+                axios.post('../../../api/upload-monetary', formData, config).then(
+                    response => {
+                        if (response.status == 201) {
+                            // this.handleOnChange();
+                            this.$refs.ref_proof_deposit.type='text'; 
+                            this.$refs.ref_proof_deposit.type='file'; 
+                            this.donation.total = '';
+                            this.donation.proof_deposit = '';
+
+                            this.v$.$reset();
+                            this.getDonations();
+                            this.loading = !true
+                        }
+                    }
+                )
+                // this.getDonations();
+                // this.loading = !true
+
+                // console.log(formData);
+                // axios.post('../../../api/upload-monetary', {
+                //     formData
+                // }).then( response=> {
+                //     if (response.status == 201) {
+                //         this.v$.$reset();
+                //         this.getDonations();
+                //         this.loading = !true
+                //     }
+                // })
+                // .catch (error => {
+                // })
+            }
+            
         },
-        upload() {
+        uploadMonetary() {
             const formData = new FormData
-            formData.set('proof_deposit', this.proof_deposit);
-            axios.post('../../../api/test-upload', formData)
+            formData.set('contribution_id', this.donation.contribution_id);
+            formData.set('product_type', this.donation.product_type);
+            formData.set('total', this.donation.total);
+            formData.set('proof_deposit', this.donation.proof_deposit);
+            axios.post('../../../api/upload-monetary', formData)
         },
         getDonations () {
             axios.get('../../../api/product-donation/'+ this.contribution_id + "/show-donations", {
@@ -742,7 +789,6 @@ export default {
 
                     if(item.product_type === '3') {
                         this.total_donations.monetary_total_donation += item.total;
-
                     }
                 })
                 
@@ -771,8 +817,6 @@ export default {
             this.d_id = id;
             console.log (this.d_id);
         },
-
-
         numberFormat (value) {
             return value.toLocaleString();
         }

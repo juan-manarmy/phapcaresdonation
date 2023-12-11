@@ -24,7 +24,7 @@ Route::middleware('api')->post('/product-donation/{contribution_id}/save-donatio
 Route::middleware('api')->get('/product-donation/{contribution_id}/show-donations','ProductDonationController@showDonations');
 Route::middleware('api')->delete('/product-donation/{id}/delete-donation','ProductDonationController@deleteDonation');
 Route::middleware('api')->post('/product-donation/{contribution_id}/save-total-donations','ProductDonationController@saveTotalDonations');
-Route::middleware('api')->post('/test-upload','ProductDonationController@handle');
+Route::middleware('api')->post('/upload-monetary','ProductDonationController@uploadMonetary');
 
 Route::middleware('api')->get('/members/show-members','AllocationController@getMembers');
 Route::middleware('api')->get('/inventory/{member_id}/{allocation_id}/show-inventory','AllocationController@getInventory');
