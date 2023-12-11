@@ -154,6 +154,7 @@ class ProductDonationController extends Controller
             ['cfs_id' => $request->cfs_id,
             'member_id' => $request->member_id,
             'distributor' => $request->distributor,
+            'inventory_location' => $request->inventory_location,
             'contribution_date' => $converted_contribution_date]
         );
         
@@ -208,8 +209,21 @@ class ProductDonationController extends Controller
         $new_donation->unit_cost = $request->donation["unit_cost"];
         $new_donation->medicine_status = $request->donation["medicine_status"];
         $new_donation->total = $request->donation["unit_cost"] * $request->donation["quantity"];
+
+        if($request->donation["product_type"] == 3) {
+
+            $proof_deposit = $request->file('proof_deposit');
+            $proof_deposit_name = Str::uuid().'.'.$request->file('proof_deposit')->extension();
+            $destination_path = public_path('/images/cfs_banners');
+    
+            // upload banner
+            $proof_deposit->move($destination_path,$proof_deposit_name);
+
+            $new_donation->total = $request->donation["total"];
+            $new_donation->proof_deposit = $proof_deposit_name;
+        }
         
-        $random = rand(1,10000);
+        // $random = rand(1,10000);
         // $new_donation->job_no = "JO-{$random}";
         // $new_donation->product_code = "JO-{$random}";
         // $new_donation->drug_reg_no = "DR-{$random}";

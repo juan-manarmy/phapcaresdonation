@@ -83,6 +83,17 @@
                     <input type="text" class="form-control" id="distributor" name="distributor" value="{{ $contribution->distributor }}" placeholder="Distributor" required>
                 </div>
             </div>
+
+            <div class="form-group row mt-2">
+                <label class="col-lg-1 col-form-label sd-label" for="inventory_location">Inventory Location :</label>
+                <div class="col-lg-4">
+                    <select class="form-select" name="inventory_location">
+                        <option {{ $contribution->inventory_location == 'ZPC' ? "selected" : "" }} value="ZPC">ZPC</option>
+                        <option {{ $contribution->inventory_location == 'OCP' ? "selected" : "" }} value="OCP">OCP</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="form-group row mt-2">
                 <label for="inputPassword" class="col-sm-1 col-form-label sd-label">Date :</label>
                 <div class="col-lg-4">
@@ -136,6 +147,17 @@
                     <input type="text" class="form-control" id="distributor" name="distributor" placeholder="Distributor" required>
                 </div>
             </div>
+
+            <div class="form-group row mt-2">
+                <label class="col-lg-1 col-form-label sd-label" for="inventory_location">Inventory Location :</label>
+                <div class="col-lg-4">
+                    <select class="form-select" name="inventory_location">
+                        <option value="ZPC">ZPC</option>
+                        <option value="OCP">OCP</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="form-group row mt-2">
                 <label for="inputPassword" class="col-sm-1 col-form-label sd-label">Date :</label>
                 <div class="col-lg-4">

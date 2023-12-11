@@ -117,10 +117,51 @@
                 </tbody>
             </table>
 
+            <h5 class="donation-titles mt-2">Monetary Donations</h5>
+            <!-- Promats Table -->
+            <table class="table mt-3">
+                <thead class="theader">
+                    <tr>
+                        <th scope="col">No.</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template v-if="Object.keys(donations).length !== 0 ">
+                        <tr v-for="(donation, index) in donations" :key="index">
+                            <template v-if="donation.product_type === '3'">
+                                <td>{{ donation.id }}</td>
+                                <td>{{ numberFormat (donation.total) }}</td>
+                                <td>
+                                    <a :href="'/product-donation/'+donation.id+'/edit-donation/'" class="btn tt cfs-edit-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit">
+                                        <i class="fas fa-edit cfs-edit-ic text-secondary"></i>
+                                    </a>
+                                    <button @click="getId(donation.id)" data-bs-toggle="modal" data-bs-target="#deleteModal" class="btn tt cfs-edit-btn" data-bs-placement="bottom" title="Delete" >
+                                        <i class="fas fa-trash-alt cfs-edit-ic text-secondary"></i>
+                                    </button>
+                                </td>
+                            </template>
+                        </tr>
+                    </template>
+                    <template v-else-if="Object.keys(donations).length === 0">
+                        <tr class="tableNoRecord">
+                            <td colspan="8" align="center">No Record Found</td>
+                        </tr>
+                    </template>
+                    
+                    <tr class="tableRecordStat">
+                        <td>Total Amount</td>
+                        <td class="tableRecordStatAmount">Php {{this.numberFormat(total_donations.monetary_total_donation)}}</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+
             <h5 class="donation-titles mt-4">Add Product</h5>
             <hr>
             <!-- Medicine Donation Forms -->
-            <form class="mt-3">
+            <form enctype="multipart/form-data" class="mt-3">
                 <div class="row mt-2">
                     <div class="col-md-6 col-sm-6 col-xs-12">
                         <div class="row">
@@ -129,6 +170,7 @@
                                 <select class="form-control form-select" id="product_type" name="product_type" v-model="donation.product_type">
                                     <option selected value="1" >Medicine / Vaccine</option>
                                     <option value="2">Promotional Materials</option>
+                                    <option value="3">Monetary</option>
                                 </select>
                             </div>
                         </div>
@@ -136,7 +178,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6 mt-2">
+                    <div class="col-md-6 mt-2" v-if="donation.product_type != '3'">
                         <div class="row">
                             <label for="" class="col-lg-4 col-form-label fw-bold">Brand Name / Product Name :</label>
                             <div class="col-lg-8">
@@ -196,7 +238,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6 mt-2">
+                    <div class="col-md-6 mt-2" v-if="donation.product_type != '3'">
                         <div class="row">
                             <label for="" class="col-lg-4 col-form-label fw-bold">Quantity :</label>
                             <div class="col-lg-8">
@@ -207,10 +249,36 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-6 mt-2" v-if="donation.product_type === '3'">
+                        <div class="row">
+                            <label for="" class="col-lg-4 col-form-label fw-bold">Amount :</label>
+                            <div class="col-lg-8">
+                                <input type="number" :class="{'is-invalid':this.v$.total.$error}" class="form-control" name="total" id="total" placeholder="Amount" v-model="donation.total">
+                                <div v-if="this.v$.total.$error" class="invalid-feedback">
+                                    Amount is required
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6 mt-2">
+                    <div class="col-md-6 mt-2" v-if="donation.product_type === '3'">
+                        <div class="row">
+                            <label for="" class="col-lg-4 col-form-label fw-bold">Proof of Deposit :</label>
+                            <div class="col-lg-8">
+                                <input type="file" :class="{'is-invalid':this.v$.proof_deposit.$error}" class="form-control" name="proof_deposit" id="proof_deposit" placeholder="Proof of Deposit" @change="handleOnChange">
+                                <div v-if="this.v$.proof_deposit.$error" class="invalid-feedback">
+                                    Proof of Deposit is required
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mt-2" v-if="donation.product_type != '3'">
                         <div class="row">
                             <label for="" class="col-lg-4 col-form-label fw-bold">Lot/Batch No. :</label>
                             <div class="col-lg-8">
@@ -224,12 +292,11 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6 mt-2">
+                    <div class="col-md-6 mt-2" v-if="donation.product_type != '3'">
                         <div class="row">
                             <label for="" class="col-lg-4 col-form-label fw-bold">MFG Date :</label>
                             <div class="col-lg-8">
                                 <date-picker type="date" :class="{'is-invalid':this.v$.mfg_date.$error}" class="date-picker-wrap" input-class="form-control" format="MM-DD-YYYY" v-model="donation.mfg_date" placeholder="MFG Date" onkeydown="return false"></date-picker>
-                                <!-- <input type="date" class="form-control" name="mfg_date" id="mfg_date" placeholder="MFG Date" v-model="donation.mfg_date"> -->
                                 <div v-if="this.v$.mfg_date.$error" class="invalid-feedback">
                                     MFG Date is required
                                 </div>
@@ -237,7 +304,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6 mt-2">
+                    <div class="col-md-6 mt-2" v-if="donation.product_type != '3'">
                         <div class="row">
                             <label for="" class="col-lg-4 col-form-label fw-bold">Expiry Date :</label>
                             <div class="col-lg-8">
@@ -263,7 +330,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6 mt-2">
+                    <div class="col-md-6 mt-2" v-if="donation.product_type != '3'">
                         <div class="row">
                             <label for="" class="col-lg-4 col-form-label fw-bold">Unit Cost/ Trade Price :</label>
                             <div class="col-lg-8">
@@ -408,6 +475,21 @@
                     <div class="row">
                         <div class="col">
                             <div class="stats-title">
+                                Monetary Amount
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="stats-values">
+                                Php {{ numberFormat (total_donations.monetary_total_donation) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="stats-title">
                                 Total Donation
                             </div>
                         </div>
@@ -482,9 +564,19 @@ export default {
             expiry_date: '',
             mfg_date: '',
             medicine_status: '',
+            proof_deposit: '',
+            total: '',
         })
 
         const rules = computed(() => {
+            if(donation.product_type == 3) {
+                return {
+                    contribution_id : { required },
+                    product_type : { required },
+                    proof_deposit : { required },
+                    total : { required },
+                }
+            }
 
             if(donation.product_type == 2) {
                 return {
@@ -529,8 +621,10 @@ export default {
             total_donations : {
                 medicine_total_donation : 0,
                 promats_total_donation : 0,
+                monetary_total_donation : 0,
                 total_products_amount : 0
             },
+            medicine_total_quantity : 0,
             medicine_total_quantity : 0,
             promats_total_quantity : 0,
             promats_count : 0,
@@ -541,6 +635,9 @@ export default {
         }
     },
     methods : {
+        handleOnChange (e) {
+            this.proof_deposit = e.target.files[0];
+        },
         emptyToast() {
             var toastLiveExample = document.getElementById('liveToast')
             var toast = new bootstrap.Toast(toastLiveExample)
@@ -575,9 +672,12 @@ export default {
                 return;
             }
 
-            this.donation.expiry_date = moment(this.donation.expiry_date).format('l');
-            this.donation.mfg_date = moment(this.donation.mfg_date).format('l');
-
+            if(this.donation.product_type != 3) {
+                this.donation.expiry_date = moment(this.donation.expiry_date).format('l');
+                this.donation.mfg_date = moment(this.donation.mfg_date).format('l');
+            }
+            
+            const headers = { 'Content-Type': 'multipart/form-data' };
             axios.post('../../../api/product-donation/'+ this.donation.contribution_id + "/save-donation", {
                 donation: this.donation
             })
@@ -595,6 +695,9 @@ export default {
                     this.donation.expiry_date = '';
                     this.donation.mfg_date = '';
                     this.donation.medicine_status = '';
+                    this.donation.total = 0;
+                    this.donation.proof_deposit = '';
+
                     this.v$.$reset();
                     this.getDonations();
                     this.loading = !true
@@ -615,6 +718,8 @@ export default {
                 this.total_donations.medicine_total_donation = 0;
                 this.promats_total_quantity = 0;
                 this.total_donations.promats_total_donation = 0;
+                this.total_donations.monetary_total_donation = 0;
+                
                 this.promats_count = 0;
                 this.medicine_count = 0;
 
@@ -634,9 +739,14 @@ export default {
                         this.total_donations.promats_total_donation += item.total;
                         this.promats_count += 1;
                     }
+
+                    if(item.product_type === '3') {
+                        this.total_donations.monetary_total_donation += item.total;
+
+                    }
                 })
                 
-                this.total_donations.total_products_amount = this.total_donations.medicine_total_donation + this.total_donations.promats_total_donation;
+                this.total_donations.total_products_amount = this.total_donations.medicine_total_donation + this.total_donations.promats_total_donation + this.total_donations.monetary_total_donation;
                 this.total_products_count = this.promats_count + this.medicine_count;
                 
             })

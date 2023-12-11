@@ -10783,6 +10783,90 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vue_composition_api__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vue/composition-api */ "./node_modules/@vue/composition-api/dist/vue-composition-api.mjs");
 /* harmony import */ var _vuelidate_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @vuelidate/core */ "./node_modules/@vuelidate/core/dist/index.esm.js");
 /* harmony import */ var _vuelidate_validators__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @vuelidate/validators */ "./node_modules/@vuelidate/validators/dist/index.esm.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -11265,9 +11349,28 @@ var moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"
       drug_reg_no: '',
       expiry_date: '',
       mfg_date: '',
-      medicine_status: ''
+      medicine_status: '',
+      proof_deposit: '',
+      total: ''
     });
     var rules = Object(_vue_composition_api__WEBPACK_IMPORTED_MODULE_2__["computed"])(function () {
+      if (donation.product_type == 3) {
+        return {
+          contribution_id: {
+            required: _vuelidate_validators__WEBPACK_IMPORTED_MODULE_4__["required"]
+          },
+          product_type: {
+            required: _vuelidate_validators__WEBPACK_IMPORTED_MODULE_4__["required"]
+          },
+          proof_deposit: {
+            required: _vuelidate_validators__WEBPACK_IMPORTED_MODULE_4__["required"]
+          },
+          total: {
+            required: _vuelidate_validators__WEBPACK_IMPORTED_MODULE_4__["required"]
+          }
+        };
+      }
+
       if (donation.product_type == 2) {
         return {
           contribution_id: {
@@ -11349,25 +11452,25 @@ var moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"
     };
   },
   data: function data() {
-    return {
+    var _ref;
+
+    return _ref = {
       moment: moment,
       donations: [],
       d_id: 0,
       total_donations: {
         medicine_total_donation: 0,
         promats_total_donation: 0,
+        monetary_total_donation: 0,
         total_products_amount: 0
       },
-      medicine_total_quantity: 0,
-      promats_total_quantity: 0,
-      promats_count: 0,
-      medicine_count: 0,
-      total_products_count: 0,
-      loading: false,
-      total_loading: false
-    };
+      medicine_total_quantity: 0
+    }, _defineProperty(_ref, "medicine_total_quantity", 0), _defineProperty(_ref, "promats_total_quantity", 0), _defineProperty(_ref, "promats_count", 0), _defineProperty(_ref, "medicine_count", 0), _defineProperty(_ref, "total_products_count", 0), _defineProperty(_ref, "loading", false), _defineProperty(_ref, "total_loading", false), _ref;
   },
   methods: {
+    handleOnChange: function handleOnChange(e) {
+      this.proof_deposit = e.target.files[0];
+    },
     emptyToast: function emptyToast() {
       var toastLiveExample = document.getElementById('liveToast');
       var toast = new bootstrap.Toast(toastLiveExample);
@@ -11404,8 +11507,14 @@ var moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"
         return;
       }
 
-      this.donation.expiry_date = moment(this.donation.expiry_date).format('l');
-      this.donation.mfg_date = moment(this.donation.mfg_date).format('l');
+      if (this.donation.product_type != 3) {
+        this.donation.expiry_date = moment(this.donation.expiry_date).format('l');
+        this.donation.mfg_date = moment(this.donation.mfg_date).format('l');
+      }
+
+      var headers = {
+        'Content-Type': 'multipart/form-data'
+      };
       axios.post('../../../api/product-donation/' + this.donation.contribution_id + "/save-donation", {
         donation: this.donation
       }).then(function (response) {
@@ -11422,6 +11531,8 @@ var moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"
           _this2.donation.expiry_date = '';
           _this2.donation.mfg_date = '';
           _this2.donation.medicine_status = '';
+          _this2.donation.total = 0;
+          _this2.donation.proof_deposit = '';
 
           _this2.v$.$reset();
 
@@ -11439,6 +11550,7 @@ var moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"
         _this3.total_donations.medicine_total_donation = 0;
         _this3.promats_total_quantity = 0;
         _this3.total_donations.promats_total_donation = 0;
+        _this3.total_donations.monetary_total_donation = 0;
         _this3.promats_count = 0;
         _this3.medicine_count = 0;
         _this3.donations = response.data;
@@ -11457,9 +11569,13 @@ var moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"
             _this3.total_donations.promats_total_donation += item.total;
             _this3.promats_count += 1;
           }
+
+          if (item.product_type === '3') {
+            _this3.total_donations.monetary_total_donation += item.total;
+          }
         });
 
-        _this3.total_donations.total_products_amount = _this3.total_donations.medicine_total_donation + _this3.total_donations.promats_total_donation;
+        _this3.total_donations.total_products_amount = _this3.total_donations.medicine_total_donation + _this3.total_donations.promats_total_donation + _this3.total_donations.monetary_total_donation;
         _this3.total_products_count = _this3.promats_count + _this3.medicine_count;
       })["catch"](function (error) {
         console.log(error);
@@ -70544,756 +70660,982 @@ var render = function () {
         ),
       ]),
       _vm._v(" "),
+      _c("h5", { staticClass: "donation-titles mt-2" }, [
+        _vm._v("Monetary Donations"),
+      ]),
+      _vm._v(" "),
+      _c("table", { staticClass: "table mt-3" }, [
+        _vm._m(4),
+        _vm._v(" "),
+        _c(
+          "tbody",
+          [
+            Object.keys(_vm.donations).length !== 0
+              ? _vm._l(_vm.donations, function (donation, index) {
+                  return _c(
+                    "tr",
+                    { key: index },
+                    [
+                      donation.product_type === "3"
+                        ? [
+                            _c("td", [_vm._v(_vm._s(donation.id))]),
+                            _vm._v(" "),
+                            _c("td", [
+                              _vm._v(_vm._s(_vm.numberFormat(donation.total))),
+                            ]),
+                            _vm._v(" "),
+                            _c("td", [
+                              _c(
+                                "a",
+                                {
+                                  staticClass: "btn tt cfs-edit-btn",
+                                  attrs: {
+                                    href:
+                                      "/product-donation/" +
+                                      donation.id +
+                                      "/edit-donation/",
+                                    "data-bs-toggle": "tooltip",
+                                    "data-bs-placement": "bottom",
+                                    title: "Edit",
+                                  },
+                                },
+                                [
+                                  _c("i", {
+                                    staticClass:
+                                      "fas fa-edit cfs-edit-ic text-secondary",
+                                  }),
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "button",
+                                {
+                                  staticClass: "btn tt cfs-edit-btn",
+                                  attrs: {
+                                    "data-bs-toggle": "modal",
+                                    "data-bs-target": "#deleteModal",
+                                    "data-bs-placement": "bottom",
+                                    title: "Delete",
+                                  },
+                                  on: {
+                                    click: function ($event) {
+                                      return _vm.getId(donation.id)
+                                    },
+                                  },
+                                },
+                                [
+                                  _c("i", {
+                                    staticClass:
+                                      "fas fa-trash-alt cfs-edit-ic text-secondary",
+                                  }),
+                                ]
+                              ),
+                            ]),
+                          ]
+                        : _vm._e(),
+                    ],
+                    2
+                  )
+                })
+              : Object.keys(_vm.donations).length === 0
+              ? [_vm._m(5)]
+              : _vm._e(),
+            _vm._v(" "),
+            _c("tr", { staticClass: "tableRecordStat" }, [
+              _c("td", [_vm._v("Total Amount")]),
+              _vm._v(" "),
+              _c("td", { staticClass: "tableRecordStatAmount" }, [
+                _vm._v(
+                  "Php " +
+                    _vm._s(
+                      this.numberFormat(
+                        _vm.total_donations.monetary_total_donation
+                      )
+                    )
+                ),
+              ]),
+              _vm._v(" "),
+              _c("td"),
+            ]),
+          ],
+          2
+        ),
+      ]),
+      _vm._v(" "),
       _c("h5", { staticClass: "donation-titles mt-4" }, [
         _vm._v("Add Product"),
       ]),
       _vm._v(" "),
       _c("hr"),
       _vm._v(" "),
-      _c("form", { staticClass: "mt-3" }, [
-        _c("div", { staticClass: "row mt-2" }, [
-          _c("div", { staticClass: "col-md-6 col-sm-6 col-xs-12" }, [
-            _c("div", { staticClass: "row" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "col-lg-4 col-form-label fw-bold",
-                  attrs: { for: "" },
-                },
-                [_vm._v("Product Type :")]
-              ),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-lg-8" }, [
+      _c(
+        "form",
+        { staticClass: "mt-3", attrs: { enctype: "multipart/form-data" } },
+        [
+          _c("div", { staticClass: "row mt-2" }, [
+            _c("div", { staticClass: "col-md-6 col-sm-6 col-xs-12" }, [
+              _c("div", { staticClass: "row" }, [
                 _c(
-                  "select",
+                  "label",
                   {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.donation.product_type,
-                        expression: "donation.product_type",
-                      },
-                    ],
-                    staticClass: "form-control form-select",
-                    attrs: { id: "product_type", name: "product_type" },
-                    on: {
-                      change: function ($event) {
-                        var $$selectedVal = Array.prototype.filter
-                          .call($event.target.options, function (o) {
-                            return o.selected
-                          })
-                          .map(function (o) {
-                            var val = "_value" in o ? o._value : o.value
-                            return val
-                          })
-                        _vm.$set(
-                          _vm.donation,
-                          "product_type",
-                          $event.target.multiple
-                            ? $$selectedVal
-                            : $$selectedVal[0]
-                        )
-                      },
-                    },
+                    staticClass: "col-lg-4 col-form-label fw-bold",
+                    attrs: { for: "" },
                   },
-                  [
-                    _c("option", { attrs: { selected: "", value: "1" } }, [
-                      _vm._v("Medicine / Vaccine"),
-                    ]),
-                    _vm._v(" "),
-                    _c("option", { attrs: { value: "2" } }, [
-                      _vm._v("Promotional Materials"),
-                    ]),
-                  ]
+                  [_vm._v("Product Type :")]
                 ),
-              ]),
-            ]),
-          ]),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col-md-6 mt-2" }, [
-            _c("div", { staticClass: "row" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "col-lg-4 col-form-label fw-bold",
-                  attrs: { for: "" },
-                },
-                [_vm._v("Brand Name / Product Name :")]
-              ),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-lg-8" }, [
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.donation.product_name,
-                      expression: "donation.product_name",
-                    },
-                  ],
-                  staticClass: "form-control",
-                  class: { "is-invalid": this.v$.product_name.$error },
-                  attrs: {
-                    type: "text",
-                    name: "product_name",
-                    id: "product_name",
-                    placeholder: "Brand Name / Product Name",
-                  },
-                  domProps: { value: _vm.donation.product_name },
-                  on: {
-                    input: function ($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.donation,
-                        "product_name",
-                        $event.target.value
-                      )
-                    },
-                  },
-                }),
                 _vm._v(" "),
-                this.v$.product_name.$error
-                  ? _c("div", { staticClass: "invalid-feedback" }, [
-                      _vm._v(
-                        "\n                                Product Name is required\n                            "
-                      ),
-                    ])
-                  : _vm._e(),
-              ]),
-            ]),
-          ]),
-          _vm._v(" "),
-          _vm.donation.product_type === "1"
-            ? _c("div", { staticClass: "col-md-6 mt-2" }, [
-                _c("div", { staticClass: "row" }, [
+                _c("div", { staticClass: "col-lg-8" }, [
                   _c(
-                    "label",
+                    "select",
                     {
-                      staticClass: "col-lg-4 col-form-label fw-bold",
-                      attrs: { for: "" },
-                    },
-                    [_vm._v("Generic Name :")]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-lg-8" }, [
-                    _c("input", {
                       directives: [
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.donation.generic_name,
-                          expression: "donation.generic_name",
+                          value: _vm.donation.product_type,
+                          expression: "donation.product_type",
                         },
                       ],
-                      staticClass: "form-control",
-                      class: { "is-invalid": this.v$.generic_name.$error },
-                      attrs: {
-                        type: "text",
-                        name: "generic_name",
-                        id: "generic_name",
-                        placeholder: "Generic Name",
-                      },
-                      domProps: { value: _vm.donation.generic_name },
+                      staticClass: "form-control form-select",
+                      attrs: { id: "product_type", name: "product_type" },
                       on: {
-                        input: function ($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
+                        change: function ($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function (o) {
+                              return o.selected
+                            })
+                            .map(function (o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
                           _vm.$set(
                             _vm.donation,
-                            "generic_name",
-                            $event.target.value
+                            "product_type",
+                            $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
                           )
                         },
                       },
-                    }),
-                    _vm._v(" "),
-                    this.v$.generic_name.$error
-                      ? _c("div", { staticClass: "invalid-feedback" }, [
-                          _vm._v(
-                            "\n                                Generic Name is required\n                            "
-                          ),
-                        ])
-                      : _vm._e(),
-                  ]),
-                ]),
-              ])
-            : _vm._e(),
-          _vm._v(" "),
-          _vm.donation.product_type === "1"
-            ? _c("div", { staticClass: "col-md-6 mt-2" }, [
-                _c("div", { staticClass: "row" }, [
-                  _c(
-                    "label",
-                    {
-                      staticClass: "col-lg-4 col-form-label fw-bold",
-                      attrs: { for: "" },
                     },
-                    [_vm._v("Strength :")]
+                    [
+                      _c("option", { attrs: { selected: "", value: "1" } }, [
+                        _vm._v("Medicine / Vaccine"),
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "2" } }, [
+                        _vm._v("Promotional Materials"),
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "3" } }, [
+                        _vm._v("Monetary"),
+                      ]),
+                    ]
                   ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-lg-8" }, [
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.donation.strength,
-                          expression: "donation.strength",
-                        },
-                      ],
-                      staticClass: "form-control",
-                      class: { "is-invalid": this.v$.strength.$error },
-                      attrs: {
-                        type: "text",
-                        name: "strength",
-                        id: "strength",
-                        placeholder: "Strength",
-                      },
-                      domProps: { value: _vm.donation.strength },
-                      on: {
-                        input: function ($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.donation,
-                            "strength",
-                            $event.target.value
-                          )
-                        },
-                      },
-                    }),
-                    _vm._v(" "),
-                    this.v$.strength.$error
-                      ? _c("div", { staticClass: "invalid-feedback" }, [
-                          _vm._v(
-                            "\n                                Strength is required\n                            "
-                          ),
-                        ])
-                      : _vm._e(),
-                  ]),
-                ]),
-              ])
-            : _vm._e(),
-          _vm._v(" "),
-          _vm.donation.product_type === "1"
-            ? _c("div", { staticClass: "col-md-6 mt-2" }, [
-                _c("div", { staticClass: "row" }, [
-                  _c(
-                    "label",
-                    {
-                      staticClass: "col-lg-4 col-form-label fw-bold",
-                      attrs: { for: "" },
-                    },
-                    [_vm._v("Dosage Form :")]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-lg-8" }, [
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.donation.dosage_form,
-                          expression: "donation.dosage_form",
-                        },
-                      ],
-                      staticClass: "form-control",
-                      class: { "is-invalid": this.v$.dosage_form.$error },
-                      attrs: {
-                        type: "text",
-                        name: "dosage_form",
-                        id: "dosage_form",
-                        placeholder: "Dosage Form",
-                      },
-                      domProps: { value: _vm.donation.dosage_form },
-                      on: {
-                        input: function ($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.donation,
-                            "dosage_form",
-                            $event.target.value
-                          )
-                        },
-                      },
-                    }),
-                    _vm._v(" "),
-                    this.v$.dosage_form.$error
-                      ? _c("div", { staticClass: "invalid-feedback" }, [
-                          _vm._v(
-                            "\n                                Dosage Form is required\n                            "
-                          ),
-                        ])
-                      : _vm._e(),
-                  ]),
-                ]),
-              ])
-            : _vm._e(),
-          _vm._v(" "),
-          _vm.donation.product_type === "1"
-            ? _c("div", { staticClass: "col-md-6 mt-2" }, [
-                _c("div", { staticClass: "row" }, [
-                  _c(
-                    "label",
-                    {
-                      staticClass: "col-lg-4 col-form-label fw-bold",
-                      attrs: { for: "" },
-                    },
-                    [_vm._v("Package Size :")]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-lg-8" }, [
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.donation.package_size,
-                          expression: "donation.package_size",
-                        },
-                      ],
-                      staticClass: "form-control",
-                      class: { "is-invalid": this.v$.package_size.$error },
-                      attrs: {
-                        type: "text",
-                        name: "package_size",
-                        id: "package_size",
-                        placeholder: "Package Size",
-                      },
-                      domProps: { value: _vm.donation.package_size },
-                      on: {
-                        input: function ($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.donation,
-                            "package_size",
-                            $event.target.value
-                          )
-                        },
-                      },
-                    }),
-                    _vm._v(" "),
-                    this.v$.package_size.$error
-                      ? _c("div", { staticClass: "invalid-feedback" }, [
-                          _vm._v(
-                            "\n                            Package Size is required\n                        "
-                          ),
-                        ])
-                      : _vm._e(),
-                  ]),
-                ]),
-              ])
-            : _vm._e(),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-md-6 mt-2" }, [
-            _c("div", { staticClass: "row" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "col-lg-4 col-form-label fw-bold",
-                  attrs: { for: "" },
-                },
-                [_vm._v("Quantity :")]
-              ),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-lg-8" }, [
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.donation.quantity,
-                      expression: "donation.quantity",
-                    },
-                  ],
-                  staticClass: "form-control",
-                  class: { "is-invalid": this.v$.quantity.$error },
-                  attrs: {
-                    type: "number",
-                    name: "quantity",
-                    id: "quantity",
-                    placeholder: "Quantity",
-                  },
-                  domProps: { value: _vm.donation.quantity },
-                  on: {
-                    input: function ($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(_vm.donation, "quantity", $event.target.value)
-                    },
-                  },
-                }),
-                _vm._v(" "),
-                this.v$.quantity.$error
-                  ? _c("div", { staticClass: "invalid-feedback" }, [
-                      _vm._v(
-                        "\n                                Quantity is required\n                            "
-                      ),
-                    ])
-                  : _vm._e(),
-              ]),
-            ]),
-          ]),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col-md-6 mt-2" }, [
-            _c("div", { staticClass: "row" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "col-lg-4 col-form-label fw-bold",
-                  attrs: { for: "" },
-                },
-                [_vm._v("Lot/Batch No. :")]
-              ),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-lg-8" }, [
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.donation.lot_no,
-                      expression: "donation.lot_no",
-                    },
-                  ],
-                  staticClass: "form-control",
-                  class: { "is-invalid": this.v$.lot_no.$error },
-                  attrs: {
-                    type: "text",
-                    name: "lot_no",
-                    id: "lot_no",
-                    placeholder: "Lot/Batch No.",
-                  },
-                  domProps: { value: _vm.donation.lot_no },
-                  on: {
-                    input: function ($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(_vm.donation, "lot_no", $event.target.value)
-                    },
-                  },
-                }),
-                _vm._v(" "),
-                this.v$.lot_no.$error
-                  ? _c("div", { staticClass: "invalid-feedback" }, [
-                      _vm._v(
-                        "\n                            Lot No. is required\n                        "
-                      ),
-                    ])
-                  : _vm._e(),
-              ]),
-            ]),
-          ]),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col-md-6 mt-2" }, [
-            _c("div", { staticClass: "row" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "col-lg-4 col-form-label fw-bold",
-                  attrs: { for: "" },
-                },
-                [_vm._v("MFG Date :")]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "col-lg-8" },
-                [
-                  _c("date-picker", {
-                    staticClass: "date-picker-wrap",
-                    class: { "is-invalid": this.v$.mfg_date.$error },
-                    attrs: {
-                      type: "date",
-                      "input-class": "form-control",
-                      format: "MM-DD-YYYY",
-                      placeholder: "MFG Date",
-                      onkeydown: "return false",
-                    },
-                    model: {
-                      value: _vm.donation.mfg_date,
-                      callback: function ($$v) {
-                        _vm.$set(_vm.donation, "mfg_date", $$v)
-                      },
-                      expression: "donation.mfg_date",
-                    },
-                  }),
-                  _vm._v(" "),
-                  this.v$.mfg_date.$error
-                    ? _c("div", { staticClass: "invalid-feedback" }, [
-                        _vm._v(
-                          "\n                                MFG Date is required\n                            "
-                        ),
-                      ])
-                    : _vm._e(),
-                ],
-                1
-              ),
-            ]),
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-md-6 mt-2" }, [
-            _c("div", { staticClass: "row" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "col-lg-4 col-form-label fw-bold",
-                  attrs: { for: "" },
-                },
-                [_vm._v("Expiry Date :")]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "col-lg-8" },
-                [
-                  _c("date-picker", {
-                    staticClass: "date-picker-wrap",
-                    class: { "is-invalid": this.v$.expiry_date.$error },
-                    attrs: {
-                      type: "date",
-                      "input-class": "form-control",
-                      format: "MM-DD-YYYY",
-                      placeholder: "Expiry Date",
-                      onkeydown: "return false",
-                    },
-                    model: {
-                      value: _vm.donation.expiry_date,
-                      callback: function ($$v) {
-                        _vm.$set(_vm.donation, "expiry_date", $$v)
-                      },
-                      expression: "donation.expiry_date",
-                    },
-                  }),
-                  _vm._v(" "),
-                  this.v$.expiry_date.$error
-                    ? _c("div", { staticClass: "invalid-feedback" }, [
-                        _vm._v(
-                          "\n                                Expiry Date is required\n                            "
-                        ),
-                      ])
-                    : _vm._e(),
-                ],
-                1
-              ),
-            ]),
-          ]),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "row" }, [
-          _vm.donation.product_type === "1"
-            ? _c("div", { staticClass: "col-md-6 mt-2" }, [
-                _c("div", { staticClass: "row" }, [
-                  _c(
-                    "label",
-                    {
-                      staticClass: "col-lg-4 col-form-label fw-bold",
-                      attrs: { for: "" },
-                    },
-                    [_vm._v("Drug Reg. No. :")]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-lg-8" }, [
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.donation.drug_reg_no,
-                          expression: "donation.drug_reg_no",
-                        },
-                      ],
-                      staticClass: "form-control",
-                      class: { "is-invalid": this.v$.drug_reg_no.$error },
-                      attrs: {
-                        type: "text",
-                        name: "drug_reg_no",
-                        id: "drug_reg_no",
-                        placeholder: "Drug Reg. No.",
-                      },
-                      domProps: { value: _vm.donation.drug_reg_no },
-                      on: {
-                        input: function ($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.donation,
-                            "drug_reg_no",
-                            $event.target.value
-                          )
-                        },
-                      },
-                    }),
-                    _vm._v(" "),
-                    this.v$.drug_reg_no.$error
-                      ? _c("div", { staticClass: "invalid-feedback" }, [
-                          _vm._v(
-                            "\n                                Drug Reg No. is required\n                            "
-                          ),
-                        ])
-                      : _vm._e(),
-                  ]),
-                ]),
-              ])
-            : _vm._e(),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-md-6 mt-2" }, [
-            _c("div", { staticClass: "row" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "col-lg-4 col-form-label fw-bold",
-                  attrs: { for: "" },
-                },
-                [_vm._v("Unit Cost/ Trade Price :")]
-              ),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-lg-8" }, [
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.donation.unit_cost,
-                      expression: "donation.unit_cost",
-                    },
-                  ],
-                  staticClass: "form-control",
-                  class: { "is-invalid": this.v$.unit_cost.$error },
-                  attrs: {
-                    type: "number",
-                    name: "unit_cost",
-                    id: "unit_cost",
-                    placeholder: "Unit Cost/ Trade Price",
-                  },
-                  domProps: { value: _vm.donation.unit_cost },
-                  on: {
-                    input: function ($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(_vm.donation, "unit_cost", $event.target.value)
-                    },
-                  },
-                }),
-                _vm._v(" "),
-                this.v$.unit_cost.$error
-                  ? _c("div", { staticClass: "invalid-feedback" }, [
-                      _vm._v(
-                        "\n                                Unit Cost is required\n                            "
-                      ),
-                    ])
-                  : _vm._e(),
-              ]),
-            ]),
-          ]),
-        ]),
-        _vm._v(" "),
-        _vm.donation.product_type === "1"
-          ? _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-md-6 mt-2" }, [
-                _c("div", { staticClass: "row" }, [
-                  _c(
-                    "label",
-                    {
-                      staticClass: "col-lg-4 col-form-label fw-bold",
-                      attrs: { for: "" },
-                    },
-                    [_vm._v("Medicine Status :")]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-lg-8" }, [
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.donation.medicine_status,
-                          expression: "donation.medicine_status",
-                        },
-                      ],
-                      staticClass: "form-control",
-                      class: { "is-invalid": this.v$.medicine_status.$error },
-                      attrs: {
-                        type: "text",
-                        name: "medicine_status",
-                        id: "medicine_status",
-                        placeholder: "Medicine Status",
-                      },
-                      domProps: { value: _vm.donation.medicine_status },
-                      on: {
-                        input: function ($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.donation,
-                            "medicine_status",
-                            $event.target.value
-                          )
-                        },
-                      },
-                    }),
-                    _vm._v(" "),
-                    this.v$.medicine_status.$error
-                      ? _c("div", { staticClass: "invalid-feedback" }, [
-                          _vm._v(
-                            "\n                                Medicine Status is required\n                            "
-                          ),
-                        ])
-                      : _vm._e(),
-                  ]),
                 ]),
               ]),
-            ])
-          : _vm._e(),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-outline-success mt-2 fw-bold",
-            attrs: { type: "button", disabled: _vm.loading },
-            on: {
-              click: function ($event) {
-                return _vm.addDonation()
-              },
-            },
-          },
-          [
-            _vm.loading
-              ? _c("div", [
-                  _c("div", {
-                    staticClass:
-                      "spinner-border text-success spinner-border-sm",
-                    attrs: { role: "status" },
-                  }),
-                  _vm._v(" "),
-                  _c("span", [_vm._v("Saving")]),
+            ]),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "row" }, [
+            _vm.donation.product_type != "3"
+              ? _c("div", { staticClass: "col-md-6 mt-2" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "col-lg-4 col-form-label fw-bold",
+                        attrs: { for: "" },
+                      },
+                      [_vm._v("Brand Name / Product Name :")]
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-8" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.donation.product_name,
+                            expression: "donation.product_name",
+                          },
+                        ],
+                        staticClass: "form-control",
+                        class: { "is-invalid": this.v$.product_name.$error },
+                        attrs: {
+                          type: "text",
+                          name: "product_name",
+                          id: "product_name",
+                          placeholder: "Brand Name / Product Name",
+                        },
+                        domProps: { value: _vm.donation.product_name },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.donation,
+                              "product_name",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      this.v$.product_name.$error
+                        ? _c("div", { staticClass: "invalid-feedback" }, [
+                            _vm._v(
+                              "\n                                Product Name is required\n                            "
+                            ),
+                          ])
+                        : _vm._e(),
+                    ]),
+                  ]),
                 ])
               : _vm._e(),
             _vm._v(" "),
-            !_vm.loading ? _c("span", [_vm._v("Save Donation")]) : _vm._e(),
-          ]
-        ),
-      ]),
+            _vm.donation.product_type === "1"
+              ? _c("div", { staticClass: "col-md-6 mt-2" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "col-lg-4 col-form-label fw-bold",
+                        attrs: { for: "" },
+                      },
+                      [_vm._v("Generic Name :")]
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-8" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.donation.generic_name,
+                            expression: "donation.generic_name",
+                          },
+                        ],
+                        staticClass: "form-control",
+                        class: { "is-invalid": this.v$.generic_name.$error },
+                        attrs: {
+                          type: "text",
+                          name: "generic_name",
+                          id: "generic_name",
+                          placeholder: "Generic Name",
+                        },
+                        domProps: { value: _vm.donation.generic_name },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.donation,
+                              "generic_name",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      this.v$.generic_name.$error
+                        ? _c("div", { staticClass: "invalid-feedback" }, [
+                            _vm._v(
+                              "\n                                Generic Name is required\n                            "
+                            ),
+                          ])
+                        : _vm._e(),
+                    ]),
+                  ]),
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.donation.product_type === "1"
+              ? _c("div", { staticClass: "col-md-6 mt-2" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "col-lg-4 col-form-label fw-bold",
+                        attrs: { for: "" },
+                      },
+                      [_vm._v("Strength :")]
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-8" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.donation.strength,
+                            expression: "donation.strength",
+                          },
+                        ],
+                        staticClass: "form-control",
+                        class: { "is-invalid": this.v$.strength.$error },
+                        attrs: {
+                          type: "text",
+                          name: "strength",
+                          id: "strength",
+                          placeholder: "Strength",
+                        },
+                        domProps: { value: _vm.donation.strength },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.donation,
+                              "strength",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      this.v$.strength.$error
+                        ? _c("div", { staticClass: "invalid-feedback" }, [
+                            _vm._v(
+                              "\n                                Strength is required\n                            "
+                            ),
+                          ])
+                        : _vm._e(),
+                    ]),
+                  ]),
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.donation.product_type === "1"
+              ? _c("div", { staticClass: "col-md-6 mt-2" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "col-lg-4 col-form-label fw-bold",
+                        attrs: { for: "" },
+                      },
+                      [_vm._v("Dosage Form :")]
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-8" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.donation.dosage_form,
+                            expression: "donation.dosage_form",
+                          },
+                        ],
+                        staticClass: "form-control",
+                        class: { "is-invalid": this.v$.dosage_form.$error },
+                        attrs: {
+                          type: "text",
+                          name: "dosage_form",
+                          id: "dosage_form",
+                          placeholder: "Dosage Form",
+                        },
+                        domProps: { value: _vm.donation.dosage_form },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.donation,
+                              "dosage_form",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      this.v$.dosage_form.$error
+                        ? _c("div", { staticClass: "invalid-feedback" }, [
+                            _vm._v(
+                              "\n                                Dosage Form is required\n                            "
+                            ),
+                          ])
+                        : _vm._e(),
+                    ]),
+                  ]),
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.donation.product_type === "1"
+              ? _c("div", { staticClass: "col-md-6 mt-2" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "col-lg-4 col-form-label fw-bold",
+                        attrs: { for: "" },
+                      },
+                      [_vm._v("Package Size :")]
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-8" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.donation.package_size,
+                            expression: "donation.package_size",
+                          },
+                        ],
+                        staticClass: "form-control",
+                        class: { "is-invalid": this.v$.package_size.$error },
+                        attrs: {
+                          type: "text",
+                          name: "package_size",
+                          id: "package_size",
+                          placeholder: "Package Size",
+                        },
+                        domProps: { value: _vm.donation.package_size },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.donation,
+                              "package_size",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      this.v$.package_size.$error
+                        ? _c("div", { staticClass: "invalid-feedback" }, [
+                            _vm._v(
+                              "\n                            Package Size is required\n                        "
+                            ),
+                          ])
+                        : _vm._e(),
+                    ]),
+                  ]),
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.donation.product_type != "3"
+              ? _c("div", { staticClass: "col-md-6 mt-2" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "col-lg-4 col-form-label fw-bold",
+                        attrs: { for: "" },
+                      },
+                      [_vm._v("Quantity :")]
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-8" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.donation.quantity,
+                            expression: "donation.quantity",
+                          },
+                        ],
+                        staticClass: "form-control",
+                        class: { "is-invalid": this.v$.quantity.$error },
+                        attrs: {
+                          type: "number",
+                          name: "quantity",
+                          id: "quantity",
+                          placeholder: "Quantity",
+                        },
+                        domProps: { value: _vm.donation.quantity },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.donation,
+                              "quantity",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      this.v$.quantity.$error
+                        ? _c("div", { staticClass: "invalid-feedback" }, [
+                            _vm._v(
+                              "\n                                Quantity is required\n                            "
+                            ),
+                          ])
+                        : _vm._e(),
+                    ]),
+                  ]),
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.donation.product_type === "3"
+              ? _c("div", { staticClass: "col-md-6 mt-2" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "col-lg-4 col-form-label fw-bold",
+                        attrs: { for: "" },
+                      },
+                      [_vm._v("Amount :")]
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-8" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.donation.total,
+                            expression: "donation.total",
+                          },
+                        ],
+                        staticClass: "form-control",
+                        class: { "is-invalid": this.v$.total.$error },
+                        attrs: {
+                          type: "number",
+                          name: "total",
+                          id: "total",
+                          placeholder: "Amount",
+                        },
+                        domProps: { value: _vm.donation.total },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.donation, "total", $event.target.value)
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      this.v$.total.$error
+                        ? _c("div", { staticClass: "invalid-feedback" }, [
+                            _vm._v(
+                              "\n                                Amount is required\n                            "
+                            ),
+                          ])
+                        : _vm._e(),
+                    ]),
+                  ]),
+                ])
+              : _vm._e(),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "row" }, [
+            _vm.donation.product_type === "3"
+              ? _c("div", { staticClass: "col-md-6 mt-2" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "col-lg-4 col-form-label fw-bold",
+                        attrs: { for: "" },
+                      },
+                      [_vm._v("Proof of Deposit :")]
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-8" }, [
+                      _c("input", {
+                        staticClass: "form-control",
+                        class: { "is-invalid": this.v$.proof_deposit.$error },
+                        attrs: {
+                          type: "file",
+                          name: "proof_deposit",
+                          id: "proof_deposit",
+                          placeholder: "Proof of Deposit",
+                        },
+                        on: { change: _vm.handleOnChange },
+                      }),
+                      _vm._v(" "),
+                      this.v$.proof_deposit.$error
+                        ? _c("div", { staticClass: "invalid-feedback" }, [
+                            _vm._v(
+                              "\n                                Proof of Deposit is required\n                            "
+                            ),
+                          ])
+                        : _vm._e(),
+                    ]),
+                  ]),
+                ])
+              : _vm._e(),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "row" }, [
+            _vm.donation.product_type != "3"
+              ? _c("div", { staticClass: "col-md-6 mt-2" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "col-lg-4 col-form-label fw-bold",
+                        attrs: { for: "" },
+                      },
+                      [_vm._v("Lot/Batch No. :")]
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-8" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.donation.lot_no,
+                            expression: "donation.lot_no",
+                          },
+                        ],
+                        staticClass: "form-control",
+                        class: { "is-invalid": this.v$.lot_no.$error },
+                        attrs: {
+                          type: "text",
+                          name: "lot_no",
+                          id: "lot_no",
+                          placeholder: "Lot/Batch No.",
+                        },
+                        domProps: { value: _vm.donation.lot_no },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.donation,
+                              "lot_no",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      this.v$.lot_no.$error
+                        ? _c("div", { staticClass: "invalid-feedback" }, [
+                            _vm._v(
+                              "\n                            Lot No. is required\n                        "
+                            ),
+                          ])
+                        : _vm._e(),
+                    ]),
+                  ]),
+                ])
+              : _vm._e(),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "row" }, [
+            _vm.donation.product_type != "3"
+              ? _c("div", { staticClass: "col-md-6 mt-2" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "col-lg-4 col-form-label fw-bold",
+                        attrs: { for: "" },
+                      },
+                      [_vm._v("MFG Date :")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col-lg-8" },
+                      [
+                        _c("date-picker", {
+                          staticClass: "date-picker-wrap",
+                          class: { "is-invalid": this.v$.mfg_date.$error },
+                          attrs: {
+                            type: "date",
+                            "input-class": "form-control",
+                            format: "MM-DD-YYYY",
+                            placeholder: "MFG Date",
+                            onkeydown: "return false",
+                          },
+                          model: {
+                            value: _vm.donation.mfg_date,
+                            callback: function ($$v) {
+                              _vm.$set(_vm.donation, "mfg_date", $$v)
+                            },
+                            expression: "donation.mfg_date",
+                          },
+                        }),
+                        _vm._v(" "),
+                        this.v$.mfg_date.$error
+                          ? _c("div", { staticClass: "invalid-feedback" }, [
+                              _vm._v(
+                                "\n                                MFG Date is required\n                            "
+                              ),
+                            ])
+                          : _vm._e(),
+                      ],
+                      1
+                    ),
+                  ]),
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.donation.product_type != "3"
+              ? _c("div", { staticClass: "col-md-6 mt-2" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "col-lg-4 col-form-label fw-bold",
+                        attrs: { for: "" },
+                      },
+                      [_vm._v("Expiry Date :")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col-lg-8" },
+                      [
+                        _c("date-picker", {
+                          staticClass: "date-picker-wrap",
+                          class: { "is-invalid": this.v$.expiry_date.$error },
+                          attrs: {
+                            type: "date",
+                            "input-class": "form-control",
+                            format: "MM-DD-YYYY",
+                            placeholder: "Expiry Date",
+                            onkeydown: "return false",
+                          },
+                          model: {
+                            value: _vm.donation.expiry_date,
+                            callback: function ($$v) {
+                              _vm.$set(_vm.donation, "expiry_date", $$v)
+                            },
+                            expression: "donation.expiry_date",
+                          },
+                        }),
+                        _vm._v(" "),
+                        this.v$.expiry_date.$error
+                          ? _c("div", { staticClass: "invalid-feedback" }, [
+                              _vm._v(
+                                "\n                                Expiry Date is required\n                            "
+                              ),
+                            ])
+                          : _vm._e(),
+                      ],
+                      1
+                    ),
+                  ]),
+                ])
+              : _vm._e(),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "row" }, [
+            _vm.donation.product_type === "1"
+              ? _c("div", { staticClass: "col-md-6 mt-2" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "col-lg-4 col-form-label fw-bold",
+                        attrs: { for: "" },
+                      },
+                      [_vm._v("Drug Reg. No. :")]
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-8" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.donation.drug_reg_no,
+                            expression: "donation.drug_reg_no",
+                          },
+                        ],
+                        staticClass: "form-control",
+                        class: { "is-invalid": this.v$.drug_reg_no.$error },
+                        attrs: {
+                          type: "text",
+                          name: "drug_reg_no",
+                          id: "drug_reg_no",
+                          placeholder: "Drug Reg. No.",
+                        },
+                        domProps: { value: _vm.donation.drug_reg_no },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.donation,
+                              "drug_reg_no",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      this.v$.drug_reg_no.$error
+                        ? _c("div", { staticClass: "invalid-feedback" }, [
+                            _vm._v(
+                              "\n                                Drug Reg No. is required\n                            "
+                            ),
+                          ])
+                        : _vm._e(),
+                    ]),
+                  ]),
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.donation.product_type != "3"
+              ? _c("div", { staticClass: "col-md-6 mt-2" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "col-lg-4 col-form-label fw-bold",
+                        attrs: { for: "" },
+                      },
+                      [_vm._v("Unit Cost/ Trade Price :")]
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-8" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.donation.unit_cost,
+                            expression: "donation.unit_cost",
+                          },
+                        ],
+                        staticClass: "form-control",
+                        class: { "is-invalid": this.v$.unit_cost.$error },
+                        attrs: {
+                          type: "number",
+                          name: "unit_cost",
+                          id: "unit_cost",
+                          placeholder: "Unit Cost/ Trade Price",
+                        },
+                        domProps: { value: _vm.donation.unit_cost },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.donation,
+                              "unit_cost",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      this.v$.unit_cost.$error
+                        ? _c("div", { staticClass: "invalid-feedback" }, [
+                            _vm._v(
+                              "\n                                Unit Cost is required\n                            "
+                            ),
+                          ])
+                        : _vm._e(),
+                    ]),
+                  ]),
+                ])
+              : _vm._e(),
+          ]),
+          _vm._v(" "),
+          _vm.donation.product_type === "1"
+            ? _c("div", { staticClass: "row" }, [
+                _c("div", { staticClass: "col-md-6 mt-2" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "col-lg-4 col-form-label fw-bold",
+                        attrs: { for: "" },
+                      },
+                      [_vm._v("Medicine Status :")]
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-8" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.donation.medicine_status,
+                            expression: "donation.medicine_status",
+                          },
+                        ],
+                        staticClass: "form-control",
+                        class: { "is-invalid": this.v$.medicine_status.$error },
+                        attrs: {
+                          type: "text",
+                          name: "medicine_status",
+                          id: "medicine_status",
+                          placeholder: "Medicine Status",
+                        },
+                        domProps: { value: _vm.donation.medicine_status },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.donation,
+                              "medicine_status",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      this.v$.medicine_status.$error
+                        ? _c("div", { staticClass: "invalid-feedback" }, [
+                            _vm._v(
+                              "\n                                Medicine Status is required\n                            "
+                            ),
+                          ])
+                        : _vm._e(),
+                    ]),
+                  ]),
+                ]),
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-outline-success mt-2 fw-bold",
+              attrs: { type: "button", disabled: _vm.loading },
+              on: {
+                click: function ($event) {
+                  return _vm.addDonation()
+                },
+              },
+            },
+            [
+              _vm.loading
+                ? _c("div", [
+                    _c("div", {
+                      staticClass:
+                        "spinner-border text-success spinner-border-sm",
+                      attrs: { role: "status" },
+                    }),
+                    _vm._v(" "),
+                    _c("span", [_vm._v("Saving")]),
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              !_vm.loading ? _c("span", [_vm._v("Save Donation")]) : _vm._e(),
+            ]
+          ),
+        ]
+      ),
       _vm._v(" "),
       _c("div", { staticClass: "d-flex flex-row-reverse" }, [
         _c(
@@ -71346,12 +71688,12 @@ var render = function () {
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "card-body stats-card-body" }, [
-          _vm._m(4),
+          _vm._m(6),
           _vm._v(" "),
           _c("hr"),
           _vm._v(" "),
           _c("div", { staticClass: "row" }, [
-            _vm._m(5),
+            _vm._m(7),
             _vm._v(" "),
             _c("div", { staticClass: "col" }, [
               _c("div", { staticClass: "stats-values" }, [
@@ -71367,7 +71709,7 @@ var render = function () {
           _c("hr"),
           _vm._v(" "),
           _c("div", { staticClass: "row" }, [
-            _vm._m(6),
+            _vm._m(8),
             _vm._v(" "),
             _c("div", { staticClass: "col" }, [
               _c("div", { staticClass: "stats-values" }, [
@@ -71383,7 +71725,7 @@ var render = function () {
           _c("hr"),
           _vm._v(" "),
           _c("div", { staticClass: "row" }, [
-            _vm._m(7),
+            _vm._m(9),
             _vm._v(" "),
             _c("div", { staticClass: "col" }, [
               _c("div", { staticClass: "stats-values" }, [
@@ -71398,12 +71740,12 @@ var render = function () {
           _vm._v(" "),
           _c("hr"),
           _vm._v(" "),
-          _vm._m(8),
+          _vm._m(10),
           _vm._v(" "),
           _c("hr"),
           _vm._v(" "),
           _c("div", { staticClass: "row" }, [
-            _vm._m(9),
+            _vm._m(11),
             _vm._v(" "),
             _c("div", { staticClass: "col" }, [
               _c("div", { staticClass: "stats-values" }, [
@@ -71423,7 +71765,7 @@ var render = function () {
           _c("hr"),
           _vm._v(" "),
           _c("div", { staticClass: "row" }, [
-            _vm._m(10),
+            _vm._m(12),
             _vm._v(" "),
             _c("div", { staticClass: "col" }, [
               _c("div", { staticClass: "stats-values" }, [
@@ -71443,7 +71785,27 @@ var render = function () {
           _c("hr"),
           _vm._v(" "),
           _c("div", { staticClass: "row" }, [
-            _vm._m(11),
+            _vm._m(13),
+            _vm._v(" "),
+            _c("div", { staticClass: "col" }, [
+              _c("div", { staticClass: "stats-values" }, [
+                _vm._v(
+                  "\n                            Php " +
+                    _vm._s(
+                      _vm.numberFormat(
+                        _vm.total_donations.monetary_total_donation
+                      )
+                    ) +
+                    "\n                        "
+                ),
+              ]),
+            ]),
+          ]),
+          _vm._v(" "),
+          _c("hr"),
+          _vm._v(" "),
+          _c("div", { staticClass: "row" }, [
+            _vm._m(14),
             _vm._v(" "),
             _c("div", { staticClass: "col" }, [
               _c("div", { staticClass: "stats-values" }, [
@@ -71477,7 +71839,7 @@ var render = function () {
       [
         _c("div", { staticClass: "modal-dialog" }, [
           _c("div", { staticClass: "modal-content" }, [
-            _vm._m(12),
+            _vm._m(15),
             _vm._v(" "),
             _c("div", { staticClass: "modal-body" }, [
               _vm._v(
@@ -71588,6 +71950,30 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
+    return _c("thead", { staticClass: "theader" }, [
+      _c("tr", [
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("No.")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Amount")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Actions")]),
+      ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("tr", { staticClass: "tableNoRecord" }, [
+      _c("td", { attrs: { colspan: "8", align: "center" } }, [
+        _vm._v("No Record Found"),
+      ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
     return _c("div", { staticClass: "stats-head-title" }, [
       _c("i", { staticClass: "fa-solid fa-box" }),
       _vm._v("\n                    Products\n                "),
@@ -71658,6 +72044,18 @@ var staticRenderFns = [
       _c("div", { staticClass: "stats-title" }, [
         _vm._v(
           "\n                            Promats Amount\n                        "
+        ),
+      ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col" }, [
+      _c("div", { staticClass: "stats-title" }, [
+        _vm._v(
+          "\n                            Monetary Amount\n                        "
         ),
       ]),
     ])

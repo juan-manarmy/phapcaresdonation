@@ -12,5 +12,6 @@ class Contribution extends Model
         'contribution_no',
         'member_id',
         'distributor',
+        'inventory_location',
         'contribution_date'];
 }
