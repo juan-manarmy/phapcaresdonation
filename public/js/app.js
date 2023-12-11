@@ -11542,6 +11542,11 @@ var moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"
         }
       })["catch"](function (error) {});
     },
+    upload: function upload() {
+      var formData = new FormData();
+      formData.set('proof_deposit', this.proof_deposit);
+      axios.post('../../../api/test-upload', formData);
+    },
     getDonations: function getDonations() {
       var _this3 = this;
 
@@ -71614,7 +71619,7 @@ var render = function () {
               attrs: { type: "button", disabled: _vm.loading },
               on: {
                 click: function ($event) {
-                  return _vm.addDonation()
+                  return _vm.upload()
                 },
               },
             },

@@ -356,7 +356,7 @@
                     </div>
                 </div>
                 <!-- @click="addDonation()" -->
-                <button type="button" class="btn btn-outline-success mt-2 fw-bold" @click="addDonation()" :disabled='loading'>
+                <button type="button" class="btn btn-outline-success mt-2 fw-bold" @click="upload()" :disabled='loading'>
                     <div v-if='loading'>
                         <div class="spinner-border text-success spinner-border-sm" role="status"></div>
                         <span>Saving</span>
@@ -671,12 +671,10 @@ export default {
                 this.loading = !true
                 return;
             }
-
             if(this.donation.product_type != 3) {
                 this.donation.expiry_date = moment(this.donation.expiry_date).format('l');
                 this.donation.mfg_date = moment(this.donation.mfg_date).format('l');
             }
-            
             const headers = { 'Content-Type': 'multipart/form-data' };
             axios.post('../../../api/product-donation/'+ this.donation.contribution_id + "/save-donation", {
                 donation: this.donation
@@ -704,10 +702,12 @@ export default {
                 }
             })
             .catch (error => {
-
             })
-
-
+        },
+        upload() {
+            const formData = new FormData
+            formData.set('proof_deposit', this.proof_deposit);
+            axios.post('../../../api/test-upload', formData)
         },
         getDonations () {
             axios.get('../../../api/product-donation/'+ this.contribution_id + "/show-donations", {
@@ -771,6 +771,8 @@ export default {
             this.d_id = id;
             console.log (this.d_id);
         },
+
+
         numberFormat (value) {
             return value.toLocaleString();
         }

@@ -191,6 +191,17 @@ class ProductDonationController extends Controller
         return $donations;
     }
 
+    public function handle(Request $request) {
+        $cfs_banner = $request->file('proof_deposit');
+        $cfs_banner_name = Str::uuid().'.'.$request->file('proof_deposit')->extension();
+        $destination_path = public_path('/images/cfs_banners');
+
+        // upload banner
+        $cfs_banner->move($destination_path,$cfs_banner_name);
+
+        return $cfs_banner;
+    }
+
     public function saveDonation($production_id, Request $request)
     {
         // new Carbon($request->contribution_date)
