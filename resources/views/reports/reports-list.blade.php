@@ -91,10 +91,6 @@
                                 <option value="ADJR">Adjustment+</option>
                             </select>
                         </div>
-                        <input type="text" name="tab" value="TR" hidden>
-                        <div class="col-auto my-auto">
-                            <button type="submit" class="btn btn-outline-success mr-auto fw-bold">Search Filter</button>
-                        </div>
 
                         <div class="col my-auto">
                             <div class="d-flex justify-content-end">

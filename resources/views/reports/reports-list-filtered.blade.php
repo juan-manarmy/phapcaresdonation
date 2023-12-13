@@ -41,6 +41,9 @@
                             <select class="form-control form-select me-2" aria-label="Default select example" name="year">
                                 <option {{ $year == 2022 ? "selected" : "" }} value="2022">2022</option>
                                 <option {{ $year == 2023 ? "selected" : "" }} value="2023">2023</option>
+                                <option {{ $year == 2024 ? "selected" : "" }} value="2023">2024</option>
+                                <option {{ $year == 2025 ? "selected" : "" }} value="2023">2025</option>
+                                <option {{ $year == 2026 ? "selected" : "" }} value="2023">2026</option>
                             </select>
                         </div>
 
@@ -94,8 +97,22 @@
                         <input type="text" name="tab" value="TR" hidden>
 
                         <div class="col-auto my-auto">
+                            Inventory Loc :
+                        </div>
+
+                        <div class="col-auto my-auto">
+                            <select class="form-control form-select me-2" aria-label="Default select example" name="inventory_location">
+                                <option {{ $inventory_location == '' ? "selected" : "" }} value="">ALL</option>
+                                <option {{ $inventory_location == 'ZPC' ? "selected" : "" }} value="ZPC">ZPC</option>
+                                <option {{ $inventory_location == 'OCP' ? "selected" : "" }} value="OCP">OCP</option>
+                            </select>
+                        </div>
+                        <input type="text" name="tab" value="TR" hidden>
+
+                        <div class="col-auto my-auto">
                             <button type="submit" class="btn btn-outline-success mr-auto fw-bold">Search Filter</button>
                         </div>
+
                     </form>
                         <div class="col my-auto">
                             <div class="d-flex justify-content-end">
@@ -103,6 +120,7 @@
                                     <input type="text" name="year" value="{{ $year }}" hidden>
                                     <input type="text" name="month" value="{{ $month }}" hidden>
                                     <input type="text" name="member_id" value="{{ $member_id }}" hidden>
+                                    <input type="text" name="inventory_location" value="{{ $inventory_location }}" hidden>
                                     <button href="{{ route('reports-generate') }}" class="btn btn-primary mr-auto fw-bold">Generate Report</a>
                                 </form>
                             </div>
@@ -158,6 +176,7 @@
                                     @if($transaction_type == 'EXP' || $transaction_type == 'ADJI')<th scope="col">Issuance Amount</th>@endif
                                     <th scope="col">Reference</th>
                                     <th scope="col">Transaction Date</th>
+                                    <th scope="col">Inv. Loc</th>
                                 </tr>
                             </thead>
                             <!-- TRANSACTION REPORT ITEMS -->
@@ -167,11 +186,12 @@
                                 ->where('year', $year)
                                 ->where('month', $month)
                                 ->where('transaction_type', $transaction_type)
+                                ->where('inventory_location','LIKE','%'.$inventory_location.'%')
                                 ->select('id','product_code','contribution_id',
                                 'contribution_no','allocation_no','allocation_id',
                                 'beneficiary_id','product_name','transaction_type',
                                 'lot_no','opening_balance_quantity','quantity','unit_cost',
-                                'receipt_quantity','receipt_amount','job_no','issuance_quantity','issuance_amount','created_at')
+                                'receipt_quantity','receipt_amount','job_no','issuance_quantity','issuance_amount','created_at','inventory_location')
                                 ->get();
 
                                 $transaction_report_total_quantity = 0;
@@ -179,7 +199,7 @@
 
                                 if($transaction_reports->count() != 0) {
                                     foreach($transaction_reports as $transaction_report) {
-                                        
+
                                         if (($transaction_type == 'EXP') || ($transaction_type == 'ADJI')) {
                                             $transaction_report_total_quantity += $transaction_report->issuance_quantity;
                                             $transaction_report_total_amount += $transaction_report->issuance_amount;
@@ -258,12 +278,14 @@
                                             if ($transaction_type == 'EXP' || $transaction_type == 'ADJI') { echo"<td>$issuance_amount</td>"; }
                                             echo"<td>$reference</td>";
                                             echo"<td>$created_at</td>";
+                                            echo"<td>$transaction_report->inventory_location</td>";
                                         echo"</tr>";
+                                        
                                     }
                                 } else {
-                                    $colspan = 11;
+                                    $colspan = 12;
                                     if($transaction_type == 'EXP') {
-                                        $colspan = 12;
+                                        $colspan = 13;
                                     }
                                     echo
                                     '<tr class="tableNoRecord">
@@ -282,6 +304,7 @@
                                     <td>{{ $transaction_total_titles }}</td>
                                     <td class="tableRecordStatAmount">{{ number_format($transaction_report_total_quantity) }}</td>
                                     <td class="tableRecordStatAmount">Php {{ number_format($transaction_report_total_amount,2) }}</td>
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                 </tr>
@@ -305,6 +328,9 @@
                             <select class="form-control form-select me-2" aria-label="Default select example" name="year">
                                 <option {{ $year == 2022 ? "selected" : "" }} value="2022">2022</option>
                                 <option {{ $year == 2023 ? "selected" : "" }} value="2023">2023</option>
+                                <option {{ $year == 2024 ? "selected" : "" }} value="2024">2024</option>
+                                <option {{ $year == 2025 ? "selected" : "" }} value="2025">2025</option>
+                                <option {{ $year == 2026 ? "selected" : "" }} value="2026">2026</option>
                             </select>
                         </div>
 
@@ -344,6 +370,18 @@
 
                         <input type="text" name="transaction_type" value="{{ $transaction_type}}" hidden>
                         <input type="text" name="tab" value="PD" hidden>
+
+                        <div class="col-auto my-auto">
+                            Inventory Loc :
+                        </div>
+
+                        <div class="col-auto my-auto">
+                            <select class="form-control form-select me-2" aria-label="Default select example" name="inventory_location">
+                                <option {{ $inventory_location == '' ? "selected" : "" }} value="">ALL</option>
+                                <option {{ $inventory_location == 'ZPC' ? "selected" : "" }} value="ZPC">ZPC</option>
+                                <option {{ $inventory_location == 'OCP' ? "selected" : "" }} value="OCP">OCP</option>
+                            </select>
+                        </div>
                     
                         <div class="col-auto my-auto">
                             <button type="submit" class="btn btn-outline-success mr-auto fw-bold">Search Filter</button>
@@ -355,6 +393,7 @@
                                     <input type="text" name="year" value="{{ $year }}" hidden>
                                     <input type="text" name="month" value="{{ $month }}" hidden>
                                     <input type="text" name="member_id" value="{{ $member_id }}" hidden>
+                                    <input type="text" name="inventory_location" value="{{ $inventory_location }}" hidden>
                                     <button href="{{ route('reports-generate') }}" class="btn btn-primary mr-auto fw-bold">Generate Report</a>
                                 </form>
                             </div>
@@ -396,6 +435,7 @@
                                         <th>Destruction Amount</th>
                                         <th>Reference</th>
                                         <th>Transaction Date</th>
+                                        <th>Inventory Loc</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -403,10 +443,11 @@
                                 $transaction_reports = \App\TransactionReport::where('member_id', $member->id)
                                 ->where('year', $year)
                                 ->where('month', $month)
+                                ->where('inventory_location','LIKE','%'.$inventory_location.'%')
                                 ->where('transaction_type', 'DES')
                                 ->select('id','member_id','beneficiary_id','destruction_id','month','year',
                                 'destruction_no','product_code','product_name','lot_no','transaction_type',
-                                'quantity','unit_cost','destruction_quantity','destruction_amount','expiry_date','created_at')->get();
+                                'quantity','unit_cost','destruction_quantity','destruction_amount','expiry_date','created_at','inventory_location')->get();
 
                                 $transaction_report_total_quantity = 0;
                                 $transaction_report_total_amount = 0;
@@ -431,7 +472,7 @@
                                         $pdrfNo = $destruction->pdrf_no;
 
                                         $reference = $destructionNo."/PDRF: ".$pdrfNo;
-              
+            
                                         echo"<tr>";
                                             echo"<td>$transaction_report->id</td>";
                                             echo"<td>$transaction_report->product_code</td>";
@@ -444,12 +485,13 @@
                                             echo"<td>$transaction_report->destruction_amount</td>";
                                             echo"<td>$reference</td>";
                                             echo"<td>$transaction_report->created_at</td>";
+                                            echo"<td>$transaction_report->inventory_location</td>";
                                         echo"</tr>";
                                     }
                                 } else {
                                     echo
                                     '<tr class="tableNoRecord">
-                                        <td colspan="11" align="center">No Record Found</td>
+                                        <td colspan="12" align="center">No Record Found</td>
                                     </tr>';
                                 }
                                 @endphp
@@ -463,6 +505,7 @@
                                     <td>Total Destruction</td>
                                     <td class="tableRecordStatAmount">{{ number_format($transaction_report_total_quantity) }}</td>
                                     <td class="tableRecordStatAmount">Php {{ number_format($transaction_report_total_amount,2) }}</td>
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                 </tr>
@@ -487,6 +530,9 @@
                             <select class="form-control form-select me-2" aria-label="Default select example" name="year">
                                 <option {{ $year == 2022 ? "selected" : "" }} value="2022">2022</option>
                                 <option {{ $year == 2023 ? "selected" : "" }} value="2023">2023</option>
+                                <option {{ $year == 2024 ? "selected" : "" }} value="2024">2024</option>
+                                <option {{ $year == 2025 ? "selected" : "" }} value="2025">2025</option>
+                                <option {{ $year == 2026 ? "selected" : "" }} value="2026">2026</option>
                             </select>
                         </div>
 
@@ -537,6 +583,7 @@
                                     <input type="text" name="year" value="{{ $year }}" hidden>
                                     <input type="text" name="month" value="{{ $month }}" hidden>
                                     <input type="text" name="member_id" value="{{ $member_id }}" hidden>
+                                    <input type="text" name="inventory_location" value="{{ $inventory_location }}" hidden>
                                     <button href="{{ route('reports-generate') }}" class="btn btn-primary mr-auto fw-bold">Generate Report</a>
                                 </form>
                             </div>

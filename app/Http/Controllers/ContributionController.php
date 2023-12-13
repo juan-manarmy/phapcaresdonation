@@ -845,6 +845,8 @@ class ContributionController extends Controller
     {
         $contribution = Contribution::findOrFail($contribution_id);
         $contribution_no =  $contribution->contribution_no;
+        $inventory_location =  $contribution->inventory_location;
+
 
         $donations = Donation::where('contribution_id', $contribution_id)
         ->where('status',1)->get();
@@ -967,6 +969,7 @@ class ContributionController extends Controller
             $transaction_report->remarks = $remarks;
             $transaction_report->job_no = $job_no;
             $transaction_report->status = $status;
+            $transaction_report->inventory_location = $inventory_location;
             $transaction_report->save(); 
 
             if($status == 1) {
@@ -1020,6 +1023,7 @@ class ContributionController extends Controller
         $contribution = Contribution::findOrFail($contribution_id);
         $member_id = $contribution->member_id;
         $contribution_no =  $contribution->contribution_no;
+        $inventory_location =  $contribution->inventory_location;
 
         $currentDate = Carbon::now();
         $currentDateMonth = $currentDate->month;
@@ -1088,6 +1092,7 @@ class ContributionController extends Controller
             $transaction_report->remarks = "";
             $transaction_report->job_no = $jobNo;
             $transaction_report->status = $donationStatus;
+            $transaction_report->inventory_location = $inventory_location;
             $transaction_report->save();
 
             if($donationStatus == 1) {

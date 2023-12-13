@@ -199,7 +199,7 @@ class ProductDonationController extends Controller
 
         $proof_deposit = $request->file('proof_deposit');
         $proof_deposit_name = Str::uuid().'.'.$request->file('proof_deposit')->extension();
-        $destination_path = public_path('/images/cfs_banners');
+        $destination_path = public_path('/images/monetary');
         // upload banner
         $proof_deposit->move($destination_path,$proof_deposit_name);
         $new_donation->proof_deposit = $proof_deposit_name;

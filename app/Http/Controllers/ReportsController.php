@@ -79,6 +79,7 @@ class ReportsController extends Controller
         $year = $current_year;
         $month = $current_month;
         $month_name = date("F", mktime(0, 0, 0, $month, 10));
+        $inventory_location = '';
         $transaction_type = 'EXP';
         $tab = 'TR';
         $transaction_table_title = "Outbound";
@@ -139,6 +140,7 @@ class ReportsController extends Controller
         'total_receipt_amount','total_destruction_quantity','total_destruction_amount',
         'total_qty_movements','total_ending_balance_qty','total_ending_balance_value'))
         ->with('tab',$tab)
+        ->with('inventory_location',$inventory_location)
         ->with('transaction_type',$transaction_type)
         ->with('transaction_table_title',$transaction_table_title)
         ->with('transaction_total_titles',$transaction_total_titles)
@@ -168,6 +170,7 @@ class ReportsController extends Controller
         ->get();
         
         $members_list = DB::table('members')->select('id','member_name')->get();
+        $inventory_location = $request->inventory_location;
 
         $member_id = $request->member_id;
         $year = $request->year;
@@ -212,6 +215,7 @@ class ReportsController extends Controller
         if($transaction_type == 'IMP' || $transaction_type == 'ADJR') {
             // Get sum total receipt quantity 
             $total_receipt_quantity = TransactionReport::where('month',$month)
+            ->where('inventory_location','LIKE','%'.$inventory_location.'%')
             ->where('year',$year)
             ->where('transaction_type',$transaction_type)
             ->where('status',1)
@@ -219,6 +223,7 @@ class ReportsController extends Controller
 
             // Get sum total receipt quantity 
             $total_receipt_amount = TransactionReport::where('month',$month)
+            ->where('inventory_location','LIKE','%'.$inventory_location.'%')
             ->where('year',$year)
             ->where('transaction_type',$transaction_type)
             ->where('status',1)
@@ -228,6 +233,7 @@ class ReportsController extends Controller
         if($transaction_type == 'EXP' || $transaction_type == 'ADJI') {
             // Get sum total issuance quantity 
             $total_issuance_quantity = TransactionReport::where('month',$month)
+            ->where('inventory_location','LIKE','%'.$inventory_location.'%')
             ->where('year',$year)
             ->where('transaction_type',$transaction_type)
             ->where('status',1)
@@ -235,6 +241,7 @@ class ReportsController extends Controller
 
             // Get sum total issuance quantity 
             $total_issuance_amount = TransactionReport::where('month',$month)
+            ->where('inventory_location','LIKE','%'.$inventory_location.'%')
             ->where('year',$year)
             ->where('transaction_type',$transaction_type)
             ->where('status',1)
@@ -242,12 +249,16 @@ class ReportsController extends Controller
         }
 
         $total_destruction_quantity = TransactionReport::where('month',$month)
+        ->where('inventory_location','LIKE','%'.$inventory_location.'%')
+
         ->where('year',$year)
         ->where('transaction_type','DES')
         ->where('status',1)
         ->sum('destruction_quantity');
 
         $total_destruction_amount = TransactionReport::where('month',$month)
+        ->where('inventory_location','LIKE','%'.$inventory_location.'%')
+
         ->where('year',$year)
         ->where('transaction_type','DES')
         ->where('status',1)
@@ -271,6 +282,7 @@ class ReportsController extends Controller
         'total_qty_movements','total_ending_balance_qty','total_ending_balance_value'))
         ->with('tab',$tab)
         ->with('transaction_type',$transaction_type)
+        ->with('inventory_location',$inventory_location)
         ->with('transaction_table_title',$transaction_table_title)
         ->with('transaction_total_titles',$transaction_total_titles)
         ->with('total_issuance_amount',$total_issuance_amount)
@@ -285,7 +297,7 @@ class ReportsController extends Controller
     public function generateExcelReport(Request $request) {
         $spreadsheet = new Spreadsheet();
 
-        $spreadsheet->getProperties()->setCreator("Keith Datuin")
+        $spreadsheet->getProperties()->setCreator("PHAPCARES")
         ->setLastModifiedBy("PHAP Cares Admin")
         ->setTitle("PHAP Cares Product Donation System")
         ->setSubject("PHAP Cares Inventory Report")
@@ -315,6 +327,7 @@ class ReportsController extends Controller
         $spreadsheet->getActiveSheet()->getColumnDimension('Q')->setWidth(15);
         $spreadsheet->getActiveSheet()->getColumnDimension('R')->setWidth(15);
         $spreadsheet->getActiveSheet()->getColumnDimension('S')->setWidth(15);
+        $spreadsheet->getActiveSheet()->getColumnDimension('T')->setWidth(15);
 
         //Transaction Report Header
         //Header Title
@@ -329,6 +342,9 @@ class ReportsController extends Controller
         $year = $request->year;
         $month = $request->month;
         $selected_member_id = $request->member_id;
+        $inventory_location = $request->inventory_location;
+
+        // dd($inventory_location);
 
         // $year = 2022;
         // $month = 11;
@@ -354,10 +370,10 @@ class ReportsController extends Controller
             'borders' => array('allborders' => array('style' => Border::BORDER_THIN,  'color' => array('rgb' => '179B78')))
         );
 
-        $spreadsheet->getActiveSheet()->getStyle("A1:S1")->applyFromArray($style);
+        $spreadsheet->getActiveSheet()->getStyle("A1:T1")->applyFromArray($style);
         $spreadsheet->getActiveSheet()->getStyle("C1")->applyFromArray($style2);
         
-        $spreadsheet->getActiveSheet()->getStyle('A1:S1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('179B78');
+        $spreadsheet->getActiveSheet()->getStyle('A1:T1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('179B78');
 
         //Header Details
         $spreadsheet->getActiveSheet()->getCell('A2')
@@ -425,15 +441,15 @@ class ReportsController extends Controller
             'borders' => array('allborders' => array('style' => Border::BORDER_THIN,  'color' => array('rgb' => '56B69C')))
         );
 
-        $spreadsheet->getActiveSheet()->getStyle("A2:S2")->applyFromArray($style);
+        $spreadsheet->getActiveSheet()->getStyle("A2:T2")->applyFromArray($style);
         $spreadsheet->getActiveSheet()->getStyle("B2")->applyFromArray($style2);
         $spreadsheet->getActiveSheet()->getStyle("D2")->applyFromArray($style2);
         
-        $spreadsheet->getActiveSheet()->getStyle("A3:S3")->applyFromArray($style);
+        $spreadsheet->getActiveSheet()->getStyle("A3:T3")->applyFromArray($style);
         $spreadsheet->getActiveSheet()->getStyle("D3")->applyFromArray($style2);
         
-        $spreadsheet->getActiveSheet()->getStyle('A2:S2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('56B69C');
-        $spreadsheet->getActiveSheet()->getStyle('A3:S3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('56B69C');
+        $spreadsheet->getActiveSheet()->getStyle('A2:T2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('56B69C');
+        $spreadsheet->getActiveSheet()->getStyle('A3:T3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('56B69C');
         
         //Transaction Summary
         //Summary Title
@@ -447,27 +463,31 @@ class ReportsController extends Controller
             'borders' => array('allborders' => array('style' => Border::BORDER_THIN,  'color' => array('rgb' => '5096A0')))
         );
 
-        $spreadsheet->getActiveSheet()->getStyle("A5:S5")->applyFromArray($style);
-        $spreadsheet->getActiveSheet()->getStyle('A5:S5')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('5096A0');
+        $spreadsheet->getActiveSheet()->getStyle("A5:T5")->applyFromArray($style);
+        $spreadsheet->getActiveSheet()->getStyle('A5:T5')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('5096A0');
 
         if($selected_member_id == 0) {
 
             $total_issuance_quantity = TransactionReport::where('month',$month)
+            ->where('inventory_location','LIKE','%'.$inventory_location.'%')
             ->where('year',$year)
             ->where('status',1)
             ->sum('issuance_quantity');
 
             $total_issuance_amount = TransactionReport::where('month',$month)
+            ->where('inventory_location','LIKE','%'.$inventory_location.'%')
             ->where('year',$year)
             ->where('status',1)
             ->sum('issuance_amount');
 
             $total_receipt_quantity = TransactionReport::where('month',$month)
+            ->where('inventory_location','LIKE','%'.$inventory_location.'%')
             ->where('year',$year)
             ->where('status',1)
             ->sum('receipt_quantity');
 
             $total_receipt_amount = TransactionReport::where('month',$month)
+            ->where('inventory_location','LIKE','%'.$inventory_location.'%')
             ->where('year',$year)
             ->where('status',1)
             ->sum('receipt_amount');
@@ -475,24 +495,28 @@ class ReportsController extends Controller
         } else {
 
             $total_issuance_quantity = TransactionReport::where('month',$month)
+            ->where('inventory_location','LIKE','%'.$inventory_location.'%')
             ->where('member_id',$selected_member_id)
             ->where('year',$year)
             ->where('status',1)
             ->sum('issuance_quantity');
 
             $total_issuance_amount = TransactionReport::where('month',$month)
+            ->where('inventory_location','LIKE','%'.$inventory_location.'%')
             ->where('member_id',$selected_member_id)
             ->where('year',$year)
             ->where('status',1)
             ->sum('issuance_amount');
 
             $total_receipt_quantity = TransactionReport::where('month',$month)
+            ->where('inventory_location','LIKE','%'.$inventory_location.'%')
             ->where('member_id',$selected_member_id)
             ->where('year',$year)
             ->where('status',1)
             ->sum('receipt_quantity');
 
             $total_receipt_amount = TransactionReport::where('month',$month)
+            ->where('inventory_location','LIKE','%'.$inventory_location.'%')
             ->where('member_id',$selected_member_id)
             ->where('year',$year)
             ->where('status',1)
@@ -547,7 +571,7 @@ class ReportsController extends Controller
         $spreadsheet->getActiveSheet()->getCell('E7')
         ->setValue("{$total_issuance_amount}");
 
-                //Summary Details Style Properties
+        //Summary Details Style Properties
         $style = array(
             'alignment' => array('horizontal' => Alignment::HORIZONTAL_LEFT, 'vertical' => Alignment::VERTICAL_CENTER,),
             'font'  => array('bold'  => true, 'color' => array('rgb' => 'FFFFFF'), 'size'  => 10, 'name'  => 'Calibri'),
@@ -560,16 +584,16 @@ class ReportsController extends Controller
             'borders' => array('allborders' => array('style' => Border::BORDER_THIN,  'color' => array('rgb' => '85BCC5')))
         );
 
-        $spreadsheet->getActiveSheet()->getStyle("A6:S6")->applyFromArray($style);
+        $spreadsheet->getActiveSheet()->getStyle("A6:T6")->applyFromArray($style);
         $spreadsheet->getActiveSheet()->getStyle("B6")->applyFromArray($style2);
         $spreadsheet->getActiveSheet()->getStyle("E6")->applyFromArray($style2);
         
-        $spreadsheet->getActiveSheet()->getStyle("A7:S7")->applyFromArray($style);
+        $spreadsheet->getActiveSheet()->getStyle("A7:T7")->applyFromArray($style);
         $spreadsheet->getActiveSheet()->getStyle("B7")->applyFromArray($style2);
         $spreadsheet->getActiveSheet()->getStyle("E7")->applyFromArray($style2);
         
-        $spreadsheet->getActiveSheet()->getStyle('A6:S6')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('85BCC5');
-        $spreadsheet->getActiveSheet()->getStyle('A7:S7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('85BCC5');
+        $spreadsheet->getActiveSheet()->getStyle('A6:T6')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('85BCC5');
+        $spreadsheet->getActiveSheet()->getStyle('A7:T7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('85BCC5');
         
         //Product Details Header
         $spreadsheet->getActiveSheet()->getCell('A8')
@@ -626,6 +650,9 @@ class ReportsController extends Controller
         
         $spreadsheet->getActiveSheet()->getCell('S8')
         ->setValue('Exp Date');
+
+        $spreadsheet->getActiveSheet()->getCell('T8')
+        ->setValue('Inventory Location');
         
         //Product Details Style Properties
         $style = array(
@@ -634,8 +661,8 @@ class ReportsController extends Controller
             'borders' => array('allborders' => array('style' => Border::BORDER_THIN,  'color' => array('rgb' => 'FFFFFF')))
         );
 
-        $spreadsheet->getActiveSheet()->getStyle("A8:S8")->applyFromArray($style);
-        $spreadsheet->getActiveSheet()->getStyle('A8:S8')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('24323D');
+        $spreadsheet->getActiveSheet()->getStyle("A8:T8")->applyFromArray($style);
+        $spreadsheet->getActiveSheet()->getStyle('A8:T8')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('24323D');
         
         $startingRow = 9;
         // Start of Transaction Report
@@ -654,7 +681,7 @@ class ReportsController extends Controller
                 $memberName =  $member->member_name;
     
                 //Show Member Name
-                $spreadsheet->getActiveSheet()->mergeCells('A'.$startingRow.':S'.$startingRow);
+                $spreadsheet->getActiveSheet()->mergeCells('A'.$startingRow.':T'.$startingRow);
     
                 $spreadsheet->getActiveSheet()->getCell('A'.$startingRow)
                 ->setValue("{$memberName}");
@@ -665,11 +692,12 @@ class ReportsController extends Controller
                     'borders' => array('allborders' => array('style' => Border::BORDER_THIN,  'color' => array('rgb' => '000000')))
                 );
     
-                $spreadsheet->getActiveSheet()->getStyle('A'.$startingRow.':S'.$startingRow)->applyFromArray($style);
-                $spreadsheet->getActiveSheet()->getStyle('A'.$startingRow.':S'.$startingRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('63768D');
+                $spreadsheet->getActiveSheet()->getStyle('A'.$startingRow.':T'.$startingRow)->applyFromArray($style);
+                $spreadsheet->getActiveSheet()->getStyle('A'.$startingRow.':T'.$startingRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('63768D');
     
                 //Transaction List Query
                 $transaction_reports = TransactionReport::where('member_id',$member_id)
+                ->where('inventory_location','LIKE','%'.$inventory_location.'%')
                 ->where('year',$year)
                 ->where('month',$month)
                 ->where('status',1)->get();
@@ -704,6 +732,7 @@ class ReportsController extends Controller
                         $mfgDate = $transactionReportDetails->mfg_date;
                         $expiryDate = $transactionReportDetails->expiry_date;
                         $createDate = $transactionReportDetails->created_at;
+                        $inventoryLocation = $transactionReportDetails->inventory_location;
                                                             
                         $beneficiaryName = "";
 
@@ -865,6 +894,10 @@ class ReportsController extends Controller
                         $spreadsheet->getActiveSheet()
                         ->getCell('S'.$productDetailsRow)
                         ->setValue("{$expiryDate}");
+
+                        $spreadsheet->getActiveSheet()
+                        ->getCell('T'.$productDetailsRow)
+                        ->setValue("{$inventoryLocation}");
                         
                         $style = array(
                             'alignment' => array('horizontal' => Alignment::HORIZONTAL_LEFT, 'vertical' => Alignment::VERTICAL_CENTER,),
@@ -880,8 +913,8 @@ class ReportsController extends Controller
         
                         $spreadsheet->getActiveSheet()->getStyle('A'.$productDetailsRow.':G'.$productDetailsRow)->applyFromArray($style);
                         $spreadsheet->getActiveSheet()->getStyle('H'.$productDetailsRow.':O'.$productDetailsRow)->applyFromArray($style2);
-                        $spreadsheet->getActiveSheet()->getStyle('P'.$productDetailsRow.':S'.$productDetailsRow)->applyFromArray($style);
-                        $spreadsheet->getActiveSheet()->getStyle('A'.$productDetailsRow.':S'.$productDetailsRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('E2E6EA');
+                        $spreadsheet->getActiveSheet()->getStyle('P'.$productDetailsRow.':T'.$productDetailsRow)->applyFromArray($style);
+                        $spreadsheet->getActiveSheet()->getStyle('A'.$productDetailsRow.':T'.$productDetailsRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('E2E6EA');
                     
                         $productDetailsRow++;
                     }
@@ -966,11 +999,11 @@ class ReportsController extends Controller
                     );
     
                     $spreadsheet->getActiveSheet()->getStyle('A'.$totalStatsRow.':G'.$totalStatsRow)->applyFromArray($style);
-                    $spreadsheet->getActiveSheet()->getStyle('H'.$totalStatsRow.':S'.$totalStatsRow)->applyFromArray($style2);
-                    $spreadsheet->getActiveSheet()->getStyle('A'.$totalStatsRow.':S'.$totalStatsRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('B8C0CB');
+                    $spreadsheet->getActiveSheet()->getStyle('H'.$totalStatsRow.':T'.$totalStatsRow)->applyFromArray($style2);
+                    $spreadsheet->getActiveSheet()->getStyle('A'.$totalStatsRow.':T'.$totalStatsRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('B8C0CB');
                 } else {
                     //Show No Record
-                    $spreadsheet->getActiveSheet()->mergeCells('A'.$productDetailsRow.':S'.$productDetailsRow);
+                    $spreadsheet->getActiveSheet()->mergeCells('A'.$productDetailsRow.':T'.$productDetailsRow);
                 
                     $spreadsheet->getActiveSheet()->getCell('A'.$productDetailsRow)
                     ->setValue('NO TRANSACTION FOUND');
@@ -981,15 +1014,15 @@ class ReportsController extends Controller
                         'borders' => array('allborders' => array('style' => Border::BORDER_THIN,  'color' => array('rgb' => '000000')))
                     );
                 
-                    $spreadsheet->getActiveSheet()->getStyle('A'.$productDetailsRow.':S'.$productDetailsRow)->applyFromArray($style);
-                    $spreadsheet->getActiveSheet()->getStyle('A'.$productDetailsRow.':S'.$productDetailsRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('E2E6EA');
+                    $spreadsheet->getActiveSheet()->getStyle('A'.$productDetailsRow.':T'.$productDetailsRow)->applyFromArray($style);
+                    $spreadsheet->getActiveSheet()->getStyle('A'.$productDetailsRow.':T'.$productDetailsRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('E2E6EA');
                 }
                 //Compute The Next Starting Row By Adding Starting Row, Total Transaction Row, Member Title Row (1), Total Stats Row (1) and Space Row(1)
                 $startingRow = $startingRow + $totalTransactionRow + 3;
             }
             //Show Cancelled Tramsactions
             $spreadsheet->getActiveSheet()
-                        ->mergeCells('A'.$startingRow.':S'.$startingRow);
+                        ->mergeCells('A'.$startingRow.':T'.$startingRow);
 	
             $spreadsheet->getActiveSheet()
 			 			->getCell('A'.$startingRow)
@@ -1001,8 +1034,8 @@ class ReportsController extends Controller
 				'borders' => array('allborders' => array('style' => Border::BORDER_THIN,  'color' => array('rgb' => '000000')))
             );
 
-			$spreadsheet->getActiveSheet()->getStyle('A'.$startingRow.':S'.$startingRow)->applyFromArray($style);
-			$spreadsheet->getActiveSheet()->getStyle('A'.$startingRow.':S'.$startingRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('6D466B');
+			$spreadsheet->getActiveSheet()->getStyle('A'.$startingRow.':T'.$startingRow)->applyFromArray($style);
+			$spreadsheet->getActiveSheet()->getStyle('A'.$startingRow.':T'.$startingRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('6D466B');
             
             //Cancelled Transaction List Query
             $transaction_reports = TransactionReport::where('year',$year)
@@ -1229,6 +1262,7 @@ class ReportsController extends Controller
 				$totalStatsRow = $startingRow + $totalTransactionRow + 1;
                 
                 $total_issuance_quantity = TransactionReport::where('member_id', $member_id)
+                
                 ->where('year',$year)
                 ->where('month',$month)
                 ->where('status',0)
@@ -1316,12 +1350,12 @@ class ReportsController extends Controller
 				);
 
 				$spreadsheet->getActiveSheet()->getStyle('A'.$totalStatsRow.':G'.$totalStatsRow)->applyFromArray($style);
-				$spreadsheet->getActiveSheet()->getStyle('H'.$totalStatsRow.':S'.$totalStatsRow)->applyFromArray($style2);
-				$spreadsheet->getActiveSheet()->getStyle('A'.$totalStatsRow.':S'.$totalStatsRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('B8C0CB');	
+				$spreadsheet->getActiveSheet()->getStyle('H'.$totalStatsRow.':T'.$totalStatsRow)->applyFromArray($style2);
+				$spreadsheet->getActiveSheet()->getStyle('A'.$totalStatsRow.':T'.$totalStatsRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('B8C0CB');	
             } else {
 				//Show No Record of cancelled transaction report
 				$spreadsheet->getActiveSheet()
-                            ->mergeCells('A'.$productDetailsRow.':S'.$productDetailsRow);
+                            ->mergeCells('A'.$productDetailsRow.':T'.$productDetailsRow);
 				
 				$spreadsheet->getActiveSheet()
 				            ->getCell('A'.$productDetailsRow)
