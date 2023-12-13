@@ -18,13 +18,13 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-
-
 Route::middleware('api')->post('/product-donation/{contribution_id}/save-donation','ProductDonationController@saveDonation');
 Route::middleware('api')->get('/product-donation/{contribution_id}/show-donations','ProductDonationController@showDonations');
 Route::middleware('api')->delete('/product-donation/{id}/delete-donation','ProductDonationController@deleteDonation');
 Route::middleware('api')->post('/product-donation/{contribution_id}/save-total-donations','ProductDonationController@saveTotalDonations');
 Route::middleware('api')->post('/upload-monetary','ProductDonationController@uploadMonetary');
+
+Route::middleware('api')->get('/test-generate','ReportsController@generateExcelReport');
 
 Route::middleware('api')->get('/members/show-members','AllocationController@getMembers');
 Route::middleware('api')->get('/inventory/{member_id}/{allocation_id}/show-inventory','AllocationController@getInventory');

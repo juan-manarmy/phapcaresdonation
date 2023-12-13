@@ -346,10 +346,6 @@ class ReportsController extends Controller
 
         // dd($inventory_location);
 
-        // $year = 2022;
-        // $month = 11;
-        // $member_id = 0;
-
         $reportMonthYear = $year."-".$month;
         
         $reportMonthYearHeader = date_format(date_create($reportMonthYear),"F Y");
@@ -2871,10 +2867,5 @@ class ReportsController extends Controller
 
     }
 
-
-    // $transaction_reports = DB::table('transaction_reports')
-    // ->join('members', 'transaction_reports.member_id', '=', 'members.id')
-    // ->select('transaction_reports.*', 'members.member_name')
-    // ->get();
     
 }

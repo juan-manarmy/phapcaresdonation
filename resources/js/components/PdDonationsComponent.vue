@@ -730,21 +730,6 @@ export default {
                         }
                     }
                 )
-                // this.getDonations();
-                // this.loading = !true
-
-                // console.log(formData);
-                // axios.post('../../../api/upload-monetary', {
-                //     formData
-                // }).then( response=> {
-                //     if (response.status == 201) {
-                //         this.v$.$reset();
-                //         this.getDonations();
-                //         this.loading = !true
-                //     }
-                // })
-                // .catch (error => {
-                // })
             }
             
         },

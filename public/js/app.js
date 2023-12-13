@@ -11564,20 +11564,7 @@ var moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"
 
             _this2.loading = !true;
           }
-        }); // this.getDonations();
-        // this.loading = !true
-        // console.log(formData);
-        // axios.post('../../../api/upload-monetary', {
-        //     formData
-        // }).then( response=> {
-        //     if (response.status == 201) {
-        //         this.v$.$reset();
-        //         this.getDonations();
-        //         this.loading = !true
-        //     }
-        // })
-        // .catch (error => {
-        // })
+        });
       }
     },
     uploadMonetary: function uploadMonetary() {
@@ -68898,9 +68885,9 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-lg-8" }, [
                         _vm._v(
-                          "\n                                            " +
+                          "\r\n                                            " +
                             _vm._s(_vm.selected_product.member_id) +
-                            "\n                                        "
+                            "\r\n                                        "
                         ),
                       ]),
                     ]),
@@ -68921,9 +68908,9 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-lg-8" }, [
                         _vm._v(
-                          "\n                                            " +
+                          "\r\n                                            " +
                             _vm._s(_vm.selected_product.product_code) +
-                            "\n                                        "
+                            "\r\n                                        "
                         ),
                       ]),
                     ]),
@@ -68944,9 +68931,9 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-lg-8" }, [
                         _vm._v(
-                          "\n                                            " +
+                          "\r\n                                            " +
                             _vm._s(_vm.selected_product.product_name) +
-                            "\n                                        "
+                            "\r\n                                        "
                         ),
                       ]),
                     ]),
@@ -68965,13 +68952,13 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-lg-8" }, [
                         _vm._v(
-                          "\n                                            " +
+                          "\r\n                                            " +
                             _vm._s(
                               _vm
                                 .moment(_vm.selected_product.expiry_date)
                                 .format("l")
                             ) +
-                            "\n                                        "
+                            "\r\n                                        "
                         ),
                       ]),
                     ]),
@@ -68992,11 +68979,11 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-lg-8" }, [
                         _vm._v(
-                          "\n                                            " +
+                          "\r\n                                            " +
                             _vm._s(
                               _vm.numberFormat(_vm.selected_product.unit_cost)
                             ) +
-                            "\n                                        "
+                            "\r\n                                        "
                         ),
                       ]),
                     ]),
@@ -69015,9 +69002,9 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-lg-8" }, [
                         _vm._v(
-                          "\n                                            " +
+                          "\r\n                                            " +
                             _vm._s(_vm.selected_product.lot_no) +
-                            "\n                                        "
+                            "\r\n                                        "
                         ),
                       ]),
                     ]),
@@ -69038,11 +69025,11 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-lg-8" }, [
                         _vm._v(
-                          "\n                                            " +
+                          "\r\n                                            " +
                             _vm._s(
                               _vm.numberFormat(_vm.selected_product.quantity)
                             ) +
-                            "\n                                        "
+                            "\r\n                                        "
                         ),
                       ]),
                     ]),
@@ -69174,7 +69161,7 @@ var render = function () {
       _c("div", { staticClass: "col-md-2" }, [
         _c("div", { staticClass: "card shadow stats-card" }, [
           _c("div", { staticClass: "card-header stats-card-header" }, [
-            _vm._v("\n                    Statistics\n                "),
+            _vm._v("\r\n                    Statistics\r\n                "),
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "card-body stats-card-body" }, [
@@ -69188,9 +69175,9 @@ var render = function () {
               _c("div", { staticClass: "col" }, [
                 _c("div", { staticClass: "stats-values" }, [
                   _vm._v(
-                    "\n                                " +
+                    "\r\n                                " +
                       _vm._s(_vm.medicine_count) +
-                      "\n                            "
+                      "\r\n                            "
                   ),
                 ]),
               ]),
@@ -69204,9 +69191,9 @@ var render = function () {
               _c("div", { staticClass: "col" }, [
                 _c("div", { staticClass: "stats-values" }, [
                   _vm._v(
-                    "\n                                " +
+                    "\r\n                                " +
                       _vm._s(_vm.promats_count) +
-                      "\n                            "
+                      "\r\n                            "
                   ),
                 ]),
               ]),
@@ -69220,9 +69207,9 @@ var render = function () {
               _c("div", { staticClass: "col" }, [
                 _c("div", { staticClass: "stats-values" }, [
                   _vm._v(
-                    "\n                                " +
+                    "\r\n                                " +
                       _vm._s(_vm.total_products_count) +
-                      "\n                            "
+                      "\r\n                            "
                   ),
                 ]),
               ]),
@@ -69240,13 +69227,13 @@ var render = function () {
               _c("div", { staticClass: "col" }, [
                 _c("div", { staticClass: "stats-values" }, [
                   _vm._v(
-                    "\n                                Php " +
+                    "\r\n                                Php " +
                       _vm._s(
                         _vm.numberFormat(
                           _vm.total_donations.medicine_total_donation
                         )
                       ) +
-                      "\n                            "
+                      "\r\n                            "
                   ),
                 ]),
               ]),
@@ -69260,13 +69247,13 @@ var render = function () {
               _c("div", { staticClass: "col" }, [
                 _c("div", { staticClass: "stats-values" }, [
                   _vm._v(
-                    "\n                                Php " +
+                    "\r\n                                Php " +
                       _vm._s(
                         _vm.numberFormat(
                           _vm.total_donations.promats_total_donation
                         )
                       ) +
-                      "\n                            "
+                      "\r\n                            "
                   ),
                 ]),
               ]),
@@ -69280,13 +69267,13 @@ var render = function () {
               _c("div", { staticClass: "col" }, [
                 _c("div", { staticClass: "stats-values" }, [
                   _vm._v(
-                    "\n                                Php " +
+                    "\r\n                                Php " +
                       _vm._s(
                         _vm.numberFormat(
                           _vm.total_donations.total_products_amount
                         )
                       ) +
-                      "\n                            "
+                      "\r\n                            "
                   ),
                 ]),
               ]),
@@ -69314,7 +69301,7 @@ var render = function () {
             _vm._v(" "),
             _c("div", { staticClass: "modal-body" }, [
               _vm._v(
-                "\n                Are you sure you want to delete this record?\n            "
+                "\r\n                Are you sure you want to delete this record?\r\n            "
               ),
             ]),
             _vm._v(" "),
@@ -69389,7 +69376,7 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "stats-head-title" }, [
       _c("i", { staticClass: "fa-solid fa-box" }),
-      _vm._v("\n                        Products\n                    "),
+      _vm._v("\r\n                        Products\r\n                    "),
     ])
   },
   function () {
@@ -69399,7 +69386,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col-8" }, [
       _c("div", { staticClass: "stats-title" }, [
         _vm._v(
-          "\n                                Medicine / Vaccine\n                            "
+          "\r\n                                Medicine / Vaccine\r\n                            "
         ),
       ]),
     ])
@@ -69411,7 +69398,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col-8" }, [
       _c("div", { staticClass: "stats-title" }, [
         _vm._v(
-          "\n                                Promats\n                            "
+          "\r\n                                Promats\r\n                            "
         ),
       ]),
     ])
@@ -69423,7 +69410,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col-8" }, [
       _c("div", { staticClass: "stats-title" }, [
         _vm._v(
-          "\n                                Total Products\n                            "
+          "\r\n                                Total Products\r\n                            "
         ),
       ]),
     ])
@@ -69434,7 +69421,7 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "stats-head-title" }, [
       _c("i", { staticClass: "fa-solid fa-wallet" }),
-      _vm._v("\n                    Amount\n                    "),
+      _vm._v("\r\n                    Amount\r\n                    "),
     ])
   },
   function () {
@@ -69444,7 +69431,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col" }, [
       _c("div", { staticClass: "stats-title" }, [
         _vm._v(
-          "\n                                Medicine Amount\n                            "
+          "\r\n                                Medicine Amount\r\n                            "
         ),
       ]),
     ])
@@ -69456,7 +69443,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col" }, [
       _c("div", { staticClass: "stats-title" }, [
         _vm._v(
-          "\n                                Promats Amount\n                            "
+          "\r\n                                Promats Amount\r\n                            "
         ),
       ]),
     ])
@@ -69468,7 +69455,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col" }, [
       _c("div", { staticClass: "stats-title" }, [
         _vm._v(
-          "\n                                Total Donation\n                            "
+          "\r\n                                Total Donation\r\n                            "
         ),
       ]),
     ])
@@ -69778,9 +69765,9 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-lg-8" }, [
                         _vm._v(
-                          "\n                                            " +
+                          "\r\n                                            " +
                             _vm._s(_vm.selected_product.member_id) +
-                            "\n                                        "
+                            "\r\n                                        "
                         ),
                       ]),
                     ]),
@@ -69801,9 +69788,9 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-lg-8" }, [
                         _vm._v(
-                          "\n                                            " +
+                          "\r\n                                            " +
                             _vm._s(_vm.selected_product.product_code) +
-                            "\n                                        "
+                            "\r\n                                        "
                         ),
                       ]),
                     ]),
@@ -69824,9 +69811,9 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-lg-8" }, [
                         _vm._v(
-                          "\n                                            " +
+                          "\r\n                                            " +
                             _vm._s(_vm.selected_product.product_name) +
-                            "\n                                        "
+                            "\r\n                                        "
                         ),
                       ]),
                     ]),
@@ -69845,13 +69832,13 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-lg-8" }, [
                         _vm._v(
-                          "\n                                            " +
+                          "\r\n                                            " +
                             _vm._s(
                               _vm
                                 .moment(_vm.selected_product.expiry_date)
                                 .format("l")
                             ) +
-                            "\n                                        "
+                            "\r\n                                        "
                         ),
                       ]),
                     ]),
@@ -69872,11 +69859,11 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-lg-8" }, [
                         _vm._v(
-                          "\n                                            " +
+                          "\r\n                                            " +
                             _vm._s(
                               _vm.numberFormat(_vm.selected_product.unit_cost)
                             ) +
-                            "\n                                        "
+                            "\r\n                                        "
                         ),
                       ]),
                     ]),
@@ -69895,9 +69882,9 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-lg-8" }, [
                         _vm._v(
-                          "\n                                            " +
+                          "\r\n                                            " +
                             _vm._s(_vm.selected_product.lot_no) +
-                            "\n                                        "
+                            "\r\n                                        "
                         ),
                       ]),
                     ]),
@@ -69918,11 +69905,11 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-lg-8" }, [
                         _vm._v(
-                          "\n                                            " +
+                          "\r\n                                            " +
                             _vm._s(
                               _vm.numberFormat(_vm.selected_product.quantity)
                             ) +
-                            "\n                                        "
+                            "\r\n                                        "
                         ),
                       ]),
                     ]),
@@ -70054,7 +70041,7 @@ var render = function () {
       _c("div", { staticClass: "col-md-2" }, [
         _c("div", { staticClass: "card shadow stats-card" }, [
           _c("div", { staticClass: "card-header stats-card-header" }, [
-            _vm._v("\n                    Statistics\n                "),
+            _vm._v("\r\n                    Statistics\r\n                "),
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "card-body stats-card-body" }, [
@@ -70068,9 +70055,9 @@ var render = function () {
               _c("div", { staticClass: "col" }, [
                 _c("div", { staticClass: "stats-values" }, [
                   _vm._v(
-                    "\n                                " +
+                    "\r\n                                " +
                       _vm._s(_vm.medicine_count) +
-                      "\n                            "
+                      "\r\n                            "
                   ),
                 ]),
               ]),
@@ -70084,9 +70071,9 @@ var render = function () {
               _c("div", { staticClass: "col" }, [
                 _c("div", { staticClass: "stats-values" }, [
                   _vm._v(
-                    "\n                                " +
+                    "\r\n                                " +
                       _vm._s(_vm.promats_count) +
-                      "\n                            "
+                      "\r\n                            "
                   ),
                 ]),
               ]),
@@ -70100,9 +70087,9 @@ var render = function () {
               _c("div", { staticClass: "col" }, [
                 _c("div", { staticClass: "stats-values" }, [
                   _vm._v(
-                    "\n                                " +
+                    "\r\n                                " +
                       _vm._s(_vm.total_products_count) +
-                      "\n                            "
+                      "\r\n                            "
                   ),
                 ]),
               ]),
@@ -70120,13 +70107,13 @@ var render = function () {
               _c("div", { staticClass: "col" }, [
                 _c("div", { staticClass: "stats-values" }, [
                   _vm._v(
-                    "\n                                Php " +
+                    "\r\n                                Php " +
                       _vm._s(
                         _vm.numberFormat(
                           _vm.total_donations.medicine_total_donation
                         )
                       ) +
-                      "\n                            "
+                      "\r\n                            "
                   ),
                 ]),
               ]),
@@ -70140,13 +70127,13 @@ var render = function () {
               _c("div", { staticClass: "col" }, [
                 _c("div", { staticClass: "stats-values" }, [
                   _vm._v(
-                    "\n                                Php " +
+                    "\r\n                                Php " +
                       _vm._s(
                         _vm.numberFormat(
                           _vm.total_donations.promats_total_donation
                         )
                       ) +
-                      "\n                            "
+                      "\r\n                            "
                   ),
                 ]),
               ]),
@@ -70160,13 +70147,13 @@ var render = function () {
               _c("div", { staticClass: "col" }, [
                 _c("div", { staticClass: "stats-values" }, [
                   _vm._v(
-                    "\n                                Php " +
+                    "\r\n                                Php " +
                       _vm._s(
                         _vm.numberFormat(
                           _vm.total_donations.total_products_amount
                         )
                       ) +
-                      "\n                            "
+                      "\r\n                            "
                   ),
                 ]),
               ]),
@@ -70194,7 +70181,7 @@ var render = function () {
             _vm._v(" "),
             _c("div", { staticClass: "modal-body" }, [
               _vm._v(
-                "\n                Are you sure you want to delete this record?\n            "
+                "\r\n                Are you sure you want to delete this record?\r\n            "
               ),
             ]),
             _vm._v(" "),
@@ -70269,7 +70256,7 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "stats-head-title" }, [
       _c("i", { staticClass: "fa-solid fa-box" }),
-      _vm._v("\n                        Products\n                    "),
+      _vm._v("\r\n                        Products\r\n                    "),
     ])
   },
   function () {
@@ -70279,7 +70266,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col-8" }, [
       _c("div", { staticClass: "stats-title" }, [
         _vm._v(
-          "\n                                Medicine / Vaccine\n                            "
+          "\r\n                                Medicine / Vaccine\r\n                            "
         ),
       ]),
     ])
@@ -70291,7 +70278,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col-8" }, [
       _c("div", { staticClass: "stats-title" }, [
         _vm._v(
-          "\n                                Promats\n                            "
+          "\r\n                                Promats\r\n                            "
         ),
       ]),
     ])
@@ -70303,7 +70290,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col-8" }, [
       _c("div", { staticClass: "stats-title" }, [
         _vm._v(
-          "\n                                Total Products\n                            "
+          "\r\n                                Total Products\r\n                            "
         ),
       ]),
     ])
@@ -70314,7 +70301,7 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "stats-head-title" }, [
       _c("i", { staticClass: "fa-solid fa-wallet" }),
-      _vm._v("\n                    Amount\n                    "),
+      _vm._v("\r\n                    Amount\r\n                    "),
     ])
   },
   function () {
@@ -70324,7 +70311,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col" }, [
       _c("div", { staticClass: "stats-title" }, [
         _vm._v(
-          "\n                                Medicine Amount\n                            "
+          "\r\n                                Medicine Amount\r\n                            "
         ),
       ]),
     ])
@@ -70336,7 +70323,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col" }, [
       _c("div", { staticClass: "stats-title" }, [
         _vm._v(
-          "\n                                Promats Amount\n                            "
+          "\r\n                                Promats Amount\r\n                            "
         ),
       ]),
     ])
@@ -70348,7 +70335,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col" }, [
       _c("div", { staticClass: "stats-title" }, [
         _vm._v(
-          "\n                                Total Donation\n                            "
+          "\r\n                                Total Donation\r\n                            "
         ),
       ]),
     ])
@@ -89160,8 +89147,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Applications/XAMPP/xamppfiles/htdocs/phapcaresdonation/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Applications/XAMPP/xamppfiles/htdocs/phapcaresdonation/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\xampp\htdocs\phapcaresdonation\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\phapcaresdonation\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
