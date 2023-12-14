@@ -707,7 +707,7 @@ export default {
                 formData.append('product_type', this.donation.product_type);
                 formData.append('total', this.donation.total);
                 formData.append('proof_deposit', this.donation.proof_deposit);
-
+                
                 let config = {
                     header : {
                     'Content-Type' : 'multipart/form-data'

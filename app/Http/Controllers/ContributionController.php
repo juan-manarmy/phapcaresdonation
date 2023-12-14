@@ -74,6 +74,13 @@ class ContributionController extends Controller
         ->get();
 
         $contribution = Contribution::findOrFail($contribution_id);
+
+        $contribution_without_dnd = Contribution::where('dnd_no','!=', '')->get();
+        $dnd_count = $contribution_without_dnd->count() + 1;
+
+        $todays_year = Carbon::now()->year;
+        $new_dnd_no = $todays_year."-".$dnd_count;
+
         $documents = Document::where('contribution_id', $contribution_id)->get();
 
         $promats_count = 0;
@@ -100,7 +107,7 @@ class ContributionController extends Controller
 
             if($donation->product_type == 1) {
                 $medicine_count += 1;
-            } else {
+            } else if($donation->product_type == 2) {
                 $promats_count += 1;
             }
 
@@ -118,6 +125,7 @@ class ContributionController extends Controller
         $total_count = $medicine_count + $promats_count;
 
         return view('contributions.contributions-details')
+        ->with('new_dnd_no',$new_dnd_no)
         ->with('product_code_missing',$product_code_missing)
         ->with('donations',$donations)
         ->with('contribution', $contribution)
@@ -442,7 +450,6 @@ class ContributionController extends Controller
         $contribution = Contribution::findOrFail($contribution_id);
 
         $contribution_no = $contribution->contribution_no;
-        $number = rand(1,10000);
 
         $dnd_no = $contribution->dnd_no;
 
@@ -468,10 +475,6 @@ class ContributionController extends Controller
         $signature01 = public_path("/images/templates/signature01.png");
         $signature02 = public_path("/images/templates/signature02.png");
 
-        // $dndTemplate = url("/images/templates/dndTemplate.jpg");
-        // $signature01 = url("/images/templates/signature01.png");
-        // $signature02 = url("/images/templates/signature02.png");
-
         $pdf->Image($dndTemplate,0,0,0,297);
         $pdf->Image($signature01,21,260,0,12);
         $pdf->Image($signature02,70,260,0,8);
@@ -480,7 +483,7 @@ class ContributionController extends Controller
         $pdf->SetXY(174,20);
         $pdf->SetTextColor(43,43,43);	
         $pdf->SetFont('Arial','B',12);
-        $pdf->Cell(0,0,"2022-{$number}");
+        $pdf->Cell(0,0,$dnd_no);
         
         $pdf->SetXY(20,36);
         $pdf->SetTextColor(43,43,43);
@@ -644,7 +647,10 @@ class ContributionController extends Controller
         // Adding Donation Items
         $positionY = 74;
         foreach ($donations as $donation) {
-            $expiry_date = date('m/d/Y', strtotime($donation->expiry_date));
+            $expiry_date = '';
+            if($expiry_date != null) {
+                $expiry_date = date('m/d/Y', strtotime($donation->expiry_date));
+            }
             
             $pdf->SetXY(11,"{$positionY}");
             $pdf->SetTextColor(43,43,43);	
@@ -784,7 +790,17 @@ class ContributionController extends Controller
         $pdf->SetTextColor(43,43,43);	
         $pdf->SetFont('Arial','',10);
         $pdf->Cell(0,0,"{$first_name} {$last_name}");
+
+        foreach ($donations as $donation) {
+            if($donation->product_type == 3) {
+                $pdf->AddPage();
+                $proof_deposit_img = public_path("/images/monetary/{$donation->proof_deposit}");
+                $pdf->Image($proof_deposit_img,0,0,350,220);
+            }
+        }
+
         $destination_path = public_path("/pdf/nod/{$contribution_no}_NOD.pdf");
+
         // $destination_path = $_SERVER["DOCUMENT_ROOT"]."/pdf/nod/{$contribution_no}_NOD.pdf";
 
         $pdf->Output($destination_path,'F');

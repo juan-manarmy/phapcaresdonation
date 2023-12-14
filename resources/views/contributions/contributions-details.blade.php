@@ -436,7 +436,7 @@
                                         <div class="row">
                                             <label for="" class="col-lg-4 col-form-label fw-bold">DND No. :</label>
                                             <div class="col-lg-8">
-                                                <input type="text" class="form-control" name="dnd_no" id="dnd_no" value="DND_{{ $contribution->contribution_no }}" readonly required>
+                                                <input type="text" class="form-control" name="dnd_no" id="dnd_no" value="{{ $new_dnd_no }}" readonly required>
                                             </div>
                                         </div>
                                     </div>
@@ -779,7 +779,11 @@
                                         <td>{{ $donation->quantity }}</td>
                                         <td>{{ $donation->unit_cost }}</td>
                                         <td>{{ $donation->total }}</td>
-                                        <td>{{ date('F, d Y', strtotime($donation->expiry_date)) }}</td>
+                                        <td>
+                                            @if($donation->expiry_date != null) 
+                                                {{ date('F, d Y', strtotime($donation->expiry_date)) }}
+                                            @endif
+                                        </td>
                                         <td>
                                             @if($contribution->status == 7)
                                             <a href="{{ route('contribution-donation-edit-view', ['donation_id' => $donation->id]) }}" class="btn tt cfs-edit-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit">
@@ -1094,6 +1098,21 @@
                         <div class="col">
                             <div class="stats-values">
                             P{{ number_format($contribution->total_promats,2) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="stats-title">
+                                Monetary Amount
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="stats-values">
+                            P{{ number_format($contribution->total_monetary,2) }}
                             </div>
                         </div>
                     </div>

@@ -148,7 +148,7 @@ class ProductDonationController extends Controller
     public function saveInitialDetails(Request $request)
     {
         $converted_contribution_date = new Carbon($request->contribution_date);
-
+        
         $contribution = Contribution::updateOrCreate(
             ['contribution_no' => $request->contribution_no],
             ['cfs_id' => $request->cfs_id,
@@ -157,6 +157,7 @@ class ProductDonationController extends Controller
             'inventory_location' => $request->inventory_location,
             'contribution_date' => $converted_contribution_date]
         );
+        
         
         $contribution_id = $contribution->id;
         $contribution_no = $contribution->contribution_no;
@@ -196,6 +197,10 @@ class ProductDonationController extends Controller
         $new_donation->contribution_id = $request->contribution_id;
         $new_donation->product_type = $request->product_type;
         $new_donation->total = $request->total;
+        $new_donation->product_name = 'Monetary';
+        $new_donation->product_code = 'Monetary';
+        $new_donation->quantity = 1;
+        $new_donation->unit_cost = $request->total;
 
         $proof_deposit = $request->file('proof_deposit');
         $proof_deposit_name = Str::uuid().'.'.$request->file('proof_deposit')->extension();
@@ -227,20 +232,6 @@ class ProductDonationController extends Controller
         $new_donation->unit_cost = $request->donation["unit_cost"];
         $new_donation->medicine_status = $request->donation["medicine_status"];
         $new_donation->total = $request->donation["unit_cost"] * $request->donation["quantity"];
-
-        if($request->donation["product_type"] == 3) {
-
-            $proof_deposit = $request->file('proof_deposit');
-            $proof_deposit_name = Str::uuid().'.'.$request->file('proof_deposit')->extension();
-            $destination_path = public_path('/images/cfs_banners');
-    
-            // upload banner
-            $proof_deposit->move($destination_path,$proof_deposit_name);
-
-            $new_donation->total = $request->donation["total"];
-            $new_donation->proof_deposit = $proof_deposit_name;
-        }
-        
         // $random = rand(1,10000);
         // $new_donation->job_no = "JO-{$random}";
         // $new_donation->product_code = "JO-{$random}";
@@ -292,6 +283,7 @@ class ProductDonationController extends Controller
 
         $contribution->total_medicine = $request->total_donations["medicine_total_donation"];
         $contribution->total_promats = $request->total_donations["promats_total_donation"];
+        $contribution->total_monetary = $request->total_donations["monetary_total_donation"];
         $contribution->total_donation = $request->total_donations["total_products_amount"];
         $contribution->save();
         // return $contribution;

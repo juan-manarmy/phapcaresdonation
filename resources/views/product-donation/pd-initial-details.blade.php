@@ -50,6 +50,12 @@
         <form method="POST" action="{{ route('pd-initial-details-save') }}" class="mt-4"> 
             @csrf
             <div class="form-group row mt-2">
+                <label for="staticEmail" class="col-sm-1 col-form-label sd-label">Contribution No:</label>
+                <div class="col-lg-4">
+                <input type="text" class="form-control" id="staticEmail" readonly value="{{ $contribution->contribution_no }}" name="contribution_no">
+                </div>
+            </div>
+            <div class="form-group row mt-2">
                 <label class="col-lg-1 col-form-label sd-label" for="sel1">Company :</label>
                 <div class="col-lg-4">
                     <select class="form-select" name="member_id">
@@ -105,6 +111,12 @@
     @else
         <form method="POST" action="{{ route('pd-initial-details-save') }}" class="mt-4"> 
             @csrf
+            <div class="form-group row mt-2">
+                <label for="staticEmail" class="col-sm-1 col-form-label sd-label">Contribution No:</label>
+                <div class="col-lg-4">
+                <input type="text" class="form-control" id="staticEmail" readonly value="CN-{{ $cn_no }}" name="contribution_no">
+                </div>
+            </div>
             <div class="form-group row mt-2">
                 <label class="col-lg-1 col-form-label sd-label" for="sel1">Call for Support :</label>
                 <div class="col-lg-4">
