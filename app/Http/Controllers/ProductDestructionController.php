@@ -407,7 +407,7 @@ class ProductDestructionController extends Controller
         $document->destruction_id = $destruction_id;
         $document->type = $type;
         $document->name = "{$destruction_no}_{$type}";
-        $document->directory = "/pdf/pdrf/{$destruction_no}_{$type}";
+        $document->directory = "/pdf/pdrf/{$destruction_no}_{$type}.pdf";
         $document->save();
     }
 

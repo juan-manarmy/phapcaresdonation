@@ -75,11 +75,27 @@ class ContributionController extends Controller
 
         $contribution = Contribution::findOrFail($contribution_id);
 
-        $contribution_without_dnd = Contribution::where('dnd_no','!=', '')->get();
+        $dnd_tag_location = '';
+
+        if($contribution->inventory_location == 'ZPC') {
+            $contribution_without_dnd = Contribution::where('dnd_no','!=', '')
+            ->where('inventory_location', 'ZPC')
+            ->get();
+            $dnd_tag_location = 'ZPC';
+        }
+
+        if ($contribution->inventory_location == 'OCP') {
+            $contribution_without_dnd = Contribution::where('dnd_no','!=', '')
+            ->where('inventory_location', 'OCP')
+            ->get();
+            $dnd_tag_location = 'OCP';
+        }
+
         $dnd_count = $contribution_without_dnd->count() + 1;
 
         $todays_year = Carbon::now()->year;
-        $new_dnd_no = $todays_year."-".$dnd_count;
+
+        $new_dnd_no = $todays_year."-".$dnd_count."-".$dnd_tag_location;
 
         $documents = Document::where('contribution_id', $contribution_id)->get();
 
@@ -249,6 +265,7 @@ class ContributionController extends Controller
             $request->reasons_rejected_donation,
             $request->status);
         }
+
         // Approve DONATION ACCEPTED
         if($request->status == 5) {
             $this->verifyDonation($request->contribution_id,
@@ -791,14 +808,6 @@ class ContributionController extends Controller
         $pdf->SetFont('Arial','',10);
         $pdf->Cell(0,0,"{$first_name} {$last_name}");
 
-        foreach ($donations as $donation) {
-            if($donation->product_type == 3) {
-                $pdf->AddPage();
-                $proof_deposit_img = public_path("/images/monetary/{$donation->proof_deposit}");
-                $pdf->Image($proof_deposit_img,0,0,350,220);
-            }
-        }
-
         $destination_path = public_path("/pdf/nod/{$contribution_no}_NOD.pdf");
 
         // $destination_path = $_SERVER["DOCUMENT_ROOT"]."/pdf/nod/{$contribution_no}_NOD.pdf";
@@ -814,12 +823,11 @@ class ContributionController extends Controller
         $document->name = "{$contribution_no}_{$type}";
         
         if($type == "NOD") {
-            $document->directory = "/pdf/nod/{$contribution_no}_{$type}";
-            // $document->directory = "/pdf/nod/{$contribution_no}_{$type}";
+            $document->directory = "/pdf/nod/{$contribution_no}_{$type}.pdf";
         } else if($type == "DND") {
-            $document->directory = "/pdf/dnd/{$contribution_no}_{$type}";
+            $document->directory = "/pdf/dnd/{$contribution_no}_{$type}.pdf";
         } else if($type == "DIDRF") {
-            $document->directory = "/pdf/didrf/{$contribution_no}_{$type}";
+            $document->directory = "/pdf/didrf/{$contribution_no}_{$type}.pdf";
         }
         $document->save();
     }
@@ -830,7 +838,7 @@ class ContributionController extends Controller
         $document->contribution_id = $contribution_id;
         $document->type = $type;
         $document->name = "{$contribution_no}_{$type}_{$dnd_no}";
-        $document->directory = "/pdf/dnd/{$contribution_no}_{$type}_{$dnd_no}";
+        $document->directory = "/pdf/dnd/{$contribution_no}_{$type}_{$dnd_no}.pdf";
         $document->save();
     }
 
@@ -851,7 +859,7 @@ class ContributionController extends Controller
         $document = Document::findOrFail($id);
 		//File Name
 		$name = $document->name.".pdf";
-		$directory = $document->directory.".pdf";
+		$directory = $document->directory;
         $destination_path = public_path($directory);
 
         return response()->download($destination_path);
@@ -863,13 +871,13 @@ class ContributionController extends Controller
         $contribution_no =  $contribution->contribution_no;
         $inventory_location =  $contribution->inventory_location;
 
-
         $donations = Donation::where('contribution_id', $contribution_id)
         ->where('status',1)->get();
         
         foreach($donations as $donation) {
             $product_code = $donation->product_code;
             $product_type = $donation->product_type;
+            $document_id = $donation->document_id;
             $product_name =  $donation->product_name;
             $generic_name =  $donation->generic_name;
             $strength =  $donation->strength;
@@ -899,7 +907,8 @@ class ContributionController extends Controller
             if($inventory->count() == 0) {
                 //Insert Details If Unique Member Id, Product Code, Lot No and Unit Cost
                 $inventory = new Inventory;
-                $inventory->member_id = $member_id; 
+                $inventory->member_id = $member_id;
+                $inventory->document_id = $document_id;
                 $inventory->product_type = $product_type;
                 $inventory->product_code = $product_code;
                 $inventory->product_name = $product_name;
@@ -913,7 +922,6 @@ class ContributionController extends Controller
                 $inventory->job_no = $job_no;
                 $inventory->save();
             } else {
-
                 //Update Details If Existing Member Id, Product Code, Lot No and Unit Cost
                 //Get The Details
                 foreach($inventory as $inventoryDetails) {

@@ -112,13 +112,13 @@
         <form method="POST" action="{{ route('pd-initial-details-save') }}" class="mt-4"> 
             @csrf
             <div class="form-group row mt-2">
-                <label for="staticEmail" class="col-sm-1 col-form-label sd-label">Contribution No:</label>
+                <label class="col-lg-2 col-form-label sd-label">Contribution No :</label>
                 <div class="col-lg-4">
                 <input type="text" class="form-control" id="staticEmail" readonly value="CN-{{ $cn_no }}" name="contribution_no">
                 </div>
             </div>
             <div class="form-group row mt-2">
-                <label class="col-lg-1 col-form-label sd-label" for="sel1">Call for Support :</label>
+                <label class="col-lg-2 col-form-label sd-label" for="sel1">Call for Support :</label>
                 <div class="col-lg-4">
                     <select class="form-select" name="cfs_id">
                         <option value="0">None</option>
@@ -130,7 +130,7 @@
             </div>
 
             <div class="form-group row mt-2">
-                <label class="col-lg-1 col-form-label sd-label" for="sel1">Company :</label>
+                <label class="col-lg-2 col-form-label sd-label" for="sel1">Company :</label>
                 <div class="col-lg-4">
                     <select class="form-select" name="member_id">
                         @foreach ($members as $item)
@@ -141,14 +141,14 @@
             </div>
 
             <div class="form-group row mt-2">
-                <label for="inputPassword" class="col-sm-1 col-form-label sd-label">Distributor :</label>
+                <label for="inputPassword" class="col-lg-2 col-form-label sd-label">Distributor :</label>
                 <div class="col-lg-4">
                     <input type="text" class="form-control" id="distributor" name="distributor" placeholder="Distributor" required>
                 </div>
             </div>
 
             <div class="form-group row mt-2">
-                <label class="col-lg-1 col-form-label sd-label" for="inventory_location">Inventory Location :</label>
+                <label class="col-lg-2 col-form-label sd-label" for="inventory_location">Inventory Location :</label>
                 <div class="col-lg-4">
                     <select class="form-select" name="inventory_location">
                         <option value="ZPC">ZPC</option>
@@ -158,7 +158,7 @@
             </div>
 
             <div class="form-group row mt-2">
-                <label for="inputPassword" class="col-sm-1 col-form-label sd-label">Date :</label>
+                <label for="inputPassword" class="col-lg-2 col-form-label sd-label">Date :</label>
                 <div class="col-lg-4">
                     <div class="input-group mb-3">
                         <input type="text" class="form-control" name="contribution_date" id="contribution_date" placeholder="Date" onkeydown="return false" autocomplete="off" required>

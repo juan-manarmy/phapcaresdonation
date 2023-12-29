@@ -16,25 +16,28 @@
     <h5 class="donation-titles mt-4">Update Product</h5>
             <hr>
             <!-- Medicine Donation Forms -->
-            <form method="POST" action="{{ route('pd-donation-update-to-drafts', ['donation_id' => $donation->id]) }}" class="mt-3">
+            <form method="POST" action="{{ route('pd-donation-update-to-drafts', ['donation_id' => $donation->id]) }}" class="mt-3" enctype="multipart/form-data">
                 @csrf
                 <!-- <input type="text" name="status" id="status" value="{{ $donation->status }}" hidden> -->
                 <div class="row mt-2">
                     <div class="col-md-6 col-sm-6 col-xs-12">
-                        <div class="row">
+                        <div class="row align-items-center">
                             <label class="col-lg-4 col-form-label fw-bold" for="">Product Type :</label>
                             <div class="col-lg-8">
                                 <input type="text" name="product_type" id="product_type" value="{{ $donation->product_type }}" hidden>
-                                @if ($donation->product_type == 1)
+                                @if($donation->product_type == 1)
                                     Medicine / Vaccine
-                                @else
+                                @elseif ($donation->product_type == 2)
                                     Promotional Materials
+                                @elseif ($donation->product_type == 3)
+                                    Monetary
                                 @endif
                             </div>
                         </div>
                     </div>
                 </div>
 
+                @if($donation->product_type != 3)
                 <div class="row">
                     <div class="col-md-6 mt-2">
                         <div class="row">
@@ -149,7 +152,35 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
+                @if($donation->product_type == 3)
+                <div class="row">
+                    <div class="col-md-6 mt-2">
+                        <div class="row">
+                            <label for="" class="col-lg-4 col-form-label fw-bold">Amount :</label>
+                            <div class="col-lg-8">
+                                <input type="text" class="form-control" name="unit_cost" id="unit_cost" placeholder="Unit Cost/ Trade Price" value="{{ $donation->unit_cost }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card my-3">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="text-center">
+                                <img src="{{asset($monetary_path)}}" alt="" class="img-fluid" id="proof_deposit_img" style="max-height:500px">
+                            </div>
+                        </div>
+
+                        <label for="formFile" class="form-label col-form-label fw-bold">Proof of Deposit</label>
+                        <input class="form-control" type="file" name="proof_deposit" id="proof_deposit" accept="" onchange="showPreview(event);">
+                        <input class="form-control" type="text" name="current_proof_deposit" id="current_proof_deposit" value="{{$monetary_path}}" hidden>
+                        <div class="form-text text-primary" for="exampleCheck1">Upload new image to update the banner.</div>
+                    </div>
+                </div>
+                @endif
                 <div class="d-flex flex-row-reverse mt-4">
                     <button type="submit" class="btn btn-primary">Update and Proceed</button>
                     <button href="#" type="button" class="btn btn-outline-secondary me-2">Go Back</button>
@@ -178,5 +209,13 @@
             autoHide: true,
         });
     });
+
+    function showPreview(event) {
+        if(event.target.files.length > 0 ) {
+            var src = URL.createObjectURL(event.target.files[0]);
+            var preview = document.getElementById("proof_deposit_img");
+            preview.src = src;
+        }
+    }
 </script>
 @endsection

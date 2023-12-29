@@ -10,6 +10,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use App\Document;
 
 class ProductDonationController extends Controller
 {
@@ -69,8 +70,11 @@ class ProductDonationController extends Controller
     public function initialDetailsView()
     {
         $members = Member::all();
-        $cn_no = Str::random(10);
-        // Str::uuid(10)
+
+        $currentDate = Carbon::now();
+        $randomStr = strtoupper(Str::random(8));
+        $cn_no = $currentDate->format('ymd');
+        $cn_no = $cn_no.$randomStr;
         
         $contributions_notif = DB::table('contributions')
         ->join('members', 'contributions.member_id', '=', 'members.id')
@@ -192,6 +196,18 @@ class ProductDonationController extends Controller
         return $donations;
     }
 
+    public function saveProofToDocuments($contribution_id,$proof_deposit) 
+    {
+        $document = new Document;
+        $document->contribution_id = $contribution_id;
+        $document->type = 'Proof of Deposit';
+        $document->name = 'Monetary';
+        $document->directory = "/images/monetary/{$proof_deposit}";
+        $document->save();
+
+        return $document->id;
+    }
+
     public function uploadMonetary(Request $request) {
         $new_donation = new Donation;
         $new_donation->contribution_id = $request->contribution_id;
@@ -207,10 +223,14 @@ class ProductDonationController extends Controller
         $destination_path = public_path('/images/monetary');
         // upload banner
         $proof_deposit->move($destination_path,$proof_deposit_name);
-        $new_donation->proof_deposit = $proof_deposit_name;
-
+        // $new_donation->proof_deposit = $proof_deposit_name;
         $new_donation->status = 1;
+
+        $document_id = $this->saveProofToDocuments($request->contribution_id,$proof_deposit_name);
+        $new_donation->document_id  = $document_id ;
+        
         $new_donation->save();
+
         return $new_donation;
     }
 
@@ -236,7 +256,6 @@ class ProductDonationController extends Controller
         // $new_donation->job_no = "JO-{$random}";
         // $new_donation->product_code = "JO-{$random}";
         // $new_donation->drug_reg_no = "DR-{$random}";
-
         // $new_donation->uom = $request->donation["uom"];
         // $new_donation->remarks = $request->donation["remarks"];
         $new_donation->status = 1;
@@ -247,24 +266,45 @@ class ProductDonationController extends Controller
 
     public function updateDonationToDrafts($donation_id, Request $request)
     {
-        $existing_donation = Donation::findOrFail($donation_id);
-        $contribution = Contribution::findOrFail($existing_donation->contribution_id);
-        $contribution_no = $contribution->contribution_no;
-        $contribution_id = $contribution->id;
+        if($request->product_type == 1 || $request->product_type == 2) {
+            $existing_donation = Donation::findOrFail($donation_id);
+            $contribution = Contribution::findOrFail($existing_donation->contribution_id);
+            $contribution_no = $contribution->contribution_no;
+            $contribution_id = $contribution->id;
+    
+            $existing_donation->product_name = $request["product_name"];
+            $existing_donation->generic_name = $request["generic_name"];
+            $existing_donation->strength = $request["strength"];
+            $existing_donation->dosage_form = $request["dosage_form"];
+            $existing_donation->package_size = $request["package_size"];
+            $existing_donation->quantity = $request["quantity"];
+            $existing_donation->lot_no = $request["lot_no"];
+            $existing_donation->expiry_date = new Carbon($request["expiry_date"]);
+            $existing_donation->drug_reg_no = $request["drug_reg_no"];
+            $existing_donation->unit_cost = $request["unit_cost"];
+            $existing_donation->medicine_status = $request["medicine_status"];
+            $existing_donation->total = $request["unit_cost"] * $request["quantity"];
+            $existing_donation->save();
+        }
 
-        $existing_donation->product_name = $request["product_name"];
-        $existing_donation->generic_name = $request["generic_name"];
-        $existing_donation->strength = $request["strength"];
-        $existing_donation->dosage_form = $request["dosage_form"];
-        $existing_donation->package_size = $request["package_size"];
-        $existing_donation->quantity = $request["quantity"];
-        $existing_donation->lot_no = $request["lot_no"];
-        $existing_donation->expiry_date = new Carbon($request["expiry_date"]);
-        $existing_donation->drug_reg_no = $request["drug_reg_no"];
-        $existing_donation->unit_cost = $request["unit_cost"];
-        $existing_donation->medicine_status = $request["medicine_status"];
-        $existing_donation->total = $request["unit_cost"] * $request["quantity"];
-        $existing_donation->save();
+        if($request->product_type == 3) {
+            $existing_donation = Donation::findOrFail($donation_id);
+            $contribution = Contribution::findOrFail($existing_donation->contribution_id);
+            $contribution_no = $contribution->contribution_no;
+            $contribution_id = $contribution->id;
+            $existing_donation->total = $request->unit_cost;
+            $existing_donation->unit_cost = $request->unit_cost;
+            
+            if($request->proof_deposit) {
+                $proof_deposit = $request->file('proof_deposit');
+                $existing_document_name = $request->current_proof_deposit;
+                $proof_deposit_name = $existing_document_name;
+                $destination_path = public_path('/images/monetary');
+                // upload banner overwrite to public images
+                $proof_deposit->move($destination_path,$proof_deposit_name);
+            }
+            $existing_donation->save();
+        }
 
         return redirect()->route('pd-donations', ['contribution_id' => $contribution_id, 'contribution_no' =>  $contribution_no]);
     }
@@ -308,7 +348,16 @@ class ProductDonationController extends Controller
 
         $donation = Donation::findOrFail($donation_id);
 
+        $monetary_path = '';
+        
+        if($donation->product_type == 3) {
+            $monetary_path = Document::find($donation->document_id);
+            $monetary_path = $monetary_path->directory;
+        }
+
+        // update monetary img when updated 
         return view('product-donation.pd-update')
+        ->with('monetary_path', $monetary_path)
         ->with('donation', $donation)
         ->with('allocations_notif', $allocations_notif)
         ->with('contributions_notif', $contributions_notif);

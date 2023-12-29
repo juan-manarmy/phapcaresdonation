@@ -50,7 +50,11 @@
                             <td>{{ number_format($item->quantity) }}</td>
                             <td>{{ $item->unit_cost }}</td>
                             <td>P{{ number_format($item->total,2) }}</td>
-                            <td>{{ date('F, d Y', strtotime($item->expiry_date)) }}</td> 
+                            <td>
+                                @if($item->expiry_date != null) 
+                                    {{ date('F, d Y', strtotime($item->expiry_date)) }}
+                                @endif
+                            </td> 
                             <td>
                                 <a href="{{ route('inventory-edit', ['id' => $item->id]) }}" class="btn tt cfs-edit-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit">
                                     <i class="fas fa-edit cfs-edit-ic text-secondary"></i>

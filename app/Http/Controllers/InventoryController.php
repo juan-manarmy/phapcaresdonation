@@ -10,6 +10,7 @@ use App\Summary;
 use App\TransactionReport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use App\Document;
 
 class InventoryController extends Controller
 {
@@ -57,21 +58,24 @@ class InventoryController extends Controller
         ->get();
 
         $inventory = Inventory::findOrFail($id);
-        if($inventory->product_type == 1) {
-            $inventory->product_type = "Medicine/Vaccine";
-        } else if($inventory->product_type == 2) {
-            $inventory->product_type = "Promotional Materials";
-        } else if($inventory->product_type == 3){
-            $inventory->product_type = "Cash Donation";
+        $monetary_path = '';
+        
+        if($inventory->product_type == 3) {
+            $monetary_path = Document::find($inventory->document_id);
+            $monetary_path = $monetary_path->directory;
         }
+
         return view ('inventory.inventory-edit')
+        ->with('monetary_path', $monetary_path)
         ->with('inventory',$inventory)
         ->with('allocations_notif', $allocations_notif)
         ->with('contributions_notif', $contributions_notif);
     }
 
     public function inventoryUpdate($inventory_id, Request $request) {
+
         $inventory = Inventory::findOrFail($inventory_id);
+
 
         //Get Existing Inventory Unit Cost And Quantity
         $inventory_quantity = $inventory->quantity;
@@ -109,7 +113,7 @@ class InventoryController extends Controller
             $expiry_date = new Carbon($inventory->expiry_date);
             $job_no = $inventory->job_no;
 
-            $transactionType ="";
+            $transactionType = "";
 
 			//Identify Adjustment Type And Compute For The Adjustments
 			if ($inventory_quantity > $quantity) {

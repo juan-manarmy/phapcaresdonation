@@ -601,11 +601,11 @@ class AllocationController extends Controller
         $document->name = "{$allocation_no}_{$type}";
 
         if($type == "DNA") {
-            $document->directory = "/pdf/dna/{$allocation_no}_{$type}";
+            $document->directory = "/pdf/dna/{$allocation_no}_{$type}.pdf";
         } else if($type == "DTAC") {
-            $document->directory = "/pdf/dtac/{$allocation_no}_{$type}";
+            $document->directory = "/pdf/dtac/{$allocation_no}_{$type}.pdf";
         } else if($type == "DODRF") {
-            $document->directory = "/pdf/dodrf/{$allocation_no}_{$type}";
+            $document->directory = "/pdf/dodrf/{$allocation_no}_{$type}.pdf";
         }
         $document->save();
     }
