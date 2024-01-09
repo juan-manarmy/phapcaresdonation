@@ -3,39 +3,52 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+Route::middleware('api')->post('/register','AuthController@register');
+Route::middleware('api')->post('/login','AuthController@login');
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::group(['middleware'=>'auth:sanctum'], function() {
+    Route::get('/cfs-posts','CfsPostControllerApi@index');
+    Route::get('/cfs-posts/spinner','CfsPostControllerApi@getPostSpinner');
+    Route::get('/cfs-posts/{id}','CfsPostControllerApi@getPostById');
+    Route::get('/cfs-posts/{id}/cfs-requests','CfsPostControllerApi@getPostRequests');
+    Route::get('/cfs-posts/{id}/cfs-donors','CfsPostControllerApi@getPostDonors');
+    Route::get('/cfs-post/get-events-selection','CfsPostControllerApi@getEventSelection');
+    Route::get('/user-profile','UserControllerApi@show');
+    Route::put('/user/update-token','UserControllerApi@updateDeviceToken');
+    Route::get('/articles','ArticleControllerApi@index');
+    Route::get('/articles/{id}','ArticleControllerApi@show');
+    Route::get('/donated-cfs-posts','CfsPostControllerApi@checkDonation');
+    Route::get('/donated/{cfs_post_id}/{donation_type}','DonationControllerApi@show');
+    Route::get('/beneficiaries/{id}','DonationControllerApi@getBeneficiaries');
+    Route::get('/search/{query}','CfsPostControllerApi@search');
+    Route::get('/post','PostControllerApi@show');
+    Route::post('/contributions/save-initial-details','ContributionControllerApi@saveInitialDetails');
+    Route::post('/contributions/{contribution_id}/save-medicine-donation','ContributionControllerApi@saveMedicineDonation');
+    Route::post('/contributions/{contribution_id}/save-promats-donation','ContributionControllerApi@savePromatsDonation');
+    Route::post('/contributions/{contribution_id}/save-monetary-donation','ContributionControllerApi@saveMonetaryDonation');
+    Route::put('/contributions/{contribution_id}/save-total-donation','ContributionControllerApi@saveTotalDonation');
+    Route::put('/contributions/{id}/update-medicine-donation','ContributionControllerApi@updateMedicineDonation');
+    Route::put('/contributions/{id}/update-promats-donation','ContributionControllerApi@updatePromatsDonation');
+    Route::post('/contributions/{id}/update-monetary-donation','ContributionControllerApi@updateMonetaryDonation');
+    Route::post('/contributions/{contribution_id}/save-secondary-details','ContributionControllerApi@saveSecondaryDetails');
+    Route::get('/contributions/get-contributions','ContributionControllerApi@getContributions');
+    Route::get('/contributions/{contribution_id}/get-approved-contribution','ContributionControllerApi@getApprovedContribution');
+    Route::get('/contributions/{id}/get-contribution-by-id','ContributionControllerApi@getContributionById');
+    Route::get('/contributions/get-contributions-drafts','ContributionControllerApi@getContributionsDrafts');
+    Route::get('/contributions/get-contributions-drafts-count','ContributionControllerApi@getContributionsDraftsCount');
+    Route::put('/contributions/{id}/update-initial-details','ContributionControllerApi@updateInitialDetails');
+    Route::get('/contributions/{contribution_id}/get-contribution-donations','ContributionControllerApi@getContributionDonation');
+    Route::get('/contributions/{contribution_id}/get-medicine-donations','ContributionControllerApi@getMedicineDonation');
+    Route::get('/contributions/{contribution_id}/get-promats-donations','ContributionControllerApi@getPromatsDonation');
+    Route::get('/contributions/{contribution_id}/get-monetary-donations','ContributionControllerApi@getMonetaryDonation');
+    Route::get('/contributions/{contribution_id}/get-donations','ContributionControllerApi@getDonations');
+    Route::delete('/contributions/{id}/delete-donation','ContributionControllerApi@deleteDonation');
+    Route::get('/contributions/{contribution_id}/get-total-donations','ContributionControllerApi@getTotalDonations');
+    Route::get('/contributions/{contribution_id}/get-documents','DocumentControllerApi@getDocuments');
+    Route::get('/inventory/get-inventory','InventoryControllerApi@getInventory');
+    Route::delete('/contributions/{id}/delete-contribution','ContributionControllerApi@deleteContribution');
+});
 
-Route::middleware('api')->post('/product-donation/{contribution_id}/save-donation','ProductDonationController@saveDonation');
-Route::middleware('api')->get('/product-donation/{contribution_id}/show-donations','ProductDonationController@showDonations');
-Route::middleware('api')->delete('/product-donation/{id}/delete-donation','ProductDonationController@deleteDonation');
-Route::middleware('api')->post('/product-donation/{contribution_id}/save-total-donations','ProductDonationController@saveTotalDonations');
-Route::middleware('api')->post('/upload-monetary','ProductDonationController@uploadMonetary');
-
-Route::middleware('api')->get('/test-generate','ReportsController@generateExcelReport');
-
-Route::middleware('api')->get('/members/show-members','AllocationController@getMembers');
-Route::middleware('api')->get('/inventory/{member_id}/{allocation_id}/show-inventory','AllocationController@getInventory');
-Route::middleware('api')->get('/inventory/{product_id}/show-product','AllocationController@getSelectedProduct');
-Route::middleware('api')->post('/allocation/{allocation_id}/save-allocated-product','AllocationController@saveAllocatedProduct');
-Route::middleware('api')->get('/allocation/{allocation_id}/get-allocated-product','AllocationController@getAllocatedProduct');
-Route::middleware('api')->delete('/allocation/{allocated_product_id}/delete-allocated-product','AllocationController@processAllocatedProductsRemove');
-Route::middleware('api')->post('/allocation/{allocation_id}/save-total-donations','AllocationController@saveTotalDonations');
-
-Route::middleware('api')->get('/destruction/{destruction_id}/get-destructed-product','ProductDestructionController@getDestructedProduct');
-Route::middleware('api')->post('/destruction/{destruction_id}/save-total-donations','ProductDestructionController@saveTotalDonations');
-Route::middleware('api')->post('/destruction/{destruction_id}/save-destructed-product','ProductDestructionController@saveDestructedProduct');
-Route::middleware('api')->get('/destruction/inventory/{member_id}/{destruction_id}/show-inventory','ProductDestructionController@getInventory');
-Route::middleware('api')->delete('/destruction/{destruction_id}/delete-destructed-product','ProductDestructionController@processDestructedProductsRemove');
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
+});

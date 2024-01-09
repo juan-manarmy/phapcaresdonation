@@ -697,10 +697,21 @@ class ProductDestructionController extends Controller
     }
 
     public function saveDestruction(Request $request) {
+
+        $beneficiary_id = $request->beneficiary_id;
+
+        if($request->new_beneficiary) {
+            $beneficiary = new Beneficiary;
+            $beneficiary->name = $request->new_beneficiary;
+            $beneficiary->save();
+
+            $beneficiary_id = $beneficiary->id;
+        } 
+
         $destruction = Destruction::updateOrCreate(
             ['destruction_no' => $request->destruction_no],
             ['pdrf_no' => $request->pdrf_no,
-            'beneficiary_id' => $request->beneficiary_id,
+            'beneficiary_id' => $beneficiary_id,
             'notice_to' => $request->notice_to,
             'pickup_address' => $request->pickup_address,
             'pickup_contact_person' => $request->pickup_contact_person,
@@ -753,11 +764,24 @@ class ProductDestructionController extends Controller
         ->orderBy('id', 'DESC')
         ->get();
 
+        $destruction_without_pdrf = Destruction::where('pdrf_no','!=', '')
+        ->get();
+
+        $pdrf_count = $destruction_without_pdrf->count() + 1;
+        $todays_year = Carbon::now()->year;
+        $new_pdrf_no = $todays_year."-".$pdrf_count;
+
         $beneficiaries = Beneficiary::all();
-        $destruction_no = Str::random(10);
+
+        $currentDate = Carbon::now();
+
+        $randomStr = strtoupper(Str::random(8));
+        $destruction_no = $currentDate->format('ymd');
+        $destruction_no = 'DN-'.$destruction_no.$randomStr;
 
         return view('product-destruction.product-destruction-create')
         ->with('destruction_no', $destruction_no)
+        ->with('new_pdrf_no', $new_pdrf_no)
         ->with('beneficiaries', $beneficiaries)
         ->with('allocations_notif', $allocations_notif)
         ->with('contributions_notif', $contributions_notif);

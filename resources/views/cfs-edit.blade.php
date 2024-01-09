@@ -45,7 +45,7 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <div class="text-center">
-                                <img src="{{asset('/images/monetary/'.$monetary_path->banner_path)}}" width="500" alt="" class="img-fluid" id="banner">
+                                <img src="{{asset('/images/cfs_banners/'.$cfs->banner_path)}}" width="500" alt="" class="img-fluid" id="banner">
                             </div>
                         </div>
 

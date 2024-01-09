@@ -37,6 +37,14 @@ Route::group(['middleware' => ['auth','isAdmin']], function() {
     Route::get('call-for-support/{id}/edit', 'CfsPostController@show')->name('edit-call-for-support-view');
     Route::put('/call-for-support/{id}/edit/submit', 'CfsPostController@edit')->name('call-for-support-submit-edit');
 
+    // PRODUCT DONATION -- API
+
+    Route::get('/product-donation/{contribution_id}/show-donations', 'ProductDonationController@showDonations');
+    Route::post('/product-donation/{contribution_id}/save-donation', 'ProductDonationController@saveDonation');
+    Route::delete('/product-donation/{id}/delete-donation', 'ProductDonationController@deleteDonation');
+    Route::post('/product-donation/{contribution_id}/save-total-donations', 'ProductDonationController@saveTotalDonations');
+    Route::post('/upload-monetary', 'ProductDonationController@uploadMonetary');
+
     // PRODUCT DONATION
     Route::get('/product-donation/initial-details', 'ProductDonationController@initialDetailsView')->name('pd-initial-details');
     Route::get('/product-donation/initial-details/{id}', 'ProductDonationController@initialDetailsViewRead')->name('pd-initial-details-read');
@@ -77,6 +85,15 @@ Route::group(['middleware' => ['auth','isAdmin']], function() {
     Route::get('/allocations/create/{id}', 'AllocationController@allocationCreateRead')->name('allocation-create-read');
     Route::delete('/allocations/delete', 'AllocationController@cancelAllocation')->name('allocation-delete');
 
+    //ALLOCATIONS API
+    Route::get('/members/show-members','AllocationController@getMembers');
+    Route::get('/inventory/{member_id}/{allocation_id}/show-inventory','AllocationController@getInventory');
+    Route::get('/inventory/{product_id}/show-product','AllocationController@getSelectedProduct');
+    Route::post('/allocation/{allocation_id}/save-allocated-product','AllocationController@saveAllocatedProduct');
+    Route::get('/allocation/{allocation_id}/get-allocated-product','AllocationController@getAllocatedProduct');
+    Route::delete('/allocation/{allocated_product_id}/delete-allocated-product','AllocationController@processAllocatedProductsRemove');
+    Route::post('/allocation/{allocation_id}/save-total-donations','AllocationController@saveTotalDonations');
+
     // PRODUCT DESTRUCTIONS
     Route::get('/product-destruction', 'ProductDestructionController@productDestructionList')->name('product-destruction-list');
     Route::get('/product-destruction/{destruction_id}/details', 'ProductDestructionController@productDestructionDetails')->name('product-destruction-details');
@@ -91,6 +108,13 @@ Route::group(['middleware' => ['auth','isAdmin']], function() {
 
     Route::get('/product-destruction/create/{id}', 'ProductDestructionController@productDestructionCreateRead')->name('product-destruction-create-read');
     Route::delete('/product-destruction/destruction/delete', 'ProductDestructionController@cancelDestruction')->name('destruction-delete');
+
+    // DESTRUCTION API
+    Route::get('/destruction/{destruction_id}/get-destructed-product','ProductDestructionController@getDestructedProduct');
+    Route::post('/destruction/{destruction_id}/save-total-donations','ProductDestructionController@saveTotalDonations');
+    Route::post('/destruction/{destruction_id}/save-destructed-product','ProductDestructionController@saveDestructedProduct');
+    Route::get('/destruction/inventory/{member_id}/{destruction_id}/show-inventory','ProductDestructionController@getInventory');
+    Route::delete('/destruction/{destruction_id}/delete-destructed-product','ProductDestructionController@processDestructedProductsRemove');
 
     // destruction-edit-view
     // INVENTORY

@@ -74,7 +74,7 @@ class ProductDonationController extends Controller
         $currentDate = Carbon::now();
         $randomStr = strtoupper(Str::random(8));
         $cn_no = $currentDate->format('ymd');
-        $cn_no = $cn_no.$randomStr;
+        $cn_no = 'CN-'.$cn_no.$randomStr;
         
         $contributions_notif = DB::table('contributions')
         ->join('members', 'contributions.member_id', '=', 'members.id')

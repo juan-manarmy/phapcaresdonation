@@ -1021,7 +1021,6 @@ class AllocationController extends Controller
     }
 
     public function allocationCreate() {
-        
         $contributions_notif = DB::table('contributions')
         ->join('members', 'contributions.member_id', '=', 'members.id')
         ->where('contributions.status',1)
@@ -1037,11 +1036,26 @@ class AllocationController extends Controller
         ->get();
 
         $beneficiaries = Beneficiary::all();
-        // $allocation_no = Str::uuid();
-        $allocation_no = 'AN-'.Str::random(10);
+
+        $currentDate = Carbon::now();
+
+        $randomStr = strtoupper(Str::random(8));
+        $allocation_no = $currentDate->format('ymd');
+        $allocation_no = 'AN-'.$allocation_no.$randomStr;
+
+        
+        $allocation_without_dna = Allocation::where('dna_no','!=', '')
+        ->get();
+
+        $dna_count = $allocation_without_dna->count() + 1;
+
+        $todays_year = Carbon::now()->year;
+
+        $new_dna_no = $todays_year."-".$dna_count;
         
         return view('allocations.allocation-create')
         ->with('allocation_no', $allocation_no)
+        ->with('new_dna_no', $new_dna_no)
         ->with('beneficiaries', $beneficiaries)
         ->with('allocations_notif', $allocations_notif)
         ->with('contributions_notif', $contributions_notif);
@@ -1080,10 +1094,21 @@ class AllocationController extends Controller
     }
 
     public function saveAllocation(Request $request) {
+
+        $beneficiary_id = $request->beneficiary_id;
+
+        if($request->new_beneficiary) {
+            $beneficiary = new Beneficiary;
+            $beneficiary->name = $request->new_beneficiary;
+            $beneficiary->save();
+
+            $beneficiary_id = $beneficiary->id;
+        } 
+
         $allocation = Allocation::updateOrCreate(
             ['allocation_no' => $request->allocation_no],
             ['dna_no' => $request->dna_no,
-            'beneficiary_id' => $request->beneficiary_id,
+            'beneficiary_id' => $beneficiary_id,
             'notice_to' => $request->notice_to,
             'authorized_representative' => $request->authorized_representative,
             'position' => $request->position,

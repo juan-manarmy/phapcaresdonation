@@ -33,7 +33,7 @@
                             <div class="row">
                                 <label for="" class="col-lg-4 col-form-label fw-bold">DNA No. :</label>
                                 <div class="col-lg-8">
-                                    <input type="text" class="form-control" name="dna_no" value="{{ $allocation->allocation_no }}" readonly>
+                                    <input type="text" class="form-control" name="dna_no" value="{{ $allocation->dna_no }}" readonly>
                                 </div>
                             </div>
                         </div>
@@ -44,12 +44,22 @@
                             <div class="row">
                                 <label for="" class="col-lg-4 col-form-label fw-bold">Beneficiary :</label>
                                 <div class="col-lg-8">
-                                    <select class="form-control form-select" name="beneficiary_id" aria-label="Default select example">
-                                        <!-- <option>New Beneficiary</option> -->
+                                    <select class="form-control form-select" name="beneficiary_id" id="beneficiary_id" aria-label="Default select example">
+                                        <option value="" disabled selected hidden>Choose a Beneficiary</option>
+                                        <option value="0"><p class="font-weight-bold">*Create New Beneficiary</p></option>
                                         @foreach($beneficiaries as $item)
                                             <option {{ $allocation->beneficiary_id == $item->id ? "selected" : "" }} value="{{ $item->id }}">{{ $item->name }}</option>
                                         @endforeach
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mt-2" id="new_beneficiary_div" style="display: none;">
+                            <div class="row">
+                                <label for="" class="col-lg-4 col-form-label fw-bold">New Beneficiary :</label>
+                                <div class="col-lg-8">
+                                    <input type="text" class="form-control" name="new_beneficiary" id="new_beneficiary" value="">
                                 </div>
                             </div>
                         </div>
@@ -164,7 +174,7 @@
                             <div class="row">
                                 <label for="" class="col-lg-4 col-form-label fw-bold">DNA No. :</label>
                                 <div class="col-lg-8">
-                                    <input type="text" class="form-control" name="dna_no" value="{{ $allocation_no }}" readonly>
+                                    <input type="text" class="form-control" name="dna_no" value="{{ $new_dna_no }}" readonly>
                                 </div>
                             </div>
                         </div>
@@ -175,12 +185,23 @@
                             <div class="row">
                                 <label for="" class="col-lg-4 col-form-label fw-bold">Beneficiary :</label>
                                 <div class="col-lg-8">
-                                    <select class="form-control form-select" name="beneficiary_id" aria-label="Default select example">
+                                    <select class="form-control form-select" name="beneficiary_id" id="beneficiary_id" aria-label="Default select example">
                                         <!-- <option>New Beneficiary</option> -->
+                                        <option value="" disabled selected hidden>Choose a Beneficiary</option>
+                                        <option value="0"><p class="font-weight-bold">*Create New Beneficiary</p></option>
                                         @foreach($beneficiaries as $item)
                                             <option value="{{ $item->id }}">{{ $item->name }}</option>
                                         @endforeach
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mt-2" id="new_beneficiary_div" style="display: none;">
+                            <div class="row">
+                                <label for="" class="col-lg-4 col-form-label fw-bold">New Beneficiary :</label>
+                                <div class="col-lg-8">
+                                    <input type="text" class="form-control" name="new_beneficiary" id="new_beneficiary" value="">
                                 </div>
                             </div>
                         </div>
@@ -405,5 +426,12 @@
         autoHide: true,
         });
     });
+
+    document.getElementById('beneficiary_id').addEventListener('change', function () {
+        var style = this.value == 0 ? 'block' : 'none';
+        document.getElementById('new_beneficiary_div').style.display = style;
+        document.getElementById('new_beneficiary').value = '';
+    });
+
 </script>
 @endsection

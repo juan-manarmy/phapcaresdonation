@@ -388,7 +388,7 @@ export default {
             this.$delete(this.selected_product);
             this.selected_product.id = 0;
             // console.log(this.inventory);
-            axios.get('../../../api/inventory/' + event.target.value + "/" + this.allocation_id +"/show-inventory", {
+            axios.get('../../../inventory/' + event.target.value + "/" + this.allocation_id +"/show-inventory", {
             })
             .then( response => {
                 this.inventory = response.data;
@@ -400,7 +400,7 @@ export default {
         },
         getMembers () {
             // this.$delete(this.inventory);
-            axios.get('../../../api/members/show-members', {
+            axios.get('../../../members/show-members', {
             })
             .then( response => {
                 this.members = response.data;
@@ -419,7 +419,7 @@ export default {
                 this.selected_product.id = 0;
             } else {
                 // if there is a selected item in invetory get the details of the product
-                axios.get('../../../api/inventory/'+ event.target.value +"/show-product", {
+                axios.get('../../../inventory/'+ event.target.value +"/show-product", {
                 })
                 .then( response => {
                     this.selected_product = response.data;
@@ -453,7 +453,7 @@ export default {
             // adding the issuance quantity 
             this.selected_product.quantity = this.issuance_quantity;
 
-            axios.post('../../../api/allocation/'+ this.allocation_id + "/save-allocated-product", {
+            axios.post('../../../allocation/'+ this.allocation_id + "/save-allocated-product", {
                 selected_product: this.selected_product
             })
             .then( response=> {
@@ -474,7 +474,7 @@ export default {
         },
         deleteProduct (id) {
             // var deletemodal = document.getElementById('deleteModal'); // relatedTarget
-            axios.delete('../../../api/allocation/'+ id + "/delete-allocated-product")
+            axios.delete('../../../allocation/'+ id + "/delete-allocated-product")
             .then( response=> {
                 if (response.status == 200) {
                     this.getAllocatedProducts ();
@@ -486,7 +486,7 @@ export default {
             })
         },
         getAllocatedProducts () {
-            axios.get('../../../api/allocation/'+ this.allocation_id + "/get-allocated-product", {
+            axios.get('../../../allocation/'+ this.allocation_id + "/get-allocated-product", {
             })
             .then( response => {
 
@@ -533,7 +533,7 @@ export default {
                 alert("Donations are empty");
                 return;
             }
-            axios.post('../../../api/allocation/'+ this.allocation_id + "/save-total-donations", {
+            axios.post('../../../allocation/'+ this.allocation_id + "/save-total-donations", {
                 total_donations: this.total_donations
             })
             .then( response=> {

@@ -425,7 +425,7 @@
                                     <td>{{$item->name}}</td>
                                     <td>{{date('F, d Y', strtotime($item->created_at))}}</td>
                                     <td>
-                                        <a href="{{$item->directory}}.pdf" target="_blank" class="btn  cfs-edit-btn" title="Open/View">
+                                        <a href="{{$item->directory}}" target="_blank" class="btn  cfs-edit-btn" title="Open/View">
                                             <i class="fas fa-folder-open cfs-edit-ic text-secondary"></i>
                                         </a>
                                         <a href="{{ route('download-pdf', ['id' => $item->id]) }}" class="btn  cfs-edit-btn" title="Download">

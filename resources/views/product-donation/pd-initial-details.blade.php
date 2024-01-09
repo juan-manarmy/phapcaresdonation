@@ -114,7 +114,7 @@
             <div class="form-group row mt-2">
                 <label class="col-lg-2 col-form-label sd-label">Contribution No :</label>
                 <div class="col-lg-4">
-                <input type="text" class="form-control" id="staticEmail" readonly value="CN-{{ $cn_no }}" name="contribution_no">
+                <input type="text" class="form-control" id="staticEmail" readonly value="{{ $cn_no }}" name="contribution_no">
                 </div>
             </div>
             <div class="form-group row mt-2">

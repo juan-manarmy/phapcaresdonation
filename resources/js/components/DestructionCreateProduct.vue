@@ -381,7 +381,7 @@ export default {
             this.$delete(this.selected_product);
             this.selected_product.id = 0;
             // console.log(this.inventory);
-            axios.get('../../../api/destruction/inventory/' + event.target.value + "/" + this.destruction_id +"/show-inventory", {
+            axios.get('../../../destruction/inventory/' + event.target.value + "/" + this.destruction_id +"/show-inventory", {
             })
             .then( response => {
                 this.inventory = response.data;
@@ -392,7 +392,7 @@ export default {
             })
         },
         getMembers () {
-            axios.get('../../../api/members/show-members', {
+            axios.get('../../../members/show-members', {
             })
             .then( response => {
                 this.members = response.data;
@@ -409,7 +409,7 @@ export default {
                 this.selected_product.id = 0;
             } else {
                 // if there is a selected item in invetory get the details of the product
-                axios.get('../../../api/inventory/'+ event.target.value +"/show-product", {
+                axios.get('../../../inventory/'+ event.target.value +"/show-product", {
                 })
                 .then( response => {
                     this.selected_product = response.data;
@@ -442,7 +442,7 @@ export default {
             // adding the issuance quantity 
             this.selected_product.quantity = this.issuance_quantity;
 
-            axios.post('../../../api/destruction/'+ this.destruction_id + "/save-destructed-product", {
+            axios.post('../../../destruction/'+ this.destruction_id + "/save-destructed-product", {
                 selected_product: this.selected_product
             })
             .then( response=> {
@@ -464,7 +464,7 @@ export default {
         deleteProduct (id) {
             
             // var deletemodal = document.getElementById('deleteModal'); // relatedTarget
-            axios.delete('../../../api/destruction/'+ id + "/delete-destructed-product")
+            axios.delete('../../../destruction/'+ id + "/delete-destructed-product")
             .then( response=> {
                 if (response.status == 200) {
                     this.getDestructedProducts ();
@@ -476,7 +476,7 @@ export default {
             })
         },
         getDestructedProducts () {
-            axios.get('../../../api/destruction/'+ this.destruction_id + "/get-destructed-product", {
+            axios.get('../../../destruction/'+ this.destruction_id + "/get-destructed-product", {
             })
             .then( response => {
 
@@ -524,7 +524,7 @@ export default {
                 return;
             }
 
-            axios.post('../../../api/destruction/'+ this.destruction_id + "/save-total-donations", {
+            axios.post('../../../destruction/'+ this.destruction_id + "/save-total-donations", {
                 total_donations: this.total_donations
             })
             .then( response=> {

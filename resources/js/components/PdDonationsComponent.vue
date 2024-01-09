@@ -650,7 +650,7 @@ export default {
                 this.total_loading = !true
                 return;
             }
-            axios.post('../../../api/product-donation/'+ this.donation.contribution_id + "/save-total-donations", {
+            axios.post('../../../product-donation/'+ this.donation.contribution_id + "/save-total-donations", {
                 total_donations: this.total_donations
             })
             .then( response=> {
@@ -673,7 +673,7 @@ export default {
             if(this.donation.product_type != 3) {
                 this.donation.expiry_date = moment(this.donation.expiry_date).format('l');
                 this.donation.mfg_date = moment(this.donation.mfg_date).format('l');
-                axios.post('../../../api/product-donation/'+ this.donation.contribution_id + "/save-donation", {
+                axios.post('../../../product-donation/'+ this.donation.contribution_id + "/save-donation", {
                     donation: this.donation
                 }).then( response=> {
                     if (response.status == 201) {
@@ -714,8 +714,7 @@ export default {
                     }
                 }
 
-                // axios.post('../../../api/upload-monetary', formData)
-                axios.post('../../../api/upload-monetary', formData, config).then(
+                axios.post('../../../upload-monetary', formData, config).then(
                     response => {
                         if (response.status == 201) {
                             // this.handleOnChange();
@@ -731,18 +730,9 @@ export default {
                     }
                 )
             }
-            
-        },
-        uploadMonetary() {
-            const formData = new FormData
-            formData.set('contribution_id', this.donation.contribution_id);
-            formData.set('product_type', this.donation.product_type);
-            formData.set('total', this.donation.total);
-            formData.set('proof_deposit', this.donation.proof_deposit);
-            axios.post('../../../api/upload-monetary', formData)
         },
         getDonations () {
-            axios.get('../../../api/product-donation/'+ this.contribution_id + "/show-donations", {
+            axios.get('../../../product-donation/'+ this.contribution_id + "/show-donations", {
             })
             .then( response => {
 
@@ -760,20 +750,20 @@ export default {
                 this.donations.forEach((item, index) => {
                     // If medicine
                     if(item.product_type === '1') {
-                        this.medicine_total_quantity += item.quantity;
-                        this.total_donations.medicine_total_donation += item.total;
+                        this.medicine_total_quantity += parseInt(item.quantity);
+                        this.total_donations.medicine_total_donation += parseFloat(item.total);
                         this.medicine_count += 1;
                     }
                     
                     // If promats
                     if(item.product_type === '2') {
-                        this.promats_total_quantity += item.quantity;
-                        this.total_donations.promats_total_donation += item.total;
+                        this.promats_total_quantity += parseInt(item.quantity);
+                        this.total_donations.promats_total_donation += parseFloat(item.total);
                         this.promats_count += 1;
                     }
 
                     if(item.product_type === '3') {
-                        this.total_donations.monetary_total_donation += item.total;
+                        this.total_donations.monetary_total_donation += parseFloat(item.total);
                     }
                 })
                 
@@ -787,7 +777,7 @@ export default {
         },
         deleteDonation (id) {
             // var deletemodal = document.getElementById('deleteModal'); // relatedTarget
-            axios.delete('../../../api/product-donation/'+ id + "/delete-donation")
+            axios.delete('../../../product-donation/'+ id + "/delete-donation")
             .then( response=> {
                 if (response.status == 200) {
                     this.getDonations ();
