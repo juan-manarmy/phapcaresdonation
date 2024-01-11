@@ -58,7 +58,7 @@
                 <div class="mb-3 form-check">
                     <input type='hidden' value='0' name='is_yearend'>
                     <input type="checkbox" class="form-check-input" name="is_yearend" id="is_yearend" value="1" {{ $cfs->is_yearend ? 'checked' : ''}} >
-                    <label class="form-check-label" for="is_yearend">Is this a Year-End request?</label>
+                    <label class="form-check-label" for="is_yearend">Is this a All-Year Round request?</label>
                 </div>
 
                 <div class="mb-3 form-check">

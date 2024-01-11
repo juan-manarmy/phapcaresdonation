@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Document;
+use App\User;
+
 
 class ProductDonationController extends Controller
 {
@@ -24,6 +26,12 @@ class ProductDonationController extends Controller
 
     public function secondaryDetailsView($contribution_id)
     {   
+        $users = User::where('users.status',1)
+        ->join('members', 'users.member_id', '=', 'members.id')
+        ->select('users.id','first_name','last_name','member_name')
+        ->orderBy('members.id', 'DESC')
+        ->get();
+
         $contributions_notif = DB::table('contributions')
         ->join('members', 'contributions.member_id', '=', 'members.id')
         ->where('contributions.status',1)
@@ -39,6 +47,7 @@ class ProductDonationController extends Controller
         ->get();
 
         return view('product-donation.pd-secondary-details')
+        ->with('users', $users)
         ->with('contribution_id', $contribution_id)
         ->with('allocations_notif', $allocations_notif)
         ->with('contributions_notif', $contributions_notif);
@@ -56,7 +65,7 @@ class ProductDonationController extends Controller
         $contribution->delivery_contact_person = $request->delivery_contact_person;
         $contribution->delivery_contact_no = $request->delivery_contact_no;
         $contribution->delivery_date = new Carbon($request->delivery_date);
-        $contribution->requester_user_id = 5;
+        $contribution->requester_user_id = $request->requester_user_id;
         $contribution->tel_no = $request->tel_no;
         $contribution->fax_no = $request->fax_no;
         $contribution->email = $request->email;

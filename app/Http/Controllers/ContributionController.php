@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Contribution;
 use App\Donation;
 use App\Member;
+use App\User;
 use Illuminate\Support\Carbon;
 use Codedge\Fpdf\Fpdf\Fpdf;
 use App\Document;
@@ -75,6 +76,14 @@ class ContributionController extends Controller
 
         $contribution = Contribution::findOrFail($contribution_id);
 
+        $requester_info = User::findOrFail($contribution->requester_user_id);
+
+        $users = User::where('users.status',1)
+        ->join('members', 'users.member_id', '=', 'members.id')
+        ->select('users.id','first_name','last_name','member_name')
+        ->orderBy('members.id', 'DESC')
+        ->get();
+
         $dnd_tag_location = '';
 
         if($contribution->inventory_location == 'ZPC') {
@@ -141,6 +150,8 @@ class ContributionController extends Controller
         $total_count = $medicine_count + $promats_count;
 
         return view('contributions.contributions-details')
+        ->with('users',$users)
+        ->with('requester_info',$requester_info)
         ->with('new_dnd_no',$new_dnd_no)
         ->with('product_code_missing',$product_code_missing)
         ->with('donations',$donations)
@@ -268,22 +279,29 @@ class ContributionController extends Controller
 
         // Approve DONATION ACCEPTED
         if($request->status == 5) {
-            $this->verifyDonation($request->contribution_id,
-            $request->contribution_date,
-            $request->distributor,
-            $request->pickup_address,
-            $request->pickup_contact_person,
-            $request->pickup_contact_no,
-            $request->pickup_date,
-            $request->delivery_address,
-            $request->delivery_contact_person,
-            $request->delivery_contact_no,
-            $request->delivery_date,
-            $request->reasons_rejected_donation,
-            $request->status);
+            $contribution->contribution_date = new Carbon($request->contribution_date);
+            $contribution->distributor = $request->distributor;
+            $contribution->pickup_address = $request->pickup_address;
+            $contribution->pickup_contact_person = $request->pickup_contact_person;
+            $contribution->pickup_contact_no = $request->pickup_contact_no;
+            $contribution->pickup_date = new Carbon($request->pickup_date);
+            $contribution->delivery_address = $request->delivery_address;
+            $contribution->delivery_contact_person = $request->delivery_contact_person;
+            $contribution->delivery_contact_no = $request->delivery_contact_no;
+            $contribution->delivery_date = new Carbon($request->delivery_date);
+            $contribution->reasons_rejected_donation = $request->reasons_rejected_donation;
+            $contribution->status = $request->status;
+            $contribution->verified_date = Carbon::now()->format('Y-m-d');
+            $contribution->verified_by_user_id = $request->verified_by_user_id;
+    
+            $member_id = $contribution->member_id;
+            $contribution_no = $contribution->contribution_no;
+    
+            $contribution->save();
             
             $this->createNODForm($contribution_id);
             $this->saveDocuments($contribution_id,$contribution_no,"NOD");
+            Helper::sendNotificationContribution($contribution_no, 'Donation Accepted! Your Notice of Donation form is now available.',$member_id);
         }
 
         // Rejecting DND

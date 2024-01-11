@@ -2,25 +2,23 @@
 
 
 @section('custom-css')
-
+<link rel="stylesheet" type="text/css" href="{{ asset('css/product-donation.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ asset('js/modules/datepicker/datepicker.css') }} "/>
 @endsection
 
 @section('content')
-<div class="page-heading">
-    <h4>All Users</h4>
-    <div class="border-container">
-        <div class="heading-line"></div>
-        <hr class="rounded">
-    </div>
+<div class="bg-heading">
+    <h4 class="px-4 py-3">Transfer Inventory</h4>
 </div>
-<section class="section">
-    <div class="card shadow mt-2">
-        <div class="card-header"></div>
-        <div class="card-body">
 
-        </div>
-    </div>
-</section>
+<div class="bg-initial-details mt-2 px-4 py-4">
+    
+</div>
+
+@endsection
+
+@section('custom-js')
+
 @endsection
 
 @section('custom-js')

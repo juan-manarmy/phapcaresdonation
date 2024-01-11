@@ -78,9 +78,11 @@
             </div>
 
             <div class="form-group row mt-2">
-                <label for="inputPassword" class="col-sm-1 col-form-label sd-label">Distributor :</label>
+                <label for="inputPassword" class="col-lg-1 col-form-label sd-label">Distributor :</label>
                 <div class="col-lg-4">
-                    <input type="text" class="form-control" id="distributor" name="distributor" value="{{ $contribution->distributor }}" placeholder="Distributor" required>
+                    <select class="form-select" name="distributor" id="distributor">
+                        <option value="ZPI MDI">ZPI MDI</option>
+                    </select>
                 </div>
             </div>
 
@@ -143,7 +145,9 @@
             <div class="form-group row mt-2">
                 <label for="inputPassword" class="col-lg-2 col-form-label sd-label">Distributor :</label>
                 <div class="col-lg-4">
-                    <input type="text" class="form-control" id="distributor" name="distributor" placeholder="Distributor" required>
+                    <select class="form-select" name="distributor" id="distributor">
+                        <option value="ZPI MDI">ZPI MDI</option>
+                    </select>
                 </div>
             </div>
 

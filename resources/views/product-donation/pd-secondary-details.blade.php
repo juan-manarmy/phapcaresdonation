@@ -57,155 +57,155 @@
 </div>
 
 <div class="bg-initial-details mt-2 px-4 py-4">
-<div class="row">
-    <div class="col-md-12">
-            <!-- Medicine Donation Forms -->
-            <form method="POST" action="{{ route('pd-secondary-details-save', ['contribution_id' => $contribution_id]) }}" class="mt-3">
-                @csrf
-                <h5 class="donation-titles">Pick-Up Details</h5>
-                <div class="row">
-                    <div class="col-md-5 mt-2">
-                        <div class="row">
-                            <label for="" class="col-lg-3 col-form-label sd-label">Address :</label>
-                            <div class="col-lg-6">
-                                <input type="text" class="form-control" name="pickup_address" id="pickup_address" placeholder="Address" placeholder="Brand Name" required>
+    <div class="row">
+        <div class="col-md-12">
+                <!-- Medicine Donation Forms -->
+                <form method="POST" action="{{ route('pd-secondary-details-save', ['contribution_id' => $contribution_id]) }}" class="mt-3">
+                    @csrf
+                    <h5 class="donation-titles">Pick-Up Details</h5>
+                    <div class="row">
+                        <div class="col-md-5 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-3 col-form-label sd-label">Address :</label>
+                                <div class="col-lg-6">
+                                    <input type="text" class="form-control" name="pickup_address" id="pickup_address" placeholder="Address" placeholder="Brand Name" required>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-6 mt-2">
-                        <div class="row">
-                            <label for="" class="col-lg-3 col-form-label sd-label">Contact Person :</label>
-                            <div class="col-lg-6">
-                                <input type="text" class="form-control" name="pickup_contact_person" id="pickup_contact_person" placeholder="Contact Person" required>
+                        <div class="col-md-6 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-3 col-form-label sd-label">Contact Person :</label>
+                                <div class="col-lg-6">
+                                    <input type="text" class="form-control" name="pickup_contact_person" id="pickup_contact_person" placeholder="Contact Person" required>
+                                </div>
                             </div>
                         </div>
+
                     </div>
 
-                </div>
-
-                <div class="row">
-                    <div class="col-md-5 mt-2">
-                        <div class="row">
-                            <label for="" class="col-lg-3 col-form-label sd-label">Contact Number :</label>
-                            <div class="col-lg-6">
-                            <input type="text" class="form-control" name="pickup_contact_no" id="pickup_contact_no" placeholder="Contact Number" required>
+                    <div class="row">
+                        <div class="col-md-5 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-3 col-form-label sd-label">Contact Number :</label>
+                                <div class="col-lg-6">
+                                <input type="text" class="form-control" name="pickup_contact_no" id="pickup_contact_no" placeholder="Contact Number" required>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-6 mt-2">
-                        <div class="row">
-                            <label for="" class="col-lg-3 col-form-label sd-label">Date :</label>
-                            <div class="col-lg-6">
-                                <div class="input-group mb-3">
-                                    <input type="text" class="form-control" name="pickup_date" id="pickup_date" aria-describedby="basic-addon2" placeholder="Pick-Up Date" onkeydown="return false" required>
-                                    <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-calendar text-main-color"></i></span>
+                        <div class="col-md-6 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-3 col-form-label sd-label">Date :</label>
+                                <div class="col-lg-6">
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" name="pickup_date" id="pickup_date" aria-describedby="basic-addon2" placeholder="Pick-Up Date" onkeydown="return false" required>
+                                        <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-calendar text-main-color"></i></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <h5 class="donation-titles mt-3">Delivery Details</h5>
-                <div class="row">
-                    <div class="col-md-5 mt-2">
-                        <div class="row">
-                            <label for="" class="col-lg-3 col-form-label sd-label">Address :</label>
-                            <div class="col-lg-6">
-                                <input type="text" class="form-control" name="delivery_address" id="delivery_address" placeholder="Address" required>
+                    <h5 class="donation-titles mt-3">Delivery Details</h5>
+                    <div class="row">
+                        <div class="col-md-5 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-3 col-form-label sd-label">Address :</label>
+                                <div class="col-lg-6">
+                                    <input type="text" class="form-control" name="delivery_address" id="delivery_address" placeholder="Address" required>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-6 mt-2">
-                        <div class="row">
-                            <label for="" class="col-lg-3 col-form-label sd-label">Contact Person :</label>
-                            <div class="col-lg-6">
-                                <input type="text" class="form-control" name="delivery_contact_person" id="delivery_contact_person" placeholder="Contact Person" required>
+                        <div class="col-md-6 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-3 col-form-label sd-label">Contact Person :</label>
+                                <div class="col-lg-6">
+                                    <input type="text" class="form-control" name="delivery_contact_person" id="delivery_contact_person" placeholder="Contact Person" required>
+                                </div>
                             </div>
                         </div>
+
                     </div>
 
-                </div>
-
-                <div class="row">
-                    <div class="col-md-5 mt-2">
-                        <div class="row">
-                            <label for="" class="col-lg-3 col-form-label sd-label">Contact Number :</label>
-                            <div class="col-lg-6">
-                            <input type="text" class="form-control" name="delivery_contact_no" id="delivery_contact_no" placeholder="Contact Number" required>
+                    <div class="row">
+                        <div class="col-md-5 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-3 col-form-label sd-label">Contact Number :</label>
+                                <div class="col-lg-6">
+                                <input type="text" class="form-control" name="delivery_contact_no" id="delivery_contact_no" placeholder="Contact Number" required>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-6 mt-2">
-                        <div class="row">
-                            <label for="" class="col-lg-3 col-form-label sd-label">Date :</label>
-                            <div class="col-lg-6">
-                                <div class="input-group mb-3">
-                                    <input type="text" class="form-control" name="delivery_date" id="delivery_date" aria-describedby="basic-addon2" placeholder="Delivery Date" onkeydown="return false" required>
-                                    <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-calendar text-main-color"></i></span>
+                        <div class="col-md-6 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-3 col-form-label sd-label">Date :</label>
+                                <div class="col-lg-6">
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" name="delivery_date" id="delivery_date" aria-describedby="basic-addon2" placeholder="Delivery Date" onkeydown="return false" required>
+                                        <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-calendar text-main-color"></i></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <h5 class="donation-titles mt-3">Request By</h5>
-                <div class="row">
-                    <div class="col-md-5 mt-2">
-                        <div class="row">
-                            <label for="" class="col-lg-3 col-form-label sd-label">Requester :</label>
-                            <div class="col-lg-6">
-                                <select class="form-control form-select " aria-label="Default select example">
-                                    <option value="1">Dela Cruz, Juan</option>
-                                    <option value="2">Super, Admin</option>
-                                </select>
+                    <h5 class="donation-titles mt-3">Request By</h5>
+                    <div class="row">
+                        <div class="col-md-5 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-3 col-form-label sd-label">Requester :</label>
+                                <div class="col-lg-6">
+                                    <select class="form-control form-select " name="requester_user_id" aria-label="Default select example">
+                                        @foreach ($users as $item)
+                                            <option value="{{ $item->id }}">{{$item->member_name}} : {{$item->last_name}}, {{$item->first_name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-3 col-form-label sd-label">Telephone No. :</label>
+                                <div class="col-lg-6">
+                                    <input type="text" class="form-control" name="tel_no" id="tel_no" placeholder="Telephone No." required>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-6 mt-2">
-                        <div class="row">
-                            <label for="" class="col-lg-3 col-form-label sd-label">Telephone No. :</label>
-                            <div class="col-lg-6">
-                                <input type="text" class="form-control" name="tel_no" id="tel_no" placeholder="Telephone No." required>
+                    <div class="row">
+
+                        <div class="col-md-5 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-3 col-form-label sd-label">Fax No. :</label>
+                                <div class="col-lg-6">
+                                <input type="text" class="form-control" name="fax_no" id="fax_no" placeholder="Fax No." required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-3 col-form-label sd-label">Email :</label>
+                                <div class="col-lg-6">
+                                <input type="text" class="form-control" name="email" id="email" placeholder="Email" required>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="row">
-
-                    <div class="col-md-5 mt-2">
-                        <div class="row">
-                            <label for="" class="col-lg-3 col-form-label sd-label">Fax No. :</label>
-                            <div class="col-lg-6">
-                            <input type="text" class="form-control" name="fax_no" id="fax_no" placeholder="Fax No." required>
-                            </div>
-                        </div>
+                    <div class="d-flex flex-row-reverse mt-2">
+                        <button type="submit" class="btn btn-primary">Save and Proceed</button>
+                        <button onclick="history.back()" type="button" class="btn btn-outline-secondary me-2">Go Back</button>
                     </div>
-
-                    <div class="col-md-6 mt-2">
-                        <div class="row">
-                            <label for="" class="col-lg-3 col-form-label sd-label">Email :</label>
-                            <div class="col-lg-6">
-                            <input type="text" class="form-control" name="email" id="email" placeholder="Email" required>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex flex-row-reverse mt-2">
-                    <button type="submit" class="btn btn-primary">Save and Proceed</button>
-                    <button onclick="history.back()" type="button" class="btn btn-outline-secondary me-2">Go Back</button>
-                </div>
-            </form>
-            <!--End Medicine Donation Forms -->
+                </form>
+                <!--End Medicine Donation Forms -->
+            </div>
         </div>
     </div>
-</div>
-
 </div>
 @endsection
 
@@ -224,6 +224,8 @@
         autoHide: true,
         });
     });
+
+
 </script>
 @endsection
 

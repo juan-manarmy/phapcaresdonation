@@ -59,6 +59,11 @@ Route::group(['middleware' => ['auth','isAdmin']], function() {
     Route::post('/product-donation/{donation_id}/update-donation-drafts', 'ProductDonationController@updateDonationToDrafts')->name('pd-donation-update-to-drafts');
     Route::get('/product-donation/finish', 'ProductDonationController@finishView')->name('pd-finish');
 
+    // TRANSFER INVENTORY
+    Route::get('/transfer-inventory/{contribution_id}/create', 'TransferInventoryController@createView')->name('transfer-inventory-create');
+
+
+
     // CONTRIBUTIONS
     Route::get('/contributions', 'ContributionController@ContributionList')->name('contribution-list');
     Route::get('/contributions/{contribution_id}/details', 'ContributionController@ContributionDetails')->name('contribution-details');

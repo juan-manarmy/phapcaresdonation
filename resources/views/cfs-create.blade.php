@@ -35,7 +35,7 @@
                     <div class="mb-3 form-check">
                         <input type='hidden' value='0' name='is_yearend'>
                         <input type="checkbox" class="form-check-input" name="is_yearend" id="is_yearend" value="1">
-                        <label class="form-check-label" for="is_yearend">Is this a Year-End request?</label>
+                        <label class="form-check-label" for="is_yearend">Is this a All-Year Round request?</label>
                     </div>
                     <div class="d-flex justify-content-end">
                         <button class="btn btn-primary">Submit Call for Support</button>

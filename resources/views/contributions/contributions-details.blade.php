@@ -36,7 +36,16 @@
             <div class="tab-content" id="myTabContent">
                 <!-- Contribution Info Tab  -->
                 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                    <h5 class="donation-titles mt-4">Contribution Details</h5>
+
+                        <div class="row align-items-center mt-4">
+                            <div class="col">
+                                <h5 class="donation-titles">Contribution Details</h5>
+                            </div>
+                            <div class="col">
+                                <a type="button" class="btn btn-outline-success" href="{{ route('transfer-inventory-create',['contribution_id' => $contribution->id]) }}">Transfer Inventory <i class="fa-solid fa-arrow-right-arrow-left ms-2"></i></a>
+                            </div>
+                        </div>
+
                         <!-- Contribution Details Forms -->
                         <div class="row">
                             <div class="col-md-6 mt-2">
@@ -232,16 +241,15 @@
                                 <div class="row">
                                     <label for="" class="col-lg-4 col-form-label fw-bold">Name :</label>
                                     <div class="col-lg-8">
-                                        Super Admin
+                                        {{ $requester_info->last_name }}, {{ $requester_info->first_name }}
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-md-6 mt-2">
                                 <div class="row">
-                                    <label for="" class="col-lg-4 col-form-label fw-bold">Position :</label>
+                                    <label for="" class="col-lg-4 col-form-label fw-bold"></label>
                                     <div class="col-lg-8">
-                                        Superadmin
                                     </div>
                                 </div>
                             </div>
@@ -252,7 +260,7 @@
                                 <div class="row">
                                     <label for="" class="col-lg-4 col-form-label fw-bold">Contact No. :</label>
                                     <div class="col-lg-8">
-                                    8655602
+                                    {{ $contribution->tel_no }}
                                     </div>
                                 </div>
                             </div>
@@ -400,16 +408,15 @@
                                         <div class="row">
                                             <label for="" class="col-lg-4 col-form-label fw-bold">Name :</label>
                                             <div class="col-lg-8">
-                                                Super Admin
+                                                {{ $requester_info->last_name }}, {{ $requester_info->first_name }}
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6 mt-2">
                                         <div class="row">
-                                            <label for="" class="col-lg-4 col-form-label fw-bold">Position :</label>
+                                            <label for="" class="col-lg-4 col-form-label fw-bold"></label>
                                             <div class="col-lg-8">
-                                                Superadmin
                                             </div>
                                         </div>
                                     </div>
@@ -420,7 +427,7 @@
                                         <div class="row">
                                             <label for="" class="col-lg-4 col-form-label fw-bold">Contact No. :</label>
                                             <div class="col-lg-8">
-                                            8655602
+                                            {{ $contribution->tel_no }}
                                             </div>
                                         </div>
                                     </div>
@@ -429,7 +436,7 @@
                                         <div class="row">
                                             <label for="" class="col-lg-4 col-form-label fw-bold">Email :</label>
                                             <div class="col-lg-8">
-                                            jdelcastillo@phapcares.org
+                                            {{ $contribution->email }}
                                             </div>
                                         </div>
                                     </div>
@@ -635,8 +642,10 @@
                                     <label for="" class="col-form-label fw-bold">Verified By :</label>
                                 </div>
                                 <div class="col-lg-4">
-                                    <select class="form-select" id="asd" name="asd">
-                                        <option value="1">Test </option>
+                                    <select class="form-select" id="verified_by_user_id" name="verified_by_user_id">
+                                        @foreach ($users as $item)
+                                            <option value="{{ $item->id }}">{{$item->member_name}} : {{$item->last_name}}, {{$item->first_name}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -1200,14 +1209,14 @@ var didrf_button = document.getElementById("didrf_button");
 var toastLiveExample = document.getElementById('liveToast')
 var toast = new bootstrap.Toast(toastLiveExample)
 
-var status = document.querySelector("input[type='radio'][name=status]:checked");
-
 if(didrf_button) {
     didrf_button.addEventListener("click", function () {
-        if(status.value == 8) {
+        var status = $("input[type='radio'][name='status']:checked").val();
+
+        if(status == 8) {
             return;
         }
-        
+
         if(product_code_missing.value != 0) {
             event.preventDefault()
             event.stopPropagation()
