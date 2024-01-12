@@ -61,6 +61,8 @@ Route::group(['middleware' => ['auth','isAdmin']], function() {
 
     // TRANSFER INVENTORY
     Route::get('/transfer-inventory/{contribution_id}/create', 'TransferInventoryController@createView')->name('transfer-inventory-create');
+    Route::post('/transfer-inventory/{contribution_id}/save', 'TransferInventoryController@saveTransferInventory')->name('transfer-inventory-save');
+
 
 
 

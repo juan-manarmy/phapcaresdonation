@@ -15,17 +15,17 @@
     <div class="row">
         <div class="col-md-12">
                 <!-- Medicine Donation Forms -->
-                <form method="POST" action="{{ route('pd-secondary-details-save', ['contribution_id' => $contribution_id]) }}" class="mt-3">
+                <form method="POST" action="{{ route('transfer-inventory-save', ['contribution_id' => $contribution_id]) }}" class="mt-3">
                     @csrf
                     <h5 class="donation-titles">Pick-Up Details</h5>
 
                     <div class="row">
                         <div class="col-md-6 mt-2">
                             <div class="row">
-                                <label for="" class="col-lg-3 col-form-label sd-label">Date :</label>
+                                <label for="" class="col-lg-4 col-form-label sd-label">Date :</label>
                                 <div class="col-lg-6">
                                     <div class="input-group">
-                                        <input type="text" class="form-control" name="pickup_date" id="pickup_date" aria-describedby="basic-addon2" placeholder="Pick-Up Date" readonly required>
+                                        <input type="text" class="form-control" name="transfer_date" id="transfer_date" aria-describedby="basic-addon2" value="{{ date('m/d/Y', strtotime($current_date)) }}" readonly required>
                                         <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-calendar text-main-color"></i></span>
                                     </div>
                                 </div>
@@ -34,9 +34,9 @@
 
                         <div class="col-md-6 mt-2">
                             <div class="row">
-                                <label for="" class="col-lg-3 col-form-label sd-label">TTIF No. :</label>
+                                <label for="" class="col-lg-4 col-form-label sd-label">TTIF No. :</label>
                                 <div class="col-lg-6">
-                                    <input type="text" class="form-control" name="pickup_contact_person" id="pickup_contact_person" placeholder="Contact Person" readonly required>
+                                    <input type="text" class="form-control" name="ttif_no" id="ttif_no" value="{{ $new_ttif_no }}" placeholder="ttif_no" readonly required>
                                 </div>
                             </div>
                         </div>
@@ -45,27 +45,39 @@
                     <div class="row">
                         <div class="col-md-6 mt-2">
                             <div class="row">
-                                <label for="" class="col-lg-3 col-form-label sd-label">Notice To :</label>
+                                <label for="" class="col-lg-4 col-form-label sd-label">Notice To :</label>
                                 <div class="col-lg-6">
-                                    <input type="text" class="form-control" name="pickup_address" id="pickup_address" placeholder="Notice To" placeholder="Brand Name" required>
+                                    <input type="text" class="form-control" name="notice_to" id="notice_to" placeholder="Notice To" required>
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-md-6 mt-2">
                             <div class="row">
-                                <label for="" class="col-lg-3 col-form-label sd-label">DAAF No.  :</label>
+                                <label for="" class="col-lg-4 col-form-label sd-label">DAAF No.  :</label>
                                 <div class="col-lg-6">
-                                    <input type="text" class="form-control" name="pickup_contact_person" id="pickup_contact_person" placeholder="To be provided by ZPC" required>
+                                    <input type="text" class="form-control" name="daff_no" id="daff_no" placeholder="To be provided by ZPC" required>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <h5 class="donation-titles mt-3">Contact Person Details</h5>
+
                     <div class="row">
                         <div class="col-md-6 mt-2">
                             <div class="row">
-                                <label for="" class="col-lg-3 col-form-label sd-label">Contact Person :</label>
+                                <label for="" class="col-lg-4 col-form-label sd-label">Name of Organization :</label>
+                                <div class="col-lg-6">
+                                    <input type="text" class="form-control" name="pickup_organization_name" id="pickup_organization_name" placeholder="Name of Organization" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-4 col-form-label sd-label">Contact Person :</label>
                                 <div class="col-lg-6">
                                     <input type="text" class="form-control" name="pickup_contact_person" id="pickup_contact_person" placeholder="Contact Person" required>
                                 </div>
@@ -74,7 +86,7 @@
 
                         <div class="col-md-6 mt-2">
                             <div class="row">
-                                <label for="" class="col-lg-3 col-form-label sd-label">Contact Number :</label>
+                                <label for="" class="col-lg-4 col-form-label sd-label">Contact Number :</label>
                                 <div class="col-lg-6">
                                 <input type="text" class="form-control" name="pickup_contact_no" id="pickup_contact_no" placeholder="Contact Number" required>
                                 </div>
@@ -85,19 +97,19 @@
                     <div class="row">
                         <div class="col-md-6 mt-2">
                             <div class="row">
-                                <label for="" class="col-lg-3 col-form-label sd-label">Address :</label>
+                                <label for="" class="col-lg-4 col-form-label sd-label">Address :</label>
                                 <div class="col-lg-6">
-                                    <input type="text" class="form-control" name="pickup_address" id="pickup_address" placeholder="Address" placeholder="Brand Name" required>
+                                    <input type="text" class="form-control" name="pickup_address" id="pickup_address" placeholder="Address" required>
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-md-6 mt-2">
                             <div class="row">
-                                <label for="" class="col-lg-3 col-form-label sd-label">Pick-Up Date :</label>
+                                <label for="" class="col-lg-4 col-form-label sd-label">Pick-Up Date :</label>
                                 <div class="col-lg-6">
                                     <div class="input-group mb-3">
-                                        <input type="text" class="form-control" name="pickup_date" id="pickup_date" aria-describedby="basic-addon2" placeholder="Pick-Up Date" onkeydown="return false" required>
+                                        <input type="text" class="form-control" name="pickup_date" id="pickup_date" aria-describedby="basic-addon2" placeholder="Pick-Up Date" onkeydown="return false" autocomplete="off" required>
                                         <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-calendar text-main-color"></i></span>
                                     </div>
                                 </div>
@@ -108,15 +120,68 @@
                     <div class="row">
                         <div class="col-md-6 mt-2">
                             <div class="row">
-                                <label for="" class="col-lg-3 col-form-label sd-label">Other Pick-Up Instructions :</label>
+                                <label for="" class="col-lg-4 col-form-label sd-label">Other Pick-Up Instructions :</label>
                                 <div class="col-lg-6">
-                                    <input type="text" class="form-control" name="pickup_address" id="pickup_address" placeholder="Other Pick-Up Instructions" required>
+                                    <input type="text" class="form-control" name="pickup_other_instruction" id="pickup_other_instruction" placeholder="Other Pick-Up Instructions" required>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-
+                    <h5 class="donation-titles mt-4">Donation Details</h5>
+                    <table class="table mt-3">
+                        <thead class="theader">
+                            <tr>
+                                <th scope="col">Select</th>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">Lot No.</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Quantity to Transfer</th>
+                                <th scope="col">Unit Cost</th>
+                                <th scope="col">Total</th>
+                                <th scope="col">Expiry Date</th>
+                                <!-- <th scope="col">Actions</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(!$donations->isEmpty())
+                                @foreach ($donations as $donation)
+                                    @if($donation->status == 1 && $donation->product_type != 3)
+                                    <tr>
+                                        <td>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="1" id="{{$donation->id}}" name="inputs[{{ $donation->id }}][is_selected]">
+                                                <label class="form-check-label" for="flexCheckChecked">
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>{{ $donation->product_name }}
+                                            <input value="{{ $donation->id }}" name="inputs[{{ $donation->id }}][id]" hidden>  
+                                            <input value="{{ $donation->product_name }}" name="inputs[{{ $donation->id }}][product_name]" hidden>
+                                        </td>
+                                        <td>{{ $donation->lot_no }} <input value="{{ $donation->lot_no }}" name="inputs[{{ $donation->id }}][lot_no]" hidden></td>
+                                        <td>{{ $donation->quantity }} </td>
+                                        <td>
+                                            <input type="number" class="form-control" name="inputs[{{ $donation->id }}][transfer_quantity]" aria-describedby="passwordHelpBlock" max="{{ $donation->quantity }}">
+                                        </td>
+                                        <td>{{ $donation->unit_cost }} <input value="{{ $donation->unit_cost }}" name="inputs[{{ $donation->id }}][unit_cost]" hidden></td>
+                                        <td>{{ $donation->total }}</td>
+                                        <td>
+                                            <input value="{{ $donation->expiry_date }}" name="inputs[{{ $donation->id }}][expiry_date]" hidden>
+                                            @if($donation->expiry_date != null)
+                                                {{ date('F, d Y', strtotime($donation->expiry_date)) }}
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @endif
+                                @endforeach
+                            @else
+                                <tr class="tableNoRecord">
+                                    <td colspan="8" align="center">No Record Found</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
 
                     <div class="d-flex flex-row-reverse mt-2">
                         <button type="submit" class="btn btn-primary">Save and Proceed</button>
@@ -132,5 +197,14 @@
 @endsection
 
 @section('custom-js')
+<script src="{{asset('js/modules/datepicker/datepicker.js')}} "></script>
 
+<script>
+    var $pickup_date = $('#pickup_date');
+    $(document).ready(function () {
+        $pickup_date.datepicker({
+        autoHide: true,
+        });
+    });
+</script>
 @endsection

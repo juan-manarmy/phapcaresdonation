@@ -42,6 +42,7 @@
                                 <h5 class="donation-titles">Contribution Details</h5>
                             </div>
                             <div class="col">
+                                <!-- <button type="button" class="btn btn-outline-secondary" href="{{ route('transfer-inventory-create',['contribution_id' => $contribution->id]) }}" disabled>Transfer Inventory <i class="fa-solid fa-arrow-right-arrow-left ms-2"></i></button> -->
                                 <a type="button" class="btn btn-outline-success" href="{{ route('transfer-inventory-create',['contribution_id' => $contribution->id]) }}">Transfer Inventory <i class="fa-solid fa-arrow-right-arrow-left ms-2"></i></a>
                             </div>
                         </div>

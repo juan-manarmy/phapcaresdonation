@@ -99,7 +99,7 @@
                                 <label for="" class="col-lg-3 col-form-label sd-label">Date :</label>
                                 <div class="col-lg-6">
                                     <div class="input-group mb-3">
-                                        <input type="text" class="form-control" name="pickup_date" id="pickup_date" aria-describedby="basic-addon2" placeholder="Pick-Up Date" onkeydown="return false" required>
+                                        <input type="text" class="form-control" name="pickup_date" id="pickup_date" aria-describedby="basic-addon2" placeholder="Pick-Up Date" onkeydown="return false" autocomplete="off" required>
                                         <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-calendar text-main-color"></i></span>
                                     </div>
                                 </div>
@@ -144,7 +144,7 @@
                                 <label for="" class="col-lg-3 col-form-label sd-label">Date :</label>
                                 <div class="col-lg-6">
                                     <div class="input-group mb-3">
-                                        <input type="text" class="form-control" name="delivery_date" id="delivery_date" aria-describedby="basic-addon2" placeholder="Delivery Date" onkeydown="return false" required>
+                                        <input type="text" class="form-control" name="delivery_date" id="delivery_date" aria-describedby="basic-addon2" placeholder="Delivery Date" onkeydown="return false" autocomplete="off" required>
                                         <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-calendar text-main-color"></i></span>
                                     </div>
                                 </div>
