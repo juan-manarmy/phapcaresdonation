@@ -72,7 +72,21 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-md-6 mt-2">
+                            <div class="form-group row mt-2">
+                                <label class="col-lg-4 col-form-label sd-label" for="inventory_location">Inventory Location :</label>
+                                <div class="col-lg-6">
+                                    <select class="form-select" name="inventory_location">
+                                        <option value="ZPC">ZPC</option>
+                                        <option value="OCP">OCP</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+
 
                     <div class="row">
                         <div class="col-md-6 mt-2">
@@ -160,9 +174,9 @@
                                             <input value="{{ $donation->product_name }}" name="inputs[{{ $donation->id }}][product_name]" hidden>
                                         </td>
                                         <td>{{ $donation->lot_no }} <input value="{{ $donation->lot_no }}" name="inputs[{{ $donation->id }}][lot_no]" hidden></td>
-                                        <td>{{ $donation->quantity }} </td>
+                                        <td>{{ $donation->quantity }}</td>
                                         <td>
-                                            <input type="number" class="form-control" name="inputs[{{ $donation->id }}][transfer_quantity]" aria-describedby="passwordHelpBlock" max="{{ $donation->quantity }}">
+                                            <input type="number" class="form-control" name="inputs[{{ $donation->id }}][transfer_quantity]" id="qt_{{ $donation->id }}" name="inputs[{{ $donation->id }}][transfer_quantity]" max="{{ $donation->quantity }}" placeholder="/{{ $donation->quantity }}" onkeyup="checkMaxInput(this, {{ $donation->quantity }})" >
                                         </td>
                                         <td>{{ $donation->unit_cost }} <input value="{{ $donation->unit_cost }}" name="inputs[{{ $donation->id }}][unit_cost]" hidden></td>
                                         <td>{{ $donation->total }}</td>
@@ -201,6 +215,12 @@
 
 <script>
     var $pickup_date = $('#pickup_date');
+    function checkMaxInput(e, quantity) {
+        if(e.value > quantity) {
+            var input = document.getElementById(e.id);
+            input.value = quantity;
+        }
+    }
     $(document).ready(function () {
         $pickup_date.datepicker({
         autoHide: true,

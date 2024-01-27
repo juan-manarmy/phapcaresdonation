@@ -41,9 +41,9 @@
                             <select class="form-control form-select me-2" aria-label="Default select example" name="year">
                                 <option {{ $year == 2022 ? "selected" : "" }} value="2022">2022</option>
                                 <option {{ $year == 2023 ? "selected" : "" }} value="2023">2023</option>
-                                <option {{ $year == 2024 ? "selected" : "" }} value="2023">2024</option>
-                                <option {{ $year == 2025 ? "selected" : "" }} value="2023">2025</option>
-                                <option {{ $year == 2026 ? "selected" : "" }} value="2023">2026</option>
+                                <option {{ $year == 2024 ? "selected" : "" }} value="2024">2024</option>
+                                <option {{ $year == 2025 ? "selected" : "" }} value="2025">2025</option>
+                                <option {{ $year == 2026 ? "selected" : "" }} value="2026">2026</option>
                             </select>
                         </div>
 
@@ -535,11 +535,9 @@
                                 <option {{ $year == 2026 ? "selected" : "" }} value="2026">2026</option>
                             </select>
                         </div>
-
                         <div class="col-auto my-auto">
                             Month :
                         </div>
-                        
                         <div class="col-auto my-auto">
                             <select class="form-control form-select me-2" aria-label="Default select example" name="month">
                                 <option {{ $month == 1 ? "selected" : "" }} value="1">January</option>

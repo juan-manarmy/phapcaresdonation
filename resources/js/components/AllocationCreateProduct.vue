@@ -174,7 +174,7 @@
                                     <div class="row">
                                         <label for="" class="col-lg-4 col-form-label fw-bold">Issuance Quantity :</label>
                                         <div class="col-lg-8">
-                                            <input type="text" class="form-control" placeholder="" id="issuance_quantity" name="issuance_quantity" v-model="issuance_quantity">
+                                            <input type="number" class="form-control" placeholder="" id="issuance_quantity" name="issuance_quantity" min="0" :max="selected_product.quantity" v-on:input="checkMaxInput($event)" v-model="issuance_quantity" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -382,6 +382,11 @@ export default {
         }
     },
     methods : {
+        checkMaxInput(event) {
+            if(this.selected_product.quantity < parseInt(event.target.value)) {
+                this.issuance_quantity = this.selected_product.quantity;
+            }
+        },
         getInventory (event) {
             this.inventory_loading = !false
             this.inventory.splice(0);
@@ -524,7 +529,7 @@ export default {
             this.p_id = id;
         },
         numberFormat (value) {
-            return value.toLocaleString();
+            return parseFloat(value).toLocaleString();
         },
         saveTotalDonation() {
             this.total_loading = !false

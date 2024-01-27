@@ -54,8 +54,10 @@ class TransferInventoryController extends Controller
 
     public function saveTransferInventory($contribution_id,Request $request) {
 
-
         $contribution = Contribution::findOrFail($contribution_id);
+        $contribution_no = $contribution->contribution_no;
+        $contribution_id = $contribution->id;
+
         $member_id = $contribution->member_id;
         $member = Member::findOrFail($member_id);
         $member_name = $member->member_name;
@@ -74,6 +76,8 @@ class TransferInventoryController extends Controller
             'pickup_other_instruction'=> $request->pickup_other_instruction]
         );
 
+        $contribution->inventory_location = $request->inventory_location;
+        $contribution->save();
         $transfer_inventory->save();
 
         $template_path = public_path("/images/templates/transferToInventoryForm.jpg");
@@ -119,7 +123,6 @@ class TransferInventoryController extends Controller
         $pdf->SetTextColor(43,43,43);	
         $pdf->SetFont('Arial','',10);
         $pdf->Cell(0,0,"{$request->pickup_contact_person}");
-
 
         $pdf->SetXY(86.6,64);
         $pdf->SetTextColor(43,43,43);	
@@ -175,13 +178,24 @@ class TransferInventoryController extends Controller
                 $positionY = $positionY + 4;
             }
         }
-
-        $destination_path = public_path("/pdf/nod/testinggg_NOD.pdf");
-
+        $file_name = $contribution_no.'_TTIF';
+        $destination_path = public_path("/pdf/transfer-inventory/$file_name.pdf");
 
         $pdf->Output($destination_path,'F');
+        $this->saveDocuments($contribution_id,$file_name,'TTIF');
+
+        return redirect()->route('contribution-details', ['contribution_id' => $contribution_id])->with('inventory-updated', 'Inventory Transfer Updated!');
 
         // save to docs the inventory transfer
+    }
 
+    public function saveDocuments($contribution_id,$file_name,$type) 
+    {
+        $document = new Document;
+        $document->contribution_id = $contribution_id;
+        $document->type = $type;
+        $document->name = $file_name;
+        $document->directory = "/pdf/transfer-inventory/$file_name.pdf";
+        $document->save();
     }
 }

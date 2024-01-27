@@ -8,6 +8,6 @@ class Allocation extends Model
 {
     //
     protected $fillable = ['allocation_no','dna_no','beneficiary_id','notice_to','authorized_representative','position',
-    'contact_number','delivery_address','delivery_date','other_delivery_instructions','status'];
+    'contact_number','email_address','delivery_address','delivery_date','other_delivery_instructions','status'];
 
 }

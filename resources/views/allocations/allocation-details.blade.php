@@ -150,6 +150,16 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="col-md-6 mt-2">
+                                    <div class="row">
+                                        <label for="" class="col-lg-4 col-form-label fw-bold">Email Address :</label>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" name="email_address" id="email_address" placeholder="Email Address" value="{{ $allocation->email_address }}" required>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                             <!-- Delivery Details -->
                             <h5 class="donation-titles mt-4">Delivery Details</h5>

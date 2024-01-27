@@ -793,7 +793,7 @@ export default {
             console.log (this.d_id);
         },
         numberFormat (value) {
-            return value.toLocaleString();
+            return parseFloat(value).toLocaleString();
         }
     },
     created() {

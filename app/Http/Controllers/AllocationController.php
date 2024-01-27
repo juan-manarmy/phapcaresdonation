@@ -770,51 +770,62 @@ class AllocationController extends Controller
         $authRep = $allocationDetails['authorized_representative'];
         $position = $allocationDetails['position'];
         $contactNumber = $allocationDetails['contact_number'];
+        $emailAddress = $allocationDetails['email_address'];
         $deliveryAddress = $allocationDetails['delivery_address'];
-        $deliveryDate = $allocationDetails['delivery_date'];
+        $deliveryDate = date('m/d/Y', strtotime($allocationDetails['delivery_date']));
         $deliveryInstructions = $allocationDetails['other_delivery_instructions'];
         $createDate = $allocationDetails['created_at'];
         $totalAllocatedProducts = $allocationDetails['total_allocated_products'];
 
+        $beneficiary = Beneficiary::findOrFail($beneficiaryId);
+        $beneficiary_name = $beneficiary->name;
 
-        $dtac_template_1 = public_path("/images/templates/dtacTemplate1.jpg");
+        $dtac_template_1 = public_path("/images/templates/dtac_p1.jpg");
+        // $dtac_template_1 = public_path("/images/templates/dtacTemplate1.jpg");
 
         //Insert Contribution Details In PDF Page
         //Set Page Layout and Add PDF Page
         $pdf = new FPDF('P','mm','Letter');
         $pdf->AddPage();
-        $pdf->Image($dtac_template_1,-8,0,0,297);
+        $pdf->Image($dtac_template_1,0,0,0,279.4);
         
         //PDF Contents
-        $pdf->SetXY(45,205);
+        $pdf->SetXY(71,233);
         $pdf->SetTextColor(43,43,43);	
         $pdf->SetFont('Arial','',8);
         $pdf->Cell(0,0,"{$authRep}");
         
-        $pdf->SetXY(45,210);
+        $pdf->SetXY(71,243);
         $pdf->SetTextColor(43,43,43);	
         $pdf->SetFont('Arial','',8);
         $pdf->Cell(0,0,"{$position}");
         
-        $pdf->SetXY(45,216);
+        $pdf->SetXY(65,253);
         $pdf->SetTextColor(43,43,43);	
         $pdf->SetFont('Arial','B',9);
-        $pdf->Cell(0,0,"{$beneficiaryId}");
+        $pdf->Cell(0,0,"{$beneficiary_name}");
         
-        $pdf->SetXY(45,220);
+        
+        $pdf->SetXY(129,233);
         $pdf->SetTextColor(43,43,43);	
         $pdf->SetFont('Arial','',9);
-        $pdf->Cell(0,0,"{$deliveryAddress}");
+        $pdf->Cell(0,0,"{$deliveryDate}");
+
+        $pdf->SetXY(124,243);
+        $pdf->SetTextColor(43,43,43);	
+        $pdf->SetFont('Arial','',9);
+        $pdf->Cell(0,0,"{$emailAddress}");
         
-        $pdf->SetXY(45,236);
+        $pdf->SetXY(130,253);
         $pdf->SetTextColor(43,43,43);	
         $pdf->SetFont('Arial','',8);
         $pdf->Cell(0,0,"{$contactNumber}");
 
-        $dtac_template_2 = public_path("/images/templates/dtacTemplate2.jpg");
+        $dtac_template_2 = public_path("/images/templates/dtac_p2.jpg");
+        // $dtac_template_2 = public_path("/images/templates/dtacTemplate2.jpg");
         
         $pdf->AddPage();
-        $pdf->Image($dtac_template_2,-8,0,0,297);
+        $pdf->Image($dtac_template_2,0,0,0,279.4);
 
 
         $allocated_products = DB::table('allocated_products')
@@ -824,7 +835,7 @@ class AllocationController extends Controller
         ->where('allocation_id',$allocation_id)
         ->get();
 
-        $positionY = 43;
+        $positionY = 46;
         foreach ($allocated_products as $allocatedProductsDetails) {
             $inventoryId =  $allocatedProductsDetails->inventory_id;
             $productCode =  $allocatedProductsDetails->product_code;
@@ -838,27 +849,27 @@ class AllocationController extends Controller
             $medicineStatus =  $allocatedProductsDetails->medicine_status;
             $memberName =  $allocatedProductsDetails->member_name;
 
-            $pdf->SetXY(19,"{$positionY}");
+            $pdf->SetXY(31.5,"{$positionY}");
             $pdf->SetTextColor(43,43,43);	
             $pdf->SetFont('Arial','',8);
             $pdf->Cell(0,0,"{$memberName}");
             
-            $pdf->SetXY(58,"{$positionY}");
+            $pdf->SetXY(72,"{$positionY}");
             $pdf->SetTextColor(43,43,43);	
             $pdf->SetFont('Arial','',8);
             $pdf->Cell(0,0,"{$productName}");
             
-            $pdf->SetXY(129,"{$positionY}");
+            $pdf->SetXY(115,"{$positionY}");
             $pdf->SetTextColor(43,43,43);	
             $pdf->SetFont('Arial','',8);
             $pdf->Cell(0,0,"{$expiryDate}");
             
-            $pdf->SetXY(151,"{$positionY}");
-            $pdf->SetTextColor(43,43,43);	
-            $pdf->SetFont('Arial','',8);
-            $pdf->Cell(0,0,"{$quantity}");
+            // $pdf->SetXY(151,"{$positionY}");
+            // $pdf->SetTextColor(43,43,43);	
+            // $pdf->SetFont('Arial','',8);
+            // $pdf->Cell(0,0,"{$quantity}");
             
-            $pdf->SetXY(163,"{$positionY}");
+            $pdf->SetXY(156,"{$positionY}");
             $pdf->SetTextColor(43,43,43);	
             $pdf->SetFont('Arial','B',8);
             $pdf->Cell(0,0,"PHP {$total}");
@@ -1113,6 +1124,7 @@ class AllocationController extends Controller
             'authorized_representative' => $request->authorized_representative,
             'position' => $request->position,
             'contact_number' => $request->contact_number,
+            'email_address' => $request->email_address,
             'delivery_address'=> $request->delivery_address,
             'delivery_date'=> new Carbon($request->delivery_date),
             'other_delivery_instructions'=> $request->other_delivery_instructions,

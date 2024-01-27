@@ -111,6 +111,16 @@
                                     <input type="text" class="form-control" placeholder="Contact Number" name="contact_number" value="{{ $allocation->contact_number }}" required>
                                 </div>
                             </div>
+
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-4 col-form-label fw-bold">Email Address :</label>
+                                <div class="col-lg-8">
+                                    <input type="text" class="form-control" placeholder="Email Address" name="email_address" value="{{ $allocation->email_address }}" required>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- Delivery Details -->
@@ -188,7 +198,7 @@
                                     <select class="form-control form-select" name="beneficiary_id" id="beneficiary_id" aria-label="Default select example">
                                         <!-- <option>New Beneficiary</option> -->
                                         <option value="" disabled selected hidden>Choose a Beneficiary</option>
-                                        <option value="0"><p class="font-weight-bold">*Create New Beneficiary</p></option>
+                                        <option value="NEW"><p class="font-weight-bold">*Create New Beneficiary</p></option>
                                         @foreach($beneficiaries as $item)
                                             <option value="{{ $item->id }}">{{ $item->name }}</option>
                                         @endforeach
@@ -251,6 +261,15 @@
                                 <label for="" class="col-lg-4 col-form-label fw-bold">Contact No. :</label>
                                 <div class="col-lg-8">
                                     <input type="text" class="form-control" placeholder="Contact Number" name="contact_number" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <div class="row">
+                                <label for="" class="col-lg-4 col-form-label fw-bold">Email Address :</label>
+                                <div class="col-lg-8">
+                                    <input type="text" class="form-control" placeholder="Email Address" name="email_address" required>
                                 </div>
                             </div>
                         </div>
@@ -428,7 +447,7 @@
     });
 
     document.getElementById('beneficiary_id').addEventListener('change', function () {
-        var style = this.value == 0 ? 'block' : 'none';
+        var style = this.value == 'NEW' ? 'block' : 'none';
         document.getElementById('new_beneficiary_div').style.display = style;
         document.getElementById('new_beneficiary').value = '';
     });

@@ -6,6 +6,11 @@
 @endsection
 
 @section('content')
+@if (session('inventory-updated'))
+<div class="alert alert-success" role="alert">
+    {{ session('inventory-updated') }}
+</div>
+@endif
 
 <div class="bg-heading">
     <h4 class="px-4 py-3">Contribution Details</h4>
@@ -42,8 +47,12 @@
                                 <h5 class="donation-titles">Contribution Details</h5>
                             </div>
                             <div class="col">
-                                <!-- <button type="button" class="btn btn-outline-secondary" href="{{ route('transfer-inventory-create',['contribution_id' => $contribution->id]) }}" disabled>Transfer Inventory <i class="fa-solid fa-arrow-right-arrow-left ms-2"></i></button> -->
-                                <a type="button" class="btn btn-outline-success" href="{{ route('transfer-inventory-create',['contribution_id' => $contribution->id]) }}">Transfer Inventory <i class="fa-solid fa-arrow-right-arrow-left ms-2"></i></a>
+                                @if ($contribution->status === 9)
+                                    <a type="button" class="btn btn-outline-success" href="{{ route('transfer-inventory-create',['contribution_id' => $contribution->id]) }}">Transfer Inventory <i class="fa-solid fa-arrow-right-arrow-left ms-2"></i></a>
+                                @else
+                                    <button type="button" class="btn btn-outline-secondary" href="{{ route('transfer-inventory-create',['contribution_id' => $contribution->id]) }}" disabled>Transfer Inventory <i class="fa-solid fa-arrow-right-arrow-left ms-2"></i></button>
+                                @endif
+                               
                             </div>
                         </div>
 
@@ -54,39 +63,39 @@
                                     <label for="" class="col-lg-4 col-form-label fw-bold">Status :</label>
                                     <!-- Status Text -->
                                     <div class="col-lg-8">
-                                            @if ($contribution->status === 1)
+                                            @if ($contribution->status == 1)
                                                 <div class="fw-bold text-success">
                                                     Contribution Registered Successfully!
                                                 </div>
-                                            @elseif ($contribution->status === 2)
+                                            @elseif ($contribution->status == 2)
                                                 <div class="fw-bold text-danger">
                                                     Contribution Rejected!
                                                 </div>
-                                            @elseif ($contribution->status === 3)
+                                            @elseif ($contribution->status == 3)
                                                 <div class="fw-bold text-success">
                                                     Contribution Approved!
                                                 </div>
-                                            @elseif ($contribution->status === 4)
+                                            @elseif ($contribution->status == 4)
                                                 <div class="fw-bold text-danger">
                                                     Donation Rejected!
                                                 </div>
-                                            @elseif ($contribution->status === 5)
+                                            @elseif ($contribution->status == 5)
                                                 <div class="fw-bold text-success">
                                                     Donation Accepted!
                                                 </div>
-                                            @elseif ($contribution->status === 6)
+                                            @elseif ($contribution->status == 6)
                                                 <div class="fw-bold text-danger">
                                                     Contribution Rejected By Staff!
                                                 </div>
-                                            @elseif ($contribution->status === 7)
+                                            @elseif ($contribution->status == 7)
                                                 <div class="fw-bold text-success">
                                                     Contribution Approved By Staff!
                                                 </div>
-                                            @elseif ($contribution->status === 8)
+                                            @elseif ($contribution->status == 8)
                                                 <div class="fw-bold text-danger">
                                                     Donation Inbound Failed!
                                                 </div>
-                                            @elseif ($contribution->status === 9)
+                                            @elseif ($contribution->status == 9)
                                                 <div class="fw-bold text-success">
                                                     Successful Contribution!
                                                 </div>

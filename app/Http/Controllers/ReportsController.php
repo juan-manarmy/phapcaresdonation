@@ -191,6 +191,7 @@ class ReportsController extends Controller
         }
 
         if($transaction_type == "EXP") {
+            
             $transaction_table_title = "Outbound";
             $transaction_total_titles = "Total Issuance";
 
