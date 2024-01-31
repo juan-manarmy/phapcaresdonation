@@ -938,6 +938,7 @@ class ContributionController extends Controller
                 $inventory->unit_cost = $unit_cost;
                 $inventory->total = $total;
                 $inventory->job_no = $job_no;
+                $inventory->inventory_location = $inventory_location;
                 $inventory->save();
             } else {
                 //Update Details If Existing Member Id, Product Code, Lot No and Unit Cost

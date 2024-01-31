@@ -18,5 +18,6 @@ class Inventory extends Model
         'drug_reg_no',
         'unit_cost',
         'total',
-        'job_no'];
+        'job_no',
+        'inventory_location'];
 }

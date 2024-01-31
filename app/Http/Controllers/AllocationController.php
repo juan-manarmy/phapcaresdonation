@@ -428,6 +428,8 @@ class AllocationController extends Controller
             $status =  $allocatedProductsDetails['status'];
 
             $inventory = Inventory::find($inventory_id);
+            $inventory_location = $inventory->inventory_location;
+
             $member_id = $inventory->member_id;
 
             // GET TODAYS MONTH AND YEAR
@@ -480,6 +482,8 @@ class AllocationController extends Controller
             $transaction_report->remarks = "";
             $transaction_report->job_no = $job_no;
             $transaction_report->status = $status;
+            $transaction_report->inventory_location = $inventory_location;
+
             $transaction_report->save(); 
 
             if($status == 1) {
