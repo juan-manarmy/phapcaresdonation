@@ -1,0 +1,16 @@
+1295.25
+
+oil, 630 liqu
+gearoil 
+rapid cleaner 225
+300
+
+
+
+36
+
+addimage compressor
+update dtac file
+
+
+
