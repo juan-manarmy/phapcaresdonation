@@ -10,10 +10,14 @@ use Auth;
 
 use App\Form;
 use App\Contribution;
+use App\CfsDonor;
+
 use App\Donation;
 use App\Inventory;
 use App\AllocatedProduct;
 use App\CfsPost;
+use App\User;
+
 use App\Document;
 
 class ContributionControllerApi extends Controller
@@ -30,6 +34,16 @@ class ContributionControllerApi extends Controller
         return $contributions;
     }
 
+    public function getCompanyMember($member_id) {
+        $users = User::where('users.status',1)
+        ->where('users.member_id',$member_id)
+        ->join('members', 'users.member_id', '=', 'members.id')
+        ->select('users.id','first_name','last_name','member_name')
+        ->orderBy('members.id', 'DESC')
+        ->get();
+        return $users;
+    }
+
     // public function getContributionById($id) {
     //     $contribution = Contribution::find($id)
     //     ->join('cfs_posts', 'contributions.cfs_id', '=', 'cfs_posts.id')
@@ -38,8 +52,17 @@ class ContributionControllerApi extends Controller
     //     return $contribution;
     // }
 
+    public function getCfsDonors ($cfs_id) {
+        $cfsDonors = CfsDonor::where('cfs_id', $cfs_id)
+        ->join('members', 'cfs_donors.member_id', '=', 'members.id')
+        ->select('cfs_donors.id','cfs_id','cfs_donors.member_id','is_inkind','is_medicine','is_cash','member_name','member_logo_path')
+        ->orderBy('cfs_donors.id', 'DESC')
+        ->get();
+        return $cfsDonors;
+    }
+
     public function getApprovedContribution($contribution_id) {
-        $member_id = Auth::user()->member_id;
+
         $contribution = Contribution::where('contributions.id', $contribution_id)
         ->join('cfs_posts', 'contributions.cfs_id', '=', 'cfs_posts.id')
         ->select(
@@ -56,11 +79,42 @@ class ContributionControllerApi extends Controller
         'delivery_contact_person',
         'delivery_contact_no',
         'delivery_date',
+        'requester_user_id',
+        'tel_no',
+        'email',
         'status',
         'title')
         ->first();
 
+        $requester = User::where('users.status',1)
+        ->where('users.id',$contribution->requester_user_id)
+        ->join('members', 'users.member_id', '=', 'members.id')
+        ->select('users.id','first_name','last_name','member_name')
+        ->orderBy('members.id', 'DESC')
+        ->first();
+
+        $contribution->requester = $requester->member_name.': '.$requester->last_name.', '.$requester->first_name;
+        
         return $contribution;
+    }
+
+    public function getAllocatedByInventory($inventory_id) {
+        
+        $allocated_products = AllocatedProduct::where('inventory_id', $inventory_id)
+        ->where('is_allocated',1)
+        ->join('allocations', 'allocated_products.allocation_id', '=', 'allocations.id')
+        ->join('beneficiaries', 'allocations.beneficiary_id', '=', 'beneficiaries.id')
+        ->select('allocated_products.id',
+        'allocated_products.product_name',
+        'allocated_products.quantity',
+        'allocated_products.unit_cost',
+        'allocated_products.total',
+        'allocated_products.is_allocated',
+        'allocated_products.created_at',
+        'beneficiaries.name')
+        ->get();
+
+        return $allocated_products;
     }
 
     public function getContributionsDrafts() {
@@ -200,6 +254,7 @@ class ContributionControllerApi extends Controller
     public function saveSecondaryDetails($contribution_id, Request $request) {
         $responseCode = 10;
         $contribution = Contribution::findOrFail($contribution_id);
+        $contribution->requester_user_id = $request->requester_user_id;
         $contribution->pickup_address = $request->pickup_address;
         $contribution->pickup_contact_person = $request->pickup_contact_person;
         $contribution->pickup_contact_no = $request->pickup_contact_no;
@@ -209,8 +264,8 @@ class ContributionControllerApi extends Controller
         $contribution->delivery_contact_no = $request->delivery_contact_no;
         $contribution->delivery_date = new Carbon($request->delivery_date);
         $contribution->requester_user_id = Auth::user()->member_id;
-        $contribution->tel_no = '';
-        $contribution->fax_no = '';
+        $contribution->tel_no = $request->tel_no;
+        $contribution->fax_no = $request->tel_no;
         $contribution->email = $request->email;
         $contribution->status = 1;
         if($contribution->save() == 1) {

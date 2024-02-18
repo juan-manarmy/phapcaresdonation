@@ -11,7 +11,8 @@ Route::group(['middleware'=>'auth:sanctum'], function() {
     Route::get('/cfs-posts/spinner','CfsPostControllerApi@getPostSpinner');
     Route::get('/cfs-posts/{id}','CfsPostControllerApi@getPostById');
     Route::get('/cfs-posts/{id}/cfs-requests','CfsPostControllerApi@getPostRequests');
-    Route::get('/cfs-posts/{id}/cfs-donors','CfsPostControllerApi@getPostDonors');
+    Route::get('/contributions/{cfs_id}/get-cfs-donors','ContributionControllerApi@getCfsDonors');
+
     Route::get('/cfs-post/get-events-selection','CfsPostControllerApi@getEventSelection');
     Route::get('/user-profile','UserControllerApi@show');
     Route::put('/user/update-token','UserControllerApi@updateDeviceToken');
@@ -47,6 +48,10 @@ Route::group(['middleware'=>'auth:sanctum'], function() {
     Route::get('/contributions/{contribution_id}/get-documents','DocumentControllerApi@getDocuments');
     Route::get('/inventory/get-inventory','InventoryControllerApi@getInventory');
     Route::delete('/contributions/{id}/delete-contribution','ContributionControllerApi@deleteContribution');
+
+    Route::get('/contributions/{member_id}/get-company-member','ContributionControllerApi@getCompanyMember');
+
+    Route::get('/contributions/{inventory_id}/get-allocated-products','ContributionControllerApi@getAllocatedByInventory');
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {

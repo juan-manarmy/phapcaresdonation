@@ -10,6 +10,7 @@ use App\CfsPost;
 use App\CfsRequest;
 use App\CfsDonor;
 use Auth;
+use App\User;
 
 class CfsPostControllerApi extends Controller
 {
@@ -19,6 +20,7 @@ class CfsPostControllerApi extends Controller
         ->orderBy('id', 'DESC')
         ->where('is_active',1)
         ->get();
+
         return $cfsPosts;
     }
 

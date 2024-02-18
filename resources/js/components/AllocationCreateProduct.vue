@@ -101,7 +101,7 @@
                                     <div class="row">
                                         <label for="" class="col-lg-4 col-form-label fw-bold">Principal :</label>
                                         <div class="col-lg-8">
-                                            {{ selected_product.member_id }}
+                                            {{ selected_product.member_name }}
                                         </div>
                                     </div>
                                 </div>
@@ -247,6 +247,21 @@
                     <div class="row">
                         <div class="col-8">
                             <div class="stats-title">
+                                Monetary
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="stats-values">
+                                {{ monetary_count }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="stats-title">
                                 Total Products
                             </div>
                         </div>
@@ -288,6 +303,21 @@
                         <div class="col">
                             <div class="stats-values">
                                 Php {{ numberFormat (total_donations.promats_total_donation) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="stats-title">
+                                Monetary Amount
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="stats-values">
+                                Php {{ numberFormat (total_donations.monetary_total_donation) }}
                             </div>
                         </div>
                     </div>
@@ -346,6 +376,7 @@ export default {
             selected_product:{
                 id:0,
                 member_id:0,
+                member_name:"",
                 allocation_id:0,
                 inventory_id:1,
                 product_type:"",
@@ -365,14 +396,17 @@ export default {
             total_donations : {
                 medicine_total_donation : 0,
                 promats_total_donation : 0,
+                monetary_total_donation : 0,
                 total_products_amount : 0
             },
             p_id : 0,
             p_quantity : 0,
             medicine_total_quantity : 0,
             promats_total_quantity : 0,
+            monetary_total_quantity : 0,
             promats_count : 0,
             medicine_count : 0,
+            monetary_count : 0,
             total_products_count : 0,
             issuance_quantity: 0,
             loading:false,
@@ -428,6 +462,8 @@ export default {
                 })
                 .then( response => {
                     this.selected_product = response.data;
+                    console.log(this.selected_product);
+
                     this.item_loading = !true
                 })
                 .catch (error => {
@@ -498,9 +534,14 @@ export default {
                 this.medicine_total_quantity = 0;
                 this.total_donations.medicine_total_donation = 0;
                 this.promats_total_quantity = 0;
+                this.monetary_total_quantity = 0;
+
                 this.total_donations.promats_total_donation = 0;
+                this.total_donations.monetary_total_donation = 0;
+
                 this.promats_count = 0;
                 this.medicine_count = 0;
+                this.monetary_count = 0;
 
                 this.allocated_products = response.data;
                 
@@ -515,10 +556,16 @@ export default {
                         this.total_donations.promats_total_donation += item.total;
                         this.promats_count += 1;
                     }
+
+                    if(item.product_type === '3') {
+                        this.monetary_total_quantity += item.quantity;
+                        this.total_donations.monetary_total_donation += item.total;
+                        this.monetary_count += 1;
+                    }
                 })
                 
-                this.total_donations.total_products_amount = this.total_donations.medicine_total_donation + this.total_donations.promats_total_donation;
-                this.total_products_count = this.promats_count + this.medicine_count;
+                this.total_donations.total_products_amount = this.total_donations.medicine_total_donation + this.total_donations.promats_total_donation + this.total_donations.monetary_total_donation;
+                this.total_products_count = this.promats_count + this.medicine_count + this.monetary_count;
                 
             })
             .catch (error => {

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use App\Contribution;
 use App\Donation;
 use App\Member;
+use App\CfsDonor;
+
 use App\User;
 use Illuminate\Support\Carbon;
 use Codedge\Fpdf\Fpdf\Fpdf;
@@ -108,8 +110,9 @@ class ContributionController extends Controller
 
         $documents = Document::where('contribution_id', $contribution_id)->get();
 
-        $promats_count = 0;
         $medicine_count = 0;
+        $promats_count = 0;
+        $monetary_count = 0;
         $total_count = 0;
         
         $total_quantity = 0;
@@ -130,10 +133,12 @@ class ContributionController extends Controller
                 $product_code_missing++;
             }
 
-            if($donation->product_type == 1) {
+            if($donation->product_type == '1') {
                 $medicine_count += 1;
-            } else if($donation->product_type == 2) {
+            } else if($donation->product_type == '2') {
                 $promats_count += 1;
+            } else if($donation->product_type == '3') {
+                $monetary_count += 1;
             }
 
             if($donation->status == 1) {
@@ -147,7 +152,7 @@ class ContributionController extends Controller
             }
         }
 
-        $total_count = $medicine_count + $promats_count;
+        $total_count = $medicine_count + $promats_count + $monetary_count;
 
         return view('contributions.contributions-details')
         ->with('users',$users)
@@ -158,6 +163,7 @@ class ContributionController extends Controller
         ->with('contribution', $contribution)
         ->with('promats_count', $promats_count)
         ->with('medicine_count', $medicine_count)
+        ->with('monetary_count', $monetary_count)
         ->with('total_count', $total_count)
         ->with('total_quantity', $total_quantity)
         ->with('total_amount', $total_amount)
@@ -886,11 +892,18 @@ class ContributionController extends Controller
     public function saveDonationsToInventory($contribution_id,$member_id) 
     {
         $contribution = Contribution::findOrFail($contribution_id);
+        $member_id =  $contribution->member_id;
+        $cfs_id =  $contribution->cfs_id;
+
         $contribution_no =  $contribution->contribution_no;
         $inventory_location =  $contribution->inventory_location;
 
         $donations = Donation::where('contribution_id', $contribution_id)
         ->where('status',1)->get();
+
+        $has_inkind = 0;
+        $has_medicine = 0;
+        $has_cash = 0;
         
         foreach($donations as $donation) {
             $product_code = $donation->product_code;
@@ -914,6 +927,19 @@ class ContributionController extends Controller
 
             $product_name = $product_name." ".$generic_name." ".$strength." ".$dosage_form." ".$package_size;
 
+            if($product_type == '1') {
+                $has_inkind = 1;
+            }
+
+            if($product_type == '2') {
+                $has_medicine = 1;
+            }
+
+            if($product_type == '3') {
+                $has_cash = 1;
+            }
+
+
             // Add donations to inventory 
             //Search Inventory If Donation Details Is Existing
             $inventory = Inventory::where('member_id', $member_id)
@@ -929,7 +955,7 @@ class ContributionController extends Controller
                 $inventory->document_id = $document_id;
                 $inventory->product_type = $product_type;
                 $inventory->product_code = $product_code;
-                $inventory->product_name = $product_name;
+                $inventory->product_name = trim($product_name);
                 $inventory->quantity = $quantity;
                 $inventory->lot_no = $lot_no;
                 $inventory->mfg_date = $mfg_date;
@@ -1054,6 +1080,14 @@ class ContributionController extends Controller
             }
         }
 
+        // save donors
+        $donors = new CfsDonor;
+        $donors->cfs_id = $cfs_id;
+        $donors->member_id = $member_id;
+        $donors->is_inkind = $has_inkind;
+        $donors->is_medicine = $has_medicine;
+        $donors->is_cash = $has_cash;
+        $donors->save();
     }
 
     public function saveTransactionReport ($contribution_id) 

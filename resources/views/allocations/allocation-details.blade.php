@@ -385,7 +385,7 @@
                         <tbody>
                             @if(!$allocated_products->isEmpty())
                                 @foreach ($allocated_products as $donation)
-                                    @if($donation->status != 1)
+                                    @if($donation->status == 0)
                                     <tr>
                                         <td>{{ $donation->id }}</td>
                                         <td>{{ $donation->product_name }}</td>
@@ -585,6 +585,21 @@
                     <div class="row">
                         <div class="col-8">
                             <div class="stats-title">
+                                Monetary
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="stats-values">
+                                {{ $monetary_count }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="stats-title">
                                 Total Products
                             </div>
                         </div>
@@ -628,6 +643,21 @@
                         <div class="col">
                             <div class="stats-values">
                                 P{{ number_format($allocation->total_promats,2) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="stats-title">
+                                Monetary Amount
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="stats-values">
+                                P{{ number_format($total_monetary,2) }}
                             </div>
                         </div>
                     </div>

@@ -11,7 +11,9 @@ use App\Inventory;
 use App\AllocatedProduct;
 use App\Document;
 use App\Summary;
+
 use App\TransactionReport;
+use App\Helpers\Helper;
 
 use Illuminate\Support\Facades\DB;
 use Auth;
@@ -412,6 +414,8 @@ class AllocationController extends Controller
         $allocated_products = AllocatedProduct::where('allocation_id', $allocation_id)
         ->where('status',1)->get();
 
+        $beneficiary_name = Beneficiary::findOrFail($beneficiary_id)->name;
+
         foreach($allocated_products as $allocatedProductsDetails) {
             $inventory_id = $allocatedProductsDetails['inventory_id'];
             $product_code =  $allocatedProductsDetails['product_code'];
@@ -484,7 +488,7 @@ class AllocationController extends Controller
             $transaction_report->status = $status;
             $transaction_report->inventory_location = $inventory_location;
 
-            $transaction_report->save(); 
+            $transaction_report->save();
 
             if($status == 1) {
 
@@ -498,7 +502,8 @@ class AllocationController extends Controller
                 ->where('year',$currentDateYear)
                 ->where('product_code',$product_code)
                 ->where('lot_no',$lot_no)
-                ->where('unit_cost',$unit_cost)->get();
+                ->where('unit_cost',$unit_cost)
+                ->get();
 
                 $summaryId = 0;
                 $movementsQuantity = 0;
@@ -525,7 +530,13 @@ class AllocationController extends Controller
                 $updateSummary->updated_at = $currentDate;
                 $updateSummary->save();
             }
+            Helper::sendNotificationContribution($product_name, 'Succesfully Allocated to '.$beneficiary_name,$member_id);
+
         }
+
+        AllocatedProduct::where('allocation_id', $allocation_id)
+            ->where('status',1)
+            ->update(['is_allocated' => 1]);
     }
 
     public function updateAllocationStatus($allocation_id, Request $request)
@@ -592,6 +603,7 @@ class AllocationController extends Controller
             // save data to documents db
             $this->saveDocuments($allocation_id,$allocation->allocation_no,$allocation->dna_no,"DODRF");
             $this->saveAllocatedProductsToInventory($allocation_id);
+
         }
 
         return back();
@@ -617,6 +629,12 @@ class AllocationController extends Controller
     public function createDNAForm($allocation_id)
     {
         $allocation = Allocation::findOrFail($allocation_id);
+
+        $beneficiaryId = $allocation->beneficiary_id;
+
+        $beneficiary = Beneficiary::findOrFail($beneficiaryId);
+        $beneficiary_name = $beneficiary->name;
+
         $allocation_no = $allocation->allocation_no;
 
         $pdf = new FPDF('P','mm','A4');
@@ -656,7 +674,7 @@ class AllocationController extends Controller
         $pdf->SetXY(20,56);
         $pdf->SetTextColor(43,43,43);	
         $pdf->SetFont('Arial','B',12);
-        $pdf->Cell(0,0,"{$allocation->beneficiary_id}");
+        $pdf->Cell(0,0,"{$beneficiary_name}");
         
         $pdf->SetXY(20,65);
         $pdf->SetTextColor(43,43,43);	
@@ -763,8 +781,7 @@ class AllocationController extends Controller
         $pdf->Output($destination_path,'F');
     }
 
-    public function createDTACForm ($allocation_id) 
-    {
+    public function createDTACForm ($allocation_id) {
         $allocationDetails = Allocation::findOrFail($allocation_id);
 
         $allocationNo = $allocationDetails['allocation_no'];
@@ -972,7 +989,6 @@ class AllocationController extends Controller
         $inventory->save();
 
         $allocated_product->delete();
-        // return $quantity;
     }
 
     public function allocationAddProducts($allocation_id) 
@@ -1011,7 +1027,9 @@ class AllocationController extends Controller
     public function getInventory($member_id, $allocation_id) {
         //get the inventory
         $get_inventory = Inventory::where('member_id', $member_id)
+        ->join('members', 'inventories.member_id', '=', 'members.id')
         ->where('quantity','!=', 0)
+        ->select('inventories.*','members.member_name')
         ->get();
         // array of inventory item
         $inventory = [];
@@ -1032,10 +1050,14 @@ class AllocationController extends Controller
 
     public function getSelectedProduct($product_id){
         $inventory = Inventory::findOrFail($product_id);
+        $member_name = Member::findOrFail($inventory->member_id)->member_name;
+        $inventory->member_name = $member_name;
+        // show-product
         return $inventory;
     }
 
     public function allocationCreate() {
+
         $contributions_notif = DB::table('contributions')
         ->join('members', 'contributions.member_id', '=', 'members.id')
         ->where('contributions.status',1)
@@ -1057,7 +1079,6 @@ class AllocationController extends Controller
         $randomStr = strtoupper(Str::random(8));
         $allocation_no = $currentDate->format('ymd');
         $allocation_no = 'AN-'.$allocation_no.$randomStr;
-
         
         $allocation_without_dna = Allocation::where('dna_no','!=', '')
         ->get();
@@ -1164,8 +1185,6 @@ class AllocationController extends Controller
         ->select('id','allocation_no','dna_no','created_at','total_allocated_products','status')
         ->get();
 
-        // $allocations = Allocation::all()->sortByDesc('id');
-
         return view('allocations.allocation-list')->with('allocations', $allocations)
         ->with('allocations_drafts', $allocations_drafts)
         ->with('allocations_notif', $allocations_notif)
@@ -1173,6 +1192,7 @@ class AllocationController extends Controller
     }
 
     public function allocationDetails($allocation_id) {
+
         $contributions_notif = DB::table('contributions')
         ->join('members', 'contributions.member_id', '=', 'members.id')
         ->where('contributions.status',1)
@@ -1193,8 +1213,13 @@ class AllocationController extends Controller
         $beneficiary = Beneficiary::findOrFail($allocation->beneficiary_id);
         $beneficiary_name = $beneficiary->name;
 
+        $total_monetary = $allocated_products
+        ->where('product_type', '=', '3')
+        ->sum('total');
+
         $promats_count = 0;
         $medicine_count = 0;
+        $monetary_count = 0;
         $total_count = 0;
         
         $total_quantity = 0;
@@ -1208,6 +1233,8 @@ class AllocationController extends Controller
                 $medicine_count += 1;
             } else if ($donation->product_type == 2 && $donation->status == 1){
                 $promats_count += 1;
+            } else if ($donation->product_type == 3 && $donation->status == 1){
+                $monetary_count += 1;
             }
 
             if($donation->status == 1) {
@@ -1221,14 +1248,16 @@ class AllocationController extends Controller
             }
         }
 
-        $total_count = $medicine_count + $promats_count;
+        $total_count = $medicine_count + $promats_count + $monetary_count;
 
         return view('allocations.allocation-details')
         ->with('promats_count', $promats_count)
         ->with('medicine_count', $medicine_count)
+        ->with('monetary_count', $monetary_count)
         ->with('total_count', $total_count)
         ->with('total_quantity', $total_quantity)
         ->with('total_amount', $total_amount)
+        ->with('total_monetary', $total_monetary)
         ->with('cancelled_total_quantity', $cancelled_total_quantity)
         ->with('cancelled_total_donation', $cancelled_total_donation)
         ->with('beneficiary_name',$beneficiary_name)

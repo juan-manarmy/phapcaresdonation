@@ -423,6 +423,21 @@
                     <div class="row">
                         <div class="col">
                             <div class="stats-title">
+                                Monetary
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="stats-values">
+                                {{ monetary_count }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="stats-title">
                                 Total Products
                             </div>
                         </div>
@@ -625,10 +640,11 @@ export default {
                 total_products_amount : 0
             },
             medicine_total_quantity : 0,
-            medicine_total_quantity : 0,
             promats_total_quantity : 0,
-            promats_count : 0,
+            monetary_total_quantity : 0,
             medicine_count : 0,
+            promats_count : 0,
+            monetary_count : 0,
             total_products_count : 0,
             loading:false,
             total_loading:false
@@ -763,12 +779,14 @@ export default {
                     }
 
                     if(item.product_type === '3') {
+                        this.monetary_total_quantity += parseInt(item.quantity);
                         this.total_donations.monetary_total_donation += parseFloat(item.total);
+                        this.monetary_count += 1;
                     }
                 })
                 
                 this.total_donations.total_products_amount = this.total_donations.medicine_total_donation + this.total_donations.promats_total_donation + this.total_donations.monetary_total_donation;
-                this.total_products_count = this.promats_count + this.medicine_count;
+                this.total_products_count = this.promats_count + this.medicine_count + this.monetary_count;
                 
             })
             .catch (error => {

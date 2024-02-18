@@ -1083,6 +1083,21 @@
                     <div class="row">
                         <div class="col-8">
                             <div class="stats-title">
+                                Monetary
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="stats-values">
+                                {{ $monetary_count }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="stats-title">
                                 Total Products
                             </div>
                         </div>

@@ -51,6 +51,7 @@ class ProductDonationController extends Controller
         ->with('contribution_id', $contribution_id)
         ->with('allocations_notif', $allocations_notif)
         ->with('contributions_notif', $contributions_notif);
+
     }
 
     public function saveSecondaryDetails($contribution_id, Request $request) {
